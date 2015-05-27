@@ -242,7 +242,6 @@ class FedupCommand(dnf.cli.Command):
         # same as the download, but offline and non-interactive. so..
         self.cli.demands.root_user = True
         self.cli.demands.resolving = True
-        #self.cli.demands.available_repos = True # XXX ww testing
         self.cli.demands.sack_activation = True
         # use the saved value for --datadir
         self.base.repos.all().pkgdir = self.state.datadir
@@ -310,7 +309,7 @@ class FedupCommand(dnf.cli.Command):
         Plymouth.set_mode("updates")
         Plymouth.progress(0)
         Plymouth.message(_("Starting system upgrade. This will take a while."))
-        # XXX ww testing
+        # add the downloaded RPMs to the sack
         for f in os.listdir(datadir):
             if f.endswith(".rpm"):
                 self.base.add_remote_rpm(os.path.join(datadir,f))
@@ -319,7 +318,6 @@ class FedupCommand(dnf.cli.Command):
             self.base.distro_sync()
         else:
             self.base.upgrade_all()
-
 
     def run_clean(self, extcmds):
         if self.state.datadir:
