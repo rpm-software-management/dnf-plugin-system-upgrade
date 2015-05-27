@@ -17,4 +17,4 @@ fedup is back.. in DNF plugin form!!
 Upstream DNF doesn't have any way for plugins to modify the transaction
 progress display, so the plugin can't update the plymouth status messages.
 
-This patch adds support: wgwoods/dnf@e18101bac6b1a76afe005807600fc7fcd128f894
+This patch adds support: https://github.com/wgwoods/dnf/commit/e18101b
