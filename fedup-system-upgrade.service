@@ -1,0 +1,13 @@
+[Unit]
+Description=System Upgrade
+ConditionPathExists=/system-update/.fedup-system-upgrade
+Conflicts=packagekit-offline-update.service
+OnFailure=reboot.target
+
+[Service]
+EnvironmentFile=/system-update/.fedup-system-upgrade
+ExecStart=/usr/bin/dnf --releasever=${RELEASEVER} fedup upgrade
+StandardOutput=journal+console
+
+[Install]
+WantedBy=system-update.target
