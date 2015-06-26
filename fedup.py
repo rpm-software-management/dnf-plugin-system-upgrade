@@ -249,8 +249,8 @@ class FedupCommand(dnf.cli.Command):
         self.cli.demands.cacheonly = True
         # and don't ask any questions (we confirmed all this beforehand)
         self.base.conf.assumeyes = True
-        # DNF-API-TODO: this is not part of upstream's API yet
-        self.base.transaction_display = PlymouthTransactionDisplay()
+        # NOTE: this is in upstream git but not released yet
+        self.cli.demands.transaction_display = PlymouthTransactionDisplay()
 
     def configure_clean(self, args):
         self.cli.demands.root_user = True
