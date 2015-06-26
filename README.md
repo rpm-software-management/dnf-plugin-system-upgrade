@@ -1,6 +1,7 @@
 # dnf-plugin-fedup
 
-fedup is back.. in DNF plugin form!!
+A proof-of-concept plugin for [DNF] that shows how to do [fedup]-style upgrades
+using [systemd]'s [Offline Updates] facility.
 
 ## Installation
 
@@ -12,9 +13,7 @@ fedup is back.. in DNF plugin form!!
     dnf fedup download --releasever=22
     dnf fedup reboot
 
-## Bugs
-
-Upstream DNF doesn't have any way for plugins to modify the transaction
-progress display, so the plugin can't update the plymouth status messages.
-
-This patch adds support: https://github.com/wgwoods/dnf/commit/e18101b
+[DNF]: https://github.com/rpm-software-management/dnf
+[fedup]: https://github.com/rhinstaller/fedup
+[systemd]: https://github.com/systemd/systemd
+[Offline Updates]: http://www.freedesktop.org/wiki/Software/systemd/SystemUpdates/
