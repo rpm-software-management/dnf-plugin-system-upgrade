@@ -302,8 +302,7 @@ class FedupCommand(dnf.cli.Command):
 
     def run_upgrade(self, extcmds):
         # Delete symlink ASAP to avoid reboot loops
-        datadir = os.readlink(MAGIC_SYMLINK)
-        os.unlink(MAGIC_SYMLINK)
+        dnf.yum.misc.unlink_f(MAGIC_SYMLINK)
         # change the upgrade status (so we can detect crashed upgrades later)
         with self.state:
             self.state.upgrade_status = 'incomplete'
@@ -312,9 +311,9 @@ class FedupCommand(dnf.cli.Command):
         Plymouth.progress(0)
         Plymouth.message(_("Starting system upgrade. This will take a while."))
         # add the downloaded RPMs to the sack
-        for f in os.listdir(datadir):
+        for f in os.listdir(self.state.datadir):
             if f.endswith(".rpm"):
-                self.base.add_remote_rpm(os.path.join(datadir,f))
+                self.base.add_remote_rpm(os.path.join(self.state.datadir,f))
         # set up the upgrade transaction
         if self.state.distro_sync:
             self.base.distro_sync()
