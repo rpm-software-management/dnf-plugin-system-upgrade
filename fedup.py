@@ -95,6 +95,7 @@ class State(object):
 
     download_status = _prop("download", "status")
     datadir = _prop("download", "datadir")
+    releasever = _prop("download", "releasever")
 
     upgrade_status = _prop("upgrade", "status")
     distro_sync = _prop("upgrade", "distro-sync")
@@ -278,7 +279,7 @@ class FedupCommand(dnf.cli.Command):
         os.symlink(self.state.datadir, MAGIC_SYMLINK)
         # write releasever into the flag file so it can be read by systemd
         with open(SYSTEMD_FLAG_FILE, 'w') as flagfile:
-            flagfile.write("RELEASEVER=%s\n" % self.base.conf.releasever)
+            flagfile.write("RELEASEVER=%s\n" % self.state.releasever)
         # set upgrade_status so that the upgrade can run
         with self.state:
             self.state.upgrade_status = 'ready'
@@ -296,6 +297,7 @@ class FedupCommand(dnf.cli.Command):
 
         with self.state:
             self.state.download_status = 'downloading'
+            self.state.releasever = self.base.conf.releasever
             self.state.datadir = self.opts.datadir
 
     def run_upgrade(self, extcmds):
