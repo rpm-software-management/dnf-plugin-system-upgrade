@@ -136,9 +136,12 @@ class PlymouthTransactionDisplay(dnf.cli.output.CliTransactionDisplay):
     def event(self, package, action, te_cur, te_total, ts_cur, ts_total):
         super(PlymouthTransactionDisplay, self).event(package,
             action, te_cur, te_total, ts_cur, ts_total)
-
-        if Plymouth.alive and action in self.action:
+        if not Plymouth.alive:
+            return
+        if action in self.action:
             self._update_plymouth(action, package, ts_cur, ts_total)
+        elif action == self.TRANS_POST:
+            Plymouth.message(_("Running post-transaction scripts..."))
 
     def _update_plymouth(self, action, package, current, total):
         Plymouth.progress(int(100.0 * current / total))
