@@ -110,10 +110,10 @@ class PlymouthOutput(object):
         self._last_args = dict()
 
     def _plymouth(self, cmd, *args):
-        if self.alive:
-            if cmd == '--ping' or args != self._last_args.get(cmd):
-                self.alive = (call((PLYMOUTH, cmd) + args) == 0)
-                self._last_args[cmd] = args
+        dupe_cmd = (args == self._last_args.get(cmd))
+        if (self.alive and not dupe_cmd) or cmd == '--ping':
+            self.alive = (call((PLYMOUTH, cmd) + args) == 0)
+            self._last_args[cmd] = args
         return self.alive
 
     def ping(self):
