@@ -133,11 +133,6 @@ Plymouth = PlymouthOutput()
 
 # A transaction display class that updates plymouth for us
 class PlymouthTransactionDisplay(dnf.cli.output.CliTransactionDisplay):
-    def __init__(self):
-        super(PlymouthTransactionDisplay, self).__init__()
-        self.current = 0
-        self.total = 0
-
     def event(self, package, action, te_cur, te_total, ts_cur, ts_total):
         super(PlymouthTransactionDisplay, self).event(package,
             action, te_cur, te_total, ts_cur, ts_total)
@@ -146,9 +141,6 @@ class PlymouthTransactionDisplay(dnf.cli.output.CliTransactionDisplay):
             self._update_plymouth(action, package, ts_cur, ts_total)
 
     def _update_plymouth(self, action, package, current, total):
-        if current == self.current and total == self.total:
-            return
-        (self.current, self.total) = (current, total)
         Plymouth.progress(int(100.0 * current / total))
         Plymouth.message("[%d/%d] %s %s..." % (
                          current, total, self.action.get(action), package))
