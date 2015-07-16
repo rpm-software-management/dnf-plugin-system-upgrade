@@ -139,14 +139,17 @@ class PlymouthTransactionDisplay(dnf.cli.output.CliTransactionDisplay):
         if not Plymouth.alive:
             return
         if action in self.action:
-            self._update_plymouth(action, package, ts_cur, ts_total)
+            self._update_plymouth(package, action, ts_cur, ts_total)
         elif action == self.TRANS_POST:
             Plymouth.message(_("Running post-transaction scripts..."))
 
-    def _update_plymouth(self, action, package, current, total):
+    def _update_plymouth(self, package, action, current, total):
         Plymouth.progress(int(100.0 * current / total))
-        Plymouth.message("[%d/%d] %s %s..." % (
-                         current, total, self.action.get(action), package))
+        Plymouth.message(self._fmt_event(package, action, current, total))
+
+    def _fmt_event(self, package, action, current, total):
+        action = self.action.get(action, action)
+        return "[%d/%d] %s %s..." % (current, total, action, package)
 
 # --- Argument parsing helpers ------------------------------------------------
 
