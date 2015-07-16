@@ -1,5 +1,6 @@
 INSTALL ?= install -p
 PYTHON ?= python
+PYTHON_UNITTEST_MODULE ?= unittest
 
 UNITDIR=$(shell pkg-config systemd --variable systemdsystemunitdir)
 PYTHON_LIBDIR=$(shell $(PYTHON) -c \
@@ -14,3 +15,8 @@ install:
 
 clean:
 	rm -rf *.pyc __pycache__
+
+check:
+	$(PYTHON) -m $(PYTHON_UNITTEST_MODULE) test_fedup
+
+.PHONY: install clean check
