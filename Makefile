@@ -11,3 +11,6 @@ install:
 	$(INSTALL) -m644 fedup-system-upgrade.service $(DESTDIR)$(UNITDIR)
 	$(INSTALL) -d $(DESTDIR)$(PLUGINDIR)
 	$(INSTALL) -m644 fedup.py $(DESTDIR)$(PLUGINDIR)
+
+clean:
+	rm -rf *.pyc __pycache__
