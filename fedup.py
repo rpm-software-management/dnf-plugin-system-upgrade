@@ -143,6 +143,11 @@ class PlymouthTransactionDisplay(dnf.cli.output.CliTransactionDisplay):
         elif action == self.TRANS_POST:
             Plymouth.message(_("Running post-transaction scripts..."))
 
+    def verify_tsi_package(self, pkg, count, total):
+        super(PlymouthTransactionDisplay, self).verify_tsi_package(pkg,
+            count, total)
+        self._update_plymouth(pkg, _("Verifying"), count, total)
+
     def _update_plymouth(self, package, action, current, total):
         Plymouth.progress(int(100.0 * current / total))
         Plymouth.message(self._fmt_event(package, action, current, total))
