@@ -194,7 +194,7 @@ class FedupPlugin(dnf.Plugin):
 
 class FedupCommand(dnf.cli.Command):
     # pylint: disable=unused-argument
-    aliases = ('fedup','system-upgrade')
+    aliases = ('fedup', 'system-upgrade')
     summary = _("Prepare system for upgrade to a new release")
     usage = "[%s] [download --releasever=%s|reboot|clean]" % (
                 _("OPTIONS"), _("VERSION"))
@@ -243,7 +243,7 @@ class FedupCommand(dnf.cli.Command):
         self.cli.demands.root_user = True
 
     def configure_upgrade(self, args):
-        # same as the download, but offline and non-interactive. so..
+        # same as the download, but offline and non-interactive. so...
         self.cli.demands.root_user = True
         self.cli.demands.resolving = True
         self.cli.demands.sack_activation = True
