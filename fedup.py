@@ -21,7 +21,7 @@ import os
 import json
 
 from argparse import ArgumentParser
-from subprocess import call
+from subprocess import call, check_call
 
 import dnf
 import dnf.cli
@@ -43,7 +43,7 @@ DOWNLOAD_FINISHED_MSG = _("Download complete! Use 'dnf %s reboot' to start the u
 # --- Miscellaneous helper functions ------------------------------------------
 
 def reboot():
-    call(["systemctl", "reboot"])
+    check_call(["systemctl", "reboot"])
 
 def checkReleaseVer(conf):
     if dnf.rpm.detect_releasever(conf.installroot) == conf.releasever:
