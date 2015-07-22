@@ -6,7 +6,6 @@ using [systemd]'s [Offline Updates] facility.
 ## Installation
 
     make install
-    systemctl enable fedup-system-upgrade.service
 
 ## Usage
 
