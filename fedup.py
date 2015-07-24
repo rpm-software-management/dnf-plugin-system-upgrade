@@ -37,8 +37,10 @@ MAGIC_SYMLINK = '/system-update'
 SYSTEMD_FLAG_FILE = '/system-update/.fedup-system-upgrade'
 
 NO_KERNEL_MSG = _("No new kernel packages were found.")
-RELEASEVER_MSG = _("Need a --releasever greater than the current system version.")
-DOWNLOAD_FINISHED_MSG = _("Download complete! Use 'dnf %s reboot' to start the upgrade.")
+RELEASEVER_MSG = _(
+    "Need a --releasever greater than the current system version.")
+DOWNLOAD_FINISHED_MSG = _(
+    "Download complete! Use 'dnf %s reboot' to start the upgrade.")
 
 # --- Miscellaneous helper functions ------------------------------------------
 
@@ -86,11 +88,12 @@ class State(object):
             self.write()
 
     # helper function for creating properties. pylint: disable=protected-access
-    def _prop(section, option): # pylint: disable=no-self-argument
+    def _prop(section, option):  # pylint: disable=no-self-argument
         def setprop(self, value):
-            self._data.setdefault(section,{})[option] = value
+            self._data.setdefault(section, {})[option] = value
+
         def getprop(self):
-            return self._data.setdefault(section,{}).get(option)
+            return self._data.setdefault(section, {}).get(option)
         return property(getprop, setprop)
 
     download_status = _prop("download", "status")
@@ -123,7 +126,7 @@ class PlymouthOutput(object):
         return self._plymouth("display-message", "--text", msg)
 
     def set_mode(self, mode):
-        return self._plymouth("change-mode", "--"+mode)
+        return self._plymouth("change-mode", "--" + mode)
 
     def progress(self, percent):
         return self._plymouth("system-update", "--progress", str(percent))
@@ -135,7 +138,7 @@ Plymouth = PlymouthOutput()
 class PlymouthTransactionDisplay(dnf.cli.output.CliTransactionDisplay):
     def event(self, package, action, te_cur, te_total, ts_cur, ts_total):
         super(PlymouthTransactionDisplay, self).event(package,
-            action, te_cur, te_total, ts_cur, ts_total)
+                                                      action, te_cur, te_total, ts_cur, ts_total)
         if not Plymouth.alive:
             return
         if action in self.action:
@@ -145,7 +148,7 @@ class PlymouthTransactionDisplay(dnf.cli.output.CliTransactionDisplay):
 
     def verify_tsi_package(self, pkg, count, total):
         super(PlymouthTransactionDisplay, self).verify_tsi_package(pkg,
-            count, total)
+                                                                   count, total)
         self._update_plymouth(pkg, _("Verifying"), count, total)
 
     def _update_plymouth(self, package, action, current, total):
@@ -161,10 +164,12 @@ class PlymouthTransactionDisplay(dnf.cli.output.CliTransactionDisplay):
 # This idea was borrowed from dnf-plugins-core!
 class PluginArgumentParser(ArgumentParser):
     def __init__(self, cmd, **kwargs):
-        prog='dnf %s' % cmd
+        prog = 'dnf %s' % cmd
         ArgumentParser.__init__(self, prog=prog, add_help=False, **kwargs)
+
     def error(self, message):
         raise AttributeError(message)
+
     def parse_known_args(self, args=None, namespace=None):
         try:
             return ArgumentParser.parse_known_args(self, args, namespace)
@@ -175,12 +180,12 @@ class PluginArgumentParser(ArgumentParser):
 def make_parser(prog):
     p = PluginArgumentParser(prog)
     p.add_argument('--distro-sync', default=False, action='store_true',
-        help=_("downgrade packages if the new release's version is older"))
+                   help=_("downgrade packages if the new release's version is older"))
     p.add_argument('--datadir', default=DEFAULT_DATADIR,
-        help=_("save downloaded data to this location"))
+                   help=_("save downloaded data to this location"))
     p.add_argument('action',
-        choices=('download','clean','reboot','upgrade'),
-        help=_("action to perform"))
+                   choices=('download', 'clean', 'reboot', 'upgrade'),
+                   help=_("action to perform"))
     return p
 
 # --- The actual Plugin and Command objects! ----------------------------------
@@ -197,7 +202,7 @@ class FedupCommand(dnf.cli.Command):
     aliases = ('fedup', 'system-upgrade')
     summary = _("Prepare system for upgrade to a new release")
     usage = "[%s] [download --releasever=%s|reboot|clean]" % (
-                _("OPTIONS"), _("VERSION"))
+        _("OPTIONS"), _("VERSION"))
 
     def __init__(self, cli):
         super(FedupCommand, self).__init__(cli)
@@ -217,14 +222,18 @@ class FedupCommand(dnf.cli.Command):
     def configure(self, args):
         self.opts = self.parse_args(args)
         self._call_sub("configure", args)
+
     def doCheck(self, basecmd, extcmds):
         self._call_sub("check", basecmd, extcmds)
+
     def run(self, extcmds):
         self._call_sub("run", extcmds)
+
     def run_transaction(self):
         self._call_sub("transaction")
+
     def _call_sub(self, name, *args):
-        subfunc = getattr(self, name+'_'+self.opts.action, None)
+        subfunc = getattr(self, name + '_' + self.opts.action, None)
         if callable(subfunc):
             subfunc(*args)
 
@@ -273,7 +282,8 @@ class FedupCommand(dnf.cli.Command):
 
     def check_upgrade(self, basecmd, extargs):
         if not self.state.upgrade_status == 'ready':
-            raise dnf.cli.CliError(_("use '%s reboot' to begin the upgrade") % basecmd)
+            raise dnf.cli.CliError(
+                _("use '%s reboot' to begin the upgrade") % basecmd)
 
     # == run_*: run the action/prep the transaction ===========================
 
@@ -316,7 +326,7 @@ class FedupCommand(dnf.cli.Command):
         # add the downloaded RPMs to the sack
         for f in os.listdir(self.state.datadir):
             if f.endswith(".rpm"):
-                self.base.add_remote_rpm(os.path.join(self.state.datadir,f))
+                self.base.add_remote_rpm(os.path.join(self.state.datadir, f))
         # set up the upgrade transaction
         if self.state.distro_sync:
             self.base.distro_sync()
