@@ -270,10 +270,15 @@ class FedupCommand(dnf.cli.Command):
     def check_reboot(self, basecmd, extargs):
         if not self.state.download_status == 'complete':
             raise dnf.cli.CliError(_("system is not ready for upgrade"))
+        if os.path.lexists(MAGIC_SYMLINK):
+            raise dnf.cli.CliError(_("upgrade is already scheduled"))
 
     def check_upgrade(self, basecmd, extargs):
         if not self.state.upgrade_status == 'ready':
             raise dnf.cli.CliError(_("use '%s reboot' to begin the upgrade") % basecmd)
+        if os.readlink(MAGIC_SYMLINK) != self.state.datadir:
+            log.info(_("another upgrade tool is running. exiting quietly."))
+            raise SystemExit(0)
 
     # == run_*: run the action/prep the transaction ===========================
 
