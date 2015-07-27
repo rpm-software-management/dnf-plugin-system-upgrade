@@ -318,6 +318,19 @@ class FedupCommand(dnf.cli.Command):
         Plymouth.set_mode("updates")
         Plymouth.progress(0)
         Plymouth.message(_("Starting system upgrade. This will take a while."))
+
+        # NOTE: We *assume* that depsolving here will yield the same
+        # transaction as it did during the download, but we aren't doing
+        # anything to *ensure* that; if the metadata changed, or if depsolving
+        # is non-deterministic in some way, we could end up with a different
+        # transaction and then the upgrade will fail due to missing packages.
+        #
+        # One way to *guarantee* that we have the same transaction would be
+        # to save & restore the Transaction object, but there's no documented
+        # way to save a Transaction to disk.
+        #
+        # So far, though, the above assumption seems to hold. So... onward!
+
         # add the downloaded RPMs to the sack
         for f in os.listdir(self.state.datadir):
             if f.endswith(".rpm"):
