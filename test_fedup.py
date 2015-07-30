@@ -11,6 +11,7 @@ except ImportError:
 from mock import patch
 from fedup import PLYMOUTH
 
+
 @patch('fedup.call', return_value=0)
 class PlymouthTestCase(unittest.TestCase):
     def setUp(self):
@@ -24,10 +25,10 @@ class PlymouthTestCase(unittest.TestCase):
         self.assertTrue(self.ply.alive)
 
     def test_ping_when_dead(self, call):
-        call.return_value=1
+        call.return_value = 1
         self.ply.ping()
         self.assertFalse(self.ply.alive)
-        call.return_value=0
+        call.return_value = 0
         self.ply.ping()
         self.assertEqual(call.call_count, 2)
         self.assertTrue(self.ply.alive)
@@ -50,7 +51,8 @@ class PlymouthTestCase(unittest.TestCase):
 
     def test_progress(self, call):
         self.ply.progress(27)
-        call.assert_called_once_with((PLYMOUTH, "system-update", "--progress", str(27)))
+        call.assert_called_once_with(
+            (PLYMOUTH, "system-update", "--progress", str(27)))
 
     def test_mode(self, call):
         self.ply.set_mode("updates")
@@ -70,9 +72,9 @@ class PlymouthTransactionDisplayTestCase(unittest.TestCase):
         msg = self.display._fmt_event(self.pkg, self.action, 1, 1000)
         # updating plymouth display means two plymouth calls
         call.assert_has_calls([
-                mock.call((PLYMOUTH, "system-update", "--progress", "0")),
-                mock.call((PLYMOUTH, "display-message", "--text", msg))
-            ], any_order=True)
+            mock.call((PLYMOUTH, "system-update", "--progress", "0")),
+            mock.call((PLYMOUTH, "display-message", "--text", msg))
+        ], any_order=True)
 
     def test_filter_calls(self, call):
         # event progress on the same transaction item -> one display update
