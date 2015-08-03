@@ -28,7 +28,7 @@ import dnf.cli
 from dnf.i18n import _
 
 import logging
-log = logging.getLogger("dnf.plugin")
+logger = logging.getLogger("dnf.plugin")
 
 
 PLYMOUTH = '/usr/bin/plymouth'
@@ -59,6 +59,7 @@ def checkDataDir(datadir):
 
 # --- State object - for tracking upgrade state between runs ------------------
 
+# DNF-INTEGRATION-NOTE: basically the same thing as dnf.persistor.JSONDB
 class State(object):
     statefile = '/var/lib/dnf/system-upgrade.json'
     def __init__(self):
@@ -162,7 +163,7 @@ class PlymouthTransactionDisplay(dnf.cli.output.CliTransactionDisplay):
 
 # --- Argument parsing helpers ------------------------------------------------
 
-# This idea was borrowed from dnf-plugins-core!
+# DNF-INTEGRATION-NOTE: this was borrowed from dnfpluginscore.ArgumentParser
 class PluginArgumentParser(ArgumentParser):
     def __init__(self, cmd, **kwargs):
         prog = 'dnf %s' % cmd
@@ -246,7 +247,12 @@ class SystemUpgradeCommand(dnf.cli.Command):
         self.cli.demands.available_repos = True
         self.cli.demands.sack_activation = True
         self.base.repos.all().pkgdir = self.opts.datadir
-        # ...don't actually install anything now, though!
+        # We want to do the depsolve / download / transaction-test, but *not*
+        # run the actual RPM transaction to install the downloaded packages.
+        # Setting the "test" flag makes the RPM transaction a test transaction,
+        # so nothing actually gets installed.
+        # (It also means that we run two test transactions in a row, which is
+        # kind of silly, but that's something for DNF to fix...)
         self.base.conf.tsflags.append("test")
 
     def configure_reboot(self, args):
@@ -263,7 +269,7 @@ class SystemUpgradeCommand(dnf.cli.Command):
         self.cli.demands.cacheonly = True
         # and don't ask any questions (we confirmed all this beforehand)
         self.base.conf.assumeyes = True
-        # NOTE: this is in upstream git but not released yet
+        # NOTE: this has no effect in DNF < 1.0.1
         self.cli.demands.transaction_display = PlymouthTransactionDisplay()
 
     def configure_clean(self, args):
@@ -288,7 +294,7 @@ class SystemUpgradeCommand(dnf.cli.Command):
             raise dnf.cli.CliError(
                 _("use '%s reboot' to begin the upgrade") % basecmd)
         if os.readlink(MAGIC_SYMLINK) != self.state.datadir:
-            log.info(_("another upgrade tool is running. exiting quietly."))
+            logger.info(_("another upgrade tool is running. exiting quietly."))
             raise SystemExit(0)
 
     # == run_*: run the action/prep the transaction ===========================
@@ -354,7 +360,7 @@ class SystemUpgradeCommand(dnf.cli.Command):
 
     def run_clean(self, extcmds):
         if self.state.datadir:
-            log.info(_("Cleaning up downloaded data..."))
+            logger.info(_("Cleaning up downloaded data..."))
             dnf.util.clear_dir(self.state.datadir)
         self.state.clear()
 
@@ -369,7 +375,7 @@ class SystemUpgradeCommand(dnf.cli.Command):
         with self.state:
             self.state.download_status = 'complete'
             self.state.distro_sync = self.opts.distro_sync
-        log.info(DOWNLOAD_FINISHED_MSG, self.base.basecmd)
+        logger.info(DOWNLOAD_FINISHED_MSG, self.base.basecmd)
 
     def transaction_upgrade(self):
         Plymouth.message(_("Upgrade complete! Cleaning up and rebooting..."))
