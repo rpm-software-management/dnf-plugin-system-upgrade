@@ -1,4 +1,4 @@
-# fedup.py - implement fedup as a DNF plugin.
+# system_upgrade.py - handle major-version system upgrades.
 #
 # Copyright (c) 2015 Red Hat, Inc.
 #
@@ -28,15 +28,16 @@ import dnf.cli
 from dnf.i18n import _
 
 import logging
-log = logging.getLogger("dnf.plugin.fedup")
+log = logging.getLogger("dnf.plugin")
 
 
 PLYMOUTH = '/usr/bin/plymouth'
-DEFAULT_DATADIR = '/var/lib/fedup'
+DEFAULT_DATADIR = '/var/lib/dnf/system-upgrade'
 MAGIC_SYMLINK = '/system-update'
-SYSTEMD_FLAG_FILE = '/system-update/.fedup-system-upgrade'
+SYSTEMD_FLAG_FILE = os.path.join(MAGIC_SYMLINK, '.dnf-system-upgrade')
 
-NO_KERNEL_MSG = _("No new kernel packages were found.")
+NO_KERNEL_MSG = _(
+    "No new kernel packages were found.")
 RELEASEVER_MSG = _(
     "Need a --releasever greater than the current system version.")
 DOWNLOAD_FINISHED_MSG = _(
@@ -59,7 +60,7 @@ def checkDataDir(datadir):
 # --- State object - for tracking upgrade state between runs ------------------
 
 class State(object):
-    statefile = '/var/lib/fedup/upgrade.state'
+    statefile = '/var/lib/dnf/system-upgrade.json'
     def __init__(self):
         self._data = {}
         self._read()
@@ -190,22 +191,22 @@ def make_parser(prog):
 
 # --- The actual Plugin and Command objects! ----------------------------------
 
-class FedupPlugin(dnf.Plugin):
-    name = 'fedup'
+class SystemUpgradePlugin(dnf.Plugin):
+    name = 'system-upgrade'
     def __init__(self, base, cli):
-        super(FedupPlugin, self).__init__(base, cli)
+        super(SystemUpgradePlugin, self).__init__(base, cli)
         if cli:
-            cli.register_command(FedupCommand)
+            cli.register_command(SystemUpgradeCommand)
 
-class FedupCommand(dnf.cli.Command):
+class SystemUpgradeCommand(dnf.cli.Command):
     # pylint: disable=unused-argument
-    aliases = ('fedup', 'system-upgrade')
+    aliases = ('system-upgrade', 'fedup')
     summary = _("Prepare system for upgrade to a new release")
     usage = "[%s] [download --releasever=%s|reboot|clean]" % (
         _("OPTIONS"), _("VERSION"))
 
     def __init__(self, cli):
-        super(FedupCommand, self).__init__(cli)
+        super(SystemUpgradeCommand, self).__init__(cli)
         self.opts = None
         self.state = State()
 

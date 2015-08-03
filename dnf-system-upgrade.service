@@ -1,13 +1,13 @@
 [Unit]
 Description=System Upgrade
-ConditionPathExists=/system-update/.fedup-system-upgrade
+ConditionPathExists=/system-update/.dnf-system-upgrade
 OnFailure=reboot.target
 
 [Service]
 # We need the --releasever junk because there's no way for DNF plugins to
 # change $releasever - see https://bugzilla.redhat.com/show_bug.cgi?id=1212341
-EnvironmentFile=/system-update/.fedup-system-upgrade
-ExecStart=/usr/bin/dnf --releasever=${RELEASEVER} fedup upgrade
+EnvironmentFile=/system-update/.dnf-system-upgrade
+ExecStart=/usr/bin/dnf --releasever=${RELEASEVER} system-upgrade upgrade
 StandardOutput=journal+console
 
 [Install]

@@ -1,6 +1,6 @@
-# test_fedup.py - unit tests for dnf-plugin-fedup's fedup.py
+# test_system_upgrade.py - unit tests for system-upgrade plugin
 
-import fedup
+import system_upgrade
 
 import unittest
 try:
@@ -9,13 +9,13 @@ except ImportError:
     import mock
 
 from mock import patch
-from fedup import PLYMOUTH
+from system_upgrade import PLYMOUTH
 
 
-@patch('fedup.call', return_value=0)
+@patch('system_upgrade.call', return_value=0)
 class PlymouthTestCase(unittest.TestCase):
     def setUp(self):
-        self.ply = fedup.PlymouthOutput()
+        self.ply = system_upgrade.PlymouthOutput()
         self.msg = "Hello, plymouth."
         self.msg_args = (PLYMOUTH, "display-message", "--text", self.msg)
 
@@ -58,12 +58,12 @@ class PlymouthTestCase(unittest.TestCase):
         self.ply.set_mode("updates")
         call.assert_called_once_with((PLYMOUTH, "change-mode", "--updates"))
 
-@patch('fedup.call', return_value=0)
+@patch('system_upgrade.call', return_value=0)
 class PlymouthTransactionDisplayTestCase(unittest.TestCase):
     # pylint: disable=protected-access
     def setUp(self):
-        fedup.Plymouth = fedup.PlymouthOutput()
-        self.display = fedup.PlymouthTransactionDisplay()
+        system_upgrade.Plymouth = system_upgrade.PlymouthOutput()
+        self.display = system_upgrade.PlymouthTransactionDisplay()
         self.pkg = "testpackage"
         self.action = self.display.PKG_INSTALL
 
@@ -90,7 +90,7 @@ class PlymouthTransactionDisplayTestCase(unittest.TestCase):
         self.assertEqual(call.call_count, 3)
 
     def test_verify(self, call):
-        with patch("fedup._", return_value="Verifying"):
+        with patch("system_upgrade._", return_value="Verifying"):
             self.display.verify_tsi_package(self.pkg, 1, 1000)
         msg = self.display._fmt_event(self.pkg, "Verifying", 1, 1000)
         call.assert_has_calls([

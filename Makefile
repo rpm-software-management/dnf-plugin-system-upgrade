@@ -9,15 +9,15 @@ PLUGINDIR=$(PYTHON_LIBDIR)/dnf-plugins
 
 install:
 	$(INSTALL) -d $(DESTDIR)$(UNITDIR)
-	$(INSTALL) -m644 fedup-system-upgrade.service $(DESTDIR)$(UNITDIR)
+	$(INSTALL) -m644 dnf-system-upgrade.service $(DESTDIR)$(UNITDIR)
 	$(INSTALL) -d $(DESTDIR)$(PLUGINDIR)
-	$(INSTALL) -m644 fedup.py $(DESTDIR)$(PLUGINDIR)
-	systemctl --no-reload --root=$(DESTDIR) enable fedup-system-upgrade.service
+	$(INSTALL) -m644 system_upgrade.py $(DESTDIR)$(PLUGINDIR)
+	systemctl --no-reload --root=$(DESTDIR) enable dnf-system-upgrade.service
 
 clean:
 	rm -rf *.pyc __pycache__
 
 check:
-	$(PYTHON) -m $(PYTHON_UNITTEST_MODULE) test_fedup
+	$(PYTHON) -m $(PYTHON_UNITTEST_MODULE) test_system_upgrade
 
 .PHONY: install clean check

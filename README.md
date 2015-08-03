@@ -1,16 +1,16 @@
-# dnf-plugin-fedup
+# dnf-plugin-system-upgrade
 
-A proof-of-concept plugin for [DNF] that shows how to do [fedup]-style upgrades
-using [systemd]'s [Offline Updates] facility.
+A plugin for [DNF] that does [fedup]-style upgrades using [systemd]'s [Offline
+Updates] facility.
 
 ## Installation
 
     make install
 
-## Usage
+## Example Usage
 
-    dnf fedup download --releasever=22
-    dnf fedup reboot
+    dnf system-upgrade download --releasever=22
+    dnf system-upgrade reboot
 
 [DNF]: https://github.com/rpm-software-management/dnf
 [fedup]: https://github.com/rhinstaller/fedup
