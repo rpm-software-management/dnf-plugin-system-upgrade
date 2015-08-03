@@ -1,7 +1,7 @@
 [Unit]
 Description=System Upgrade
 ConditionPathExists=/system-update/.dnf-system-upgrade
-OnFailure=reboot.target
+FailureAction=reboot
 
 [Service]
 # We need the --releasever junk because there's no way for DNF plugins to
