@@ -30,6 +30,8 @@ from dnf.i18n import _
 import logging
 logger = logging.getLogger("dnf.plugin")
 
+from distutils.version import StrictVersion
+DNFVERSION = StrictVersion(dnf.const.VERSION)
 
 PLYMOUTH = '/usr/bin/plymouth'
 DEFAULT_DATADIR = '/var/lib/dnf/system-upgrade'
@@ -42,6 +44,8 @@ RELEASEVER_MSG = _(
     "Need a --releasever greater than the current system version.")
 DOWNLOAD_FINISHED_MSG = _(
     "Download complete! Use 'dnf %s reboot' to start the upgrade.")
+NO_PLYMOUTH_PROGRESS_MSG = _(
+    "This version of DNF cannot show graphical upgrade progress.")
 
 # --- Miscellaneous helper functions ------------------------------------------
 
@@ -56,6 +60,10 @@ def checkDataDir(datadir):
     if os.path.exists(datadir) and not os.path.isdir(datadir):
         raise dnf.cli.CliError(_("--datadir: File exists"))
     # FUTURE NOTE: check for removable devices etc.
+
+def checkDNFVer():
+    if DNFVERSION < "1.0.1":
+        logger.warning(NO_PLYMOUTH_PROGRESS_MSG)
 
 # --- State object - for tracking upgrade state between runs ------------------
 
@@ -136,11 +144,16 @@ class PlymouthOutput(object):
 # A single PlymouthOutput instance for us to use within this module
 Plymouth = PlymouthOutput()
 
-# A transaction display class that updates plymouth for us
-class PlymouthTransactionDisplay(dnf.cli.output.CliTransactionDisplay):
+# A transaction display class that updates plymouth for us.
+class PlymouthTransactionDisplay(dnf.callback.LoggingTransactionDisplay):
+    # NOTE: before DNF 1.0.0 the CLI only used one TransactionDisplay object,
+    # so we need to call the superclass to get the normal CLI output
+    call_super = ("1.0.1" <= DNFVERSION < "1.1.0")
+
     def event(self, package, action, te_cur, te_total, ts_cur, ts_total):
-        super(PlymouthTransactionDisplay, self).event(package,
-                                                      action, te_cur, te_total, ts_cur, ts_total)
+        if self.call_super:
+            super(PlymouthTransactionDisplay, self).event(
+                package, action, te_cur, te_total, ts_cur, ts_total)
         if not Plymouth.alive:
             return
         if action in self.action:
@@ -149,8 +162,9 @@ class PlymouthTransactionDisplay(dnf.cli.output.CliTransactionDisplay):
             Plymouth.message(_("Running post-transaction scripts..."))
 
     def verify_tsi_package(self, pkg, count, total):
-        super(PlymouthTransactionDisplay, self).verify_tsi_package(pkg,
-                                                                   count, total)
+        if self.call_super:
+            super(PlymouthTransactionDisplay, self).verify_tsi_package(
+                pkg, count, total)
         self._update_plymouth(pkg, _("Verifying"), count, total)
 
     def _update_plymouth(self, package, action, current, total):
@@ -194,6 +208,7 @@ def make_parser(prog):
 
 class SystemUpgradePlugin(dnf.Plugin):
     name = 'system-upgrade'
+
     def __init__(self, base, cli):
         super(SystemUpgradePlugin, self).__init__(base, cli)
         if cli:
@@ -283,12 +298,14 @@ class SystemUpgradeCommand(dnf.cli.Command):
         dnf.cli.commands.checkEnabledRepo(self.base)
         checkReleaseVer(self.base.conf)
         checkDataDir(self.opts.datadir)
+        checkDNFVer()
 
     def check_reboot(self, basecmd, extargs):
         if not self.state.download_status == 'complete':
             raise dnf.cli.CliError(_("system is not ready for upgrade"))
         if os.path.lexists(MAGIC_SYMLINK):
             raise dnf.cli.CliError(_("upgrade is already scheduled"))
+        checkDNFVer()
 
     def check_upgrade(self, basecmd, extargs):
         if not self.state.upgrade_status == 'ready':
@@ -297,6 +314,7 @@ class SystemUpgradeCommand(dnf.cli.Command):
         if os.readlink(MAGIC_SYMLINK) != self.state.datadir:
             logger.info(_("another upgrade tool is running. exiting quietly."))
             raise SystemExit(0)
+        checkDNFVer()
 
     # == run_*: run the action/prep the transaction ===========================
 
