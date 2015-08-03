@@ -186,7 +186,7 @@ def make_parser(prog):
     p.add_argument('--datadir', default=DEFAULT_DATADIR,
                    help=_("save downloaded data to this location"))
     p.add_argument('action',
-                   choices=('download', 'clean', 'reboot', 'upgrade'),
+                   choices=('download', 'clean', 'reboot', 'do-upgrade'),
                    help=_("action to perform"))
     return p
 
@@ -203,6 +203,7 @@ class SystemUpgradeCommand(dnf.cli.Command):
     # pylint: disable=unused-argument
     aliases = ('system-upgrade', 'fedup')
     summary = _("Prepare system for upgrade to a new release")
+    # NOTE: do-upgrade isn't meant to be invoked by users, so it's not in usage
     usage = "[%s] [download --releasever=%s|reboot|clean]" % (
         _("OPTIONS"), _("VERSION"))
 
