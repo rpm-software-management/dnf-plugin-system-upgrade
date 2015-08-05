@@ -14,12 +14,24 @@ PLUGINDIR=$(PYTHON_LIBDIR)/dnf-plugins
 UNITDIR=$(shell pkg-config systemd --variable systemdsystemunitdir)
 TARGET_WANTSDIR=$(UNITDIR)/system-update.target.wants
 
+LOCALEDIR ?= /usr/share/locale
+TEXTDOMAIN = dnf-plugin-system-upgrade
+LANGUAGES = $(patsubst po/%.po,%,$(wildcard po/*.po))
+MSGFILES = $(patsubst %,po/%.mo,$(LANGUAGES))
+
 SERVICE = dnf-system-upgrade.service
 PLUGIN = system_upgrade.py
 
-build:
+build: $(MSGFILES)
 
-install: $(PLUGIN) $(SERVICE)
+po/$(TEXTDOMAIN).pot: $(PLUGIN)
+	touch $@
+	xgettext -s -j -d $(TEXTDOMAIN) -o $@ $?
+
+po/%.mo : po/%.po
+	msgfmt $< -o $@
+
+install: $(PLUGIN) $(SERVICE) $(MSGFILES)
 	$(INSTALL) -d $(DESTDIR)$(PLUGINDIR)
 	$(INSTALL) -m644 $(PLUGIN) $(DESTDIR)$(PLUGINDIR)
 	$(PYTHON) -m py_compile $(DESTDIR)$(PLUGINDIR)/$(PLUGIN)
@@ -28,9 +40,12 @@ install: $(PLUGIN) $(SERVICE)
 	$(INSTALL) -d $(DESTDIR)$(TARGET_WANTSDIR)
 	$(INSTALL) -m644 $(SERVICE) $(DESTDIR)$(UNITDIR)
 	$(LN) -sf ../$(SERVICE) $(DESTDIR)$(TARGET_WANTSDIR)/$(SERVICE)
+	for lang in $(LANGUAGES); do \
+	  $(INSTALL) po/$$lang.mo $(DESTDIR)$(LOCALEDIR)/$$lang/$(TEXTDOMAIN).mo;\
+	done
 
 clean:
-	rm -rf *.py[co] __pycache__ dnf-plugin-system-upgrade-*.tar.gz
+	rm -rf *.py[co] __pycache__ dnf-plugin-system-upgrade-*.tar.gz po/*.mo
 
 check:
 	$(PYTHON) -m $(PYTHON_UNITTEST_MODULE) test_system_upgrade
