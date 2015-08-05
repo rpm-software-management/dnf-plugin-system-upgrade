@@ -41,7 +41,9 @@ install: $(PLUGIN) $(SERVICE) $(MSGFILES)
 	$(INSTALL) -m644 $(SERVICE) $(DESTDIR)$(UNITDIR)
 	$(LN) -sf ../$(SERVICE) $(DESTDIR)$(TARGET_WANTSDIR)/$(SERVICE)
 	for lang in $(LANGUAGES); do \
-	  $(INSTALL) po/$$lang.mo $(DESTDIR)$(LOCALEDIR)/$$lang/$(TEXTDOMAIN).mo;\
+	  langdir=$(DESTDIR)$(LOCALEDIR)/$${lang}; \
+	  $(INSTALL) -d $$langdir; \
+	  $(INSTALL) po/$${lang}.mo $${langdir}/$(TEXTDOMAIN).mo;\
 	done
 
 clean:
