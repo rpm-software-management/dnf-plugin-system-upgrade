@@ -5,69 +5,63 @@ Summary:    System Upgrade plugin for DNF
 Group:      System Environment/Base
 License:    GPLv2+
 URL:        https://github.com/rpm-software-management/dnf-plugin-system-upgrade
-Source0:    dnf-plugin-system-upgrade-%{version}.tar.gz
+Source0:    %{name}-%{version}.tar.gz
 
-Provides:   dnf-command(system-upgrade)
+Requires: python-%{name}
+Provides: dnf-command(system-upgrade)
 
-BuildArch:  noarch
-# TODO: gettext
-BuildRequires: pkgconfig
-BuildRequires: systemd
+BuildArch: noarch
+BuildRequires: pkgconfig systemd gettext
 
 %description
 System Upgrade plugin for DNF.
 This package provides the systemd services required to make the upgrade work.
 
-# Use the py3 version in F23 and later
-%if 0%{?fedora} >= 23
-Requires:   python3-dnf-plugin-system-upgrade = %{version}-%{release}
-%else
-Requires:   python-dnf-plugin-system-upgrade = %{version}-%{release}
-%endif
-
-%package -n python3-dnf-plugin-system-upgrade
+%package -n python3-%{name}
+%{?python_provide:%python_provide python3-%{name}}
 Summary:    System Upgrade plugin for DNF
-Group:      System Environment/Base
 Requires:   python3-dnf
-BuildRequires:  python3-devel
-BuildRequires:  python3-dnf
-BuildRequires:  python3-nose
-%description -n python3-dnf-plugin-system-upgrade
+BuildRequires:  python3-devel python3-dnf python3-nose
+%description -n python3-%{name}
 System Upgrade plugin for DNF (Python 3 version).
 This package provides the "system-upgrade" command.
 
-%package -n python-dnf-plugin-system-upgrade
+%package -n python2-%{name}
+%{?python_provide:%python_provide python2-%{name}}
 Summary:    System Upgrade plugin for DNF
-Group:      System Environment/Base
+# TODO: change python-dnf and python-nose once python2-* versions exist
 Requires:   python-dnf
-BuildRequires:  python-devel
-BuildRequires:  python-dnf
-BuildRequires:  python-nose
-%description -n python-dnf-plugin-system-upgrade
+BuildRequires:  python2-devel python-dnf python-nose
+%description -n python2-%{name}
 System Upgrade plugin for DNF (Python 2 version).
 This package provides the "system-upgrade" command.
 
 %prep
-%setup -q -n dnf-plugin-system-upgrade-%{version}
+%setup -q -n %{name}-%{version}
 
 %build
-make install DESTDIR=$RPM_BUILD_ROOT PYTHON=python2
-make install DESTDIR=$RPM_BUILD_ROOT PYTHON=python3
+make %{?_smp_mflags}
+
+%install
+make install DESTDIR=$RPM_BUILD_ROOT PYTHON=%{__python2}
+%find_lang %{name}
+make install DESTDIR=$RPM_BUILD_ROOT PYTHON=%{__python3}
 
 %check
-make check PYTHON=python2
-make check PYTHON=python3
+make check PYTHON=%{__python2}
+make check PYTHON=%{__python3}
 
-%files
-%doc LICENSE README.md
+%files -f %{name}.lang
+%license LICENSE
+%doc README.md
 %{_unitdir}/dnf-system-upgrade.service
 %{_unitdir}/system-update.target.wants/dnf-system-upgrade.service
 
-%files -n python3-dnf-plugin-system-upgrade
+%files -n python3-%{name}
 %{python3_sitelib}/dnf-plugins/system_upgrade.py
 %{python3_sitelib}/dnf-plugins/__pycache__/system_upgrade*.py*
 
-%files -n python-dnf-plugin-system-upgrade
+%files -n python2-%{name}
 %{python_sitelib}/dnf-plugins/system_upgrade.py*
 
 %changelog
