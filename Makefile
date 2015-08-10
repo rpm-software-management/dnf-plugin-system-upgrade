@@ -25,8 +25,7 @@ PLUGIN = system_upgrade.py
 build: $(MSGFILES)
 
 po/$(TEXTDOMAIN).pot: $(PLUGIN)
-	touch $@
-	xgettext -s -j -d $(TEXTDOMAIN) -o $@ $?
+	xgettext -c -s -d $(TEXTDOMAIN) -o $@ $?
 
 po/%.mo : po/%.po
 	msgfmt $< -o $@
@@ -49,7 +48,7 @@ install: $(PLUGIN) $(SERVICE) $(MSGFILES)
 clean:
 	rm -rf *.py[co] __pycache__ dnf-plugin-system-upgrade-*.tar.gz po/*.mo
 
-check:
+check: po/en_GB.mo
 	$(PYTHON) -m $(PYTHON_UNITTEST_MODULE) test_system_upgrade
 
 archive: version-check

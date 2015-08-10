@@ -25,7 +25,16 @@ from subprocess import call, check_call
 
 import dnf
 import dnf.cli
-from dnf.i18n import _
+
+import gettext
+TEXTDOMAIN = 'dnf-plugin-system-upgrade' # NOTE: must match Makefile
+t = gettext.translation(TEXTDOMAIN, fallback=True)
+try:
+    _ = t.ugettext
+except AttributeError:
+    _ = t.gettext
+# Translators: This string is only used in unit tests.
+_("the color of the sky")
 
 import logging
 logger = logging.getLogger("dnf.plugin")

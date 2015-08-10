@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-05 15:48-0400\n"
+"POT-Creation-Date: 2015-08-10 13:29-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: Afrikaans\n"
@@ -18,84 +18,89 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "X-Generator: Zanata 3.6.2\n"
 
-#: system_upgrade.py:61
+#: system_upgrade.py:70
 msgid "--datadir: File exists"
 msgstr ""
 
-#: system_upgrade.py:382
+#: system_upgrade.py:391
 msgid "Cleaning up downloaded data..."
 msgstr ""
 
-#: system_upgrade.py:46
+#: system_upgrade.py:55
 #, python-format
 msgid "Download complete! Use 'dnf %s reboot' to start the upgrade."
 msgstr ""
 
-#: system_upgrade.py:44
+#: system_upgrade.py:53
 msgid "Need a --releasever greater than the current system version."
 msgstr ""
 
-#: system_upgrade.py:42
+#: system_upgrade.py:51
 msgid "No new kernel packages were found."
 msgstr ""
 
-#: system_upgrade.py:223
+#: system_upgrade.py:232
 msgid "OPTIONS"
 msgstr ""
 
-#: system_upgrade.py:220
+#: system_upgrade.py:229
 msgid "Prepare system for upgrade to a new release"
 msgstr ""
 
-#: system_upgrade.py:162
+#: system_upgrade.py:171
 msgid "Running post-transaction scripts..."
 msgstr ""
 
-#: system_upgrade.py:356
+#: system_upgrade.py:365
 msgid "Starting system upgrade. This will take a while."
 msgstr ""
 
-#: system_upgrade.py:48
+#: system_upgrade.py:57
 msgid "This version of DNF cannot show graphical upgrade progress."
 msgstr ""
 
-#: system_upgrade.py:400
+#: system_upgrade.py:409
 msgid "Upgrade complete! Cleaning up and rebooting..."
 msgstr ""
 
-#: system_upgrade.py:223
+#: system_upgrade.py:232
 msgid "VERSION"
 msgstr ""
 
-#: system_upgrade.py:168
+#: system_upgrade.py:177
 msgid "Verifying"
 msgstr ""
 
-#: system_upgrade.py:204
+#: system_upgrade.py:213
 msgid "action to perform"
 msgstr ""
 
-#: system_upgrade.py:315
+#: system_upgrade.py:324
 msgid "another upgrade tool is running. exiting quietly."
 msgstr ""
 
-#: system_upgrade.py:199
+#: system_upgrade.py:208
 msgid "downgrade packages if the new release's version is older"
 msgstr ""
 
-#: system_upgrade.py:201
+#: system_upgrade.py:210
 msgid "save downloaded data to this location"
 msgstr ""
 
-#: system_upgrade.py:305
+#: system_upgrade.py:314
 msgid "system is not ready for upgrade"
 msgstr ""
 
-#: system_upgrade.py:307
+#. Translators: This string is only used in unit tests.
+#: system_upgrade.py:37
+msgid "the color of the sky"
+msgstr ""
+
+#: system_upgrade.py:316
 msgid "upgrade is already scheduled"
 msgstr ""
 
-#: system_upgrade.py:313
+#: system_upgrade.py:322
 #, python-format
 msgid "use '%s reboot' to begin the upgrade"
 msgstr ""

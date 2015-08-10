@@ -97,3 +97,46 @@ class PlymouthTransactionDisplayTestCase(unittest.TestCase):
             mock.call((PLYMOUTH, "system-update", "--progress", "0")),
             mock.call((PLYMOUTH, "display-message", "--text", msg))
         ], any_order=True)
+
+import os, tempfile, shutil, gettext
+@unittest.skipUnless(os.path.exists("po/en_GB.mo"), "make po/en_GB.mo first")
+class I18NTestCase(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.localedir = tempfile.mkdtemp(prefix='i18ntest')
+        cls.msgdir = os.path.join(cls.localedir, "en_GB/LC_MESSAGES")
+        cls.msgfile = system_upgrade.TEXTDOMAIN + ".mo"
+        os.makedirs(cls.msgdir)
+        shutil.copy2("po/en_GB.mo",
+                     os.path.join(cls.msgdir, cls.msgfile))
+
+    def setUp(self):
+        self.t = gettext.translation(system_upgrade.TEXTDOMAIN, self.localedir,
+                                languages=["en_GB"], fallback=True)
+        try:
+            self.gettext = self.t.ugettext
+        except AttributeError:
+            self.gettext = self.t.gettext
+
+    def test_selftest(self):
+        self.assertIn(self.msgfile, os.listdir(self.msgdir))
+        self.assertIn("en_GB", os.listdir(self.localedir))
+        t = gettext.translation(system_upgrade.TEXTDOMAIN, self.localedir,
+                                languages=["en_GB"], fallback=False)
+        info = t.info()
+        self.assertIn("language", info)
+        self.assertEqual(info["language"], "en-GB")
+
+    def test_fallback(self):
+        msg = "THIS STRING DOES NOT EXIST"
+        trans_msg = self.gettext(msg)
+        self.assertEqual(msg, trans_msg)
+
+    def test_translation(self):
+        msg = "the color of the sky"
+        trans_msg = self.gettext(msg)
+        self.assertNotEqual(msg, trans_msg)
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.localedir)
