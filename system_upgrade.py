@@ -29,10 +29,7 @@ import dnf.cli
 import gettext
 TEXTDOMAIN = 'dnf-plugin-system-upgrade' # NOTE: must match Makefile
 t = gettext.translation(TEXTDOMAIN, fallback=True)
-try:
-    _ = t.ugettext
-except AttributeError:
-    _ = t.gettext
+_ = t.gettext
 # Translators: This string is only used in unit tests.
 _("the color of the sky")
 

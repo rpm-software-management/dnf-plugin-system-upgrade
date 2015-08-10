@@ -113,10 +113,7 @@ class I18NTestCase(unittest.TestCase):
     def setUp(self):
         self.t = gettext.translation(system_upgrade.TEXTDOMAIN, self.localedir,
                                 languages=["en_GB"], fallback=True)
-        try:
-            self.gettext = self.t.ugettext
-        except AttributeError:
-            self.gettext = self.t.gettext
+        self.gettext = self.t.gettext
 
     def test_selftest(self):
         self.assertIn(self.msgfile, os.listdir(self.msgdir))
