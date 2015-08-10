@@ -41,7 +41,7 @@ install: $(PLUGIN) $(SERVICE) $(MSGFILES)
 	$(INSTALL) -m644 $(SERVICE) $(DESTDIR)$(UNITDIR)
 	$(LN) -sf ../$(SERVICE) $(DESTDIR)$(TARGET_WANTSDIR)/$(SERVICE)
 	for lang in $(LANGUAGES); do \
-	  langdir=$(DESTDIR)$(LOCALEDIR)/$${lang}; \
+	  langdir=$(DESTDIR)$(LOCALEDIR)/$${lang}/LC_MESSAGES; \
 	  $(INSTALL) -d $$langdir; \
 	  $(INSTALL) po/$${lang}.mo $${langdir}/$(TEXTDOMAIN).mo;\
 	done
@@ -61,4 +61,4 @@ version-check:
 	git describe --tags $(VERSION)
 	grep '^Version:\s*$(VERSION)' dnf-plugin-system-upgrade.spec
 
-.PHONY: install clean check archive version-check
+.PHONY: build install clean check archive version-check
