@@ -7,8 +7,8 @@ try:
     from unittest import mock
 except ImportError:
     import mock
+patch = mock.patch
 
-from mock import patch
 from system_upgrade import PLYMOUTH
 
 
