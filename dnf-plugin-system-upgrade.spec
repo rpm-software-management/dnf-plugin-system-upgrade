@@ -29,9 +29,26 @@ This package provides the "system-upgrade" command.
 %package -n python2-%{name}
 %{?python_provide:%python_provide python2-%{name}}
 Summary:    System Upgrade plugin for DNF
-# TODO: change python-dnf and python-nose once python2-* versions exist
-Requires:   python-dnf
-BuildRequires:  python2-devel python-dnf python-nose
+BuildRequires: python2-devel python-mock
+
+
+%if 0%{?fedora} >= 22
+BuildRequires:  python2-nose
+%else
+# Fedora 21 and earlier just call it 'python-nose'
+BuildRequires:  python-nose
+%endif
+
+%if 0%{?fedora} >= 22
+# TODO: update this once dnf is following the Python packaging guidelines
+Requires:       python-dnf
+BuildRequires:  python-dnf
+%else
+# F21 didn't split out python2-dnf from the main dnf package
+Requires:       dnf
+BuildRequires:  dnf
+%endif
+
 %description -n python2-%{name}
 System Upgrade plugin for DNF (Python 2 version).
 This package provides the "system-upgrade" command.
