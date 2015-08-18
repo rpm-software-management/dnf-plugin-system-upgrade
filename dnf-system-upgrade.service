@@ -1,7 +1,6 @@
 [Unit]
 Description=System Upgrade
 ConditionPathExists=/system-update/.dnf-system-upgrade
-FailureAction=reboot
 
 [Service]
 # We need the --releasever junk because there's no way for DNF plugins to
@@ -9,6 +8,7 @@ FailureAction=reboot
 EnvironmentFile=/system-update/.dnf-system-upgrade
 ExecStart=/usr/bin/dnf --releasever=${RELEASEVER} system-upgrade do-upgrade
 StandardOutput=journal+console
+FailureAction=reboot
 
 [Install]
 WantedBy=system-update.target
