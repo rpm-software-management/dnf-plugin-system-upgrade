@@ -51,7 +51,7 @@ RELEASEVER_MSG = _(
 DOWNLOAD_FINISHED_MSG = _(
     "Download complete! Use 'dnf %s reboot' to start the upgrade.")
 NO_PLYMOUTH_PROGRESS_MSG = _(
-    "This version of DNF cannot show graphical upgrade progress.")
+    "NOTE: this version of DNF will not show graphical upgrade progress.")
 
 # --- Miscellaneous helper functions ------------------------------------------
 
@@ -278,6 +278,8 @@ class SystemUpgradeCommand(dnf.cli.Command):
         self.base.conf.tsflags.append("test")
 
     def configure_reboot(self, args):
+        # FUTURE: add a --debug-shell option to enable debug shell:
+        # systemctl add-wants system-update.target debug-shell.service
         self.cli.demands.root_user = True
 
     def configure_upgrade(self, args):
