@@ -309,6 +309,7 @@ class SystemUpgradeCommand(dnf.cli.Command):
         checkDNFVer()
 
     def check_reboot(self, basecmd, extargs):
+        # TODO: check that metadata + packages are still valid/present
         if not self.state.download_status == 'complete':
             raise dnf.cli.CliError(_("system is not ready for upgrade"))
         if os.path.lexists(MAGIC_SYMLINK):
