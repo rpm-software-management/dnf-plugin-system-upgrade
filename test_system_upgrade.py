@@ -137,3 +137,11 @@ class I18NTestCase(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         shutil.rmtree(cls.localedir)
+
+class ArgparseTestCase(unittest.TestCase):
+    def test_actions_exist(self):
+        for phase in ('configure','run'):
+            for action in system_upgrade.ACTIONS:
+                fn = phase + '_' + action
+                func = getattr(system_upgrade.SystemUpgradeCommand, fn)
+                self.assertTrue(callable(func))

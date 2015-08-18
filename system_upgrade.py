@@ -199,14 +199,14 @@ class PluginArgumentParser(ArgumentParser):
             self.print_help()
             raise dnf.exceptions.Error(str(e))
 
+ACTIONS = ('download', 'clean', 'reboot', 'upgrade')
 def make_parser(prog):
     p = PluginArgumentParser(prog)
     p.add_argument('--distro-sync', default=False, action='store_true',
                    help=_("downgrade packages if the new release's version is older"))
     p.add_argument('--datadir', default=DEFAULT_DATADIR,
                    help=_("save downloaded data to this location"))
-    p.add_argument('action',
-                   choices=('download', 'clean', 'reboot', 'do-upgrade'),
+    p.add_argument('action', choices=ACTIONS,
                    help=_("action to perform"))
     return p
 
@@ -224,7 +224,7 @@ class SystemUpgradeCommand(dnf.cli.Command):
     # pylint: disable=unused-argument
     aliases = ('system-upgrade', 'fedup')
     summary = _("Prepare system for upgrade to a new release")
-    # NOTE: do-upgrade isn't meant to be invoked by users, so it's not in usage
+    # NOTE: upgrade isn't meant to be invoked by users, so it's not in usage
     usage = "[%s] [download --releasever=%s|reboot|clean]" % (
         _("OPTIONS"), _("VERSION"))
 
