@@ -48,7 +48,7 @@ NO_KERNEL_MSG = _(
     "No new kernel packages were found.")
 RELEASEVER_MSG = _(
     "Need a --releasever greater than the current system version.")
-DOWNLOAD_FINISHED_MSG = _(
+DOWNLOAD_FINISHED_MSG = _( # Translators: do not change "reboot" here
     "Download complete! Use 'dnf %s reboot' to start the upgrade.")
 NO_PLYMOUTH_PROGRESS_MSG = _(
     "NOTE: this version of DNF will not show graphical upgrade progress.")
@@ -317,7 +317,7 @@ class SystemUpgradeCommand(dnf.cli.Command):
 
     def check_upgrade(self, basecmd, extargs):
         if not self.state.upgrade_status == 'ready':
-            raise dnf.cli.CliError(
+            raise dnf.cli.CliError( # Translators: do not change "reboot" here
                 _("use '%s reboot' to begin the upgrade") % basecmd)
         if os.readlink(MAGIC_SYMLINK) != self.state.datadir:
             logger.info(_("another upgrade tool is running. exiting quietly."))
