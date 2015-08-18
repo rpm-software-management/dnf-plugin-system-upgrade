@@ -1,106 +1,104 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+# Asier Sarasua Garmendia <asier.sarasua@gmail.com>, 2015. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-10 13:29-0400\n"
-"PO-Revision-Date: \n"
-"Last-Translator: \n"
+"POT-Creation-Date: 2015-08-18 12:49-0400\n"
+"PO-Revision-Date: 2015-08-15 06:04-0400\n"
+"Last-Translator: Asier Sarasua Garmendia <asier.sarasua@gmail.com>\n"
 "Language-Team: Basque\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: eu\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"X-Generator: Zanata 3.6.2\n"
+"X-Generator: Zanata 3.7.1\n"
 
-#: system_upgrade.py:70
+#: system_upgrade.py:67
 msgid "--datadir: File exists"
-msgstr ""
+msgstr "--datadir: Fitxategia badago lehendik"
 
-#: system_upgrade.py:391
+#: system_upgrade.py:390
 msgid "Cleaning up downloaded data..."
-msgstr ""
+msgstr "Deskargatutako datuak garbitzen..."
 
-#: system_upgrade.py:55
+#: system_upgrade.py:52
 #, python-format
 msgid "Download complete! Use 'dnf %s reboot' to start the upgrade."
+msgstr "Deskarga osatu da! Erabili 'dnf %s reboot' bertsio-berrizea hasteko."
+
+#: system_upgrade.py:54
+msgid "NOTE: this version of DNF will not show graphical upgrade progress."
 msgstr ""
 
-#: system_upgrade.py:53
+#: system_upgrade.py:50
 msgid "Need a --releasever greater than the current system version."
 msgstr ""
+"Uneko sistemaren bertsioarena baino handiagoa den --releasever bat behar du."
 
-#: system_upgrade.py:51
+#: system_upgrade.py:48
 msgid "No new kernel packages were found."
-msgstr ""
-
-#: system_upgrade.py:232
-msgid "OPTIONS"
-msgstr ""
+msgstr "Ez da kernel-pakete berririk aurkitu."
 
 #: system_upgrade.py:229
+msgid "OPTIONS"
+msgstr "AUKERAK"
+
+#: system_upgrade.py:226
 msgid "Prepare system for upgrade to a new release"
-msgstr ""
+msgstr "Prestatu sistema bertsio-berritzeko"
 
-#: system_upgrade.py:171
+#: system_upgrade.py:168
 msgid "Running post-transaction scripts..."
-msgstr ""
+msgstr "Transakzio osteko script-ak exekutatzen..."
 
-#: system_upgrade.py:365
+#: system_upgrade.py:364
 msgid "Starting system upgrade. This will take a while."
 msgstr ""
+"Sistemaren bertsio-berritzea hasten. Denbora-tartetxo bat behar du honek."
 
-#: system_upgrade.py:57
-msgid "This version of DNF cannot show graphical upgrade progress."
-msgstr ""
-
-#: system_upgrade.py:409
+#: system_upgrade.py:408
 msgid "Upgrade complete! Cleaning up and rebooting..."
-msgstr ""
+msgstr "Bertsio-berrizea osatu da! Garbitzen eta berrabiarazten..."
 
-#: system_upgrade.py:232
+#: system_upgrade.py:229
 msgid "VERSION"
-msgstr ""
+msgstr "BERTSIOA"
 
-#: system_upgrade.py:177
+#: system_upgrade.py:174
 msgid "Verifying"
-msgstr ""
+msgstr "Egiaztatzen"
 
-#: system_upgrade.py:213
+#: system_upgrade.py:210
 msgid "action to perform"
-msgstr ""
+msgstr "burutuko den ekintza"
 
-#: system_upgrade.py:324
+#: system_upgrade.py:323
 msgid "another upgrade tool is running. exiting quietly."
 msgstr ""
 
-#: system_upgrade.py:208
+#: system_upgrade.py:206
 msgid "downgrade packages if the new release's version is older"
 msgstr ""
 
-#: system_upgrade.py:210
+#: system_upgrade.py:208
 msgid "save downloaded data to this location"
 msgstr ""
 
-#: system_upgrade.py:314
+#: system_upgrade.py:313
 msgid "system is not ready for upgrade"
 msgstr ""
 
 #. Translators: This string is only used in unit tests.
-#: system_upgrade.py:37
+#: system_upgrade.py:34
 msgid "the color of the sky"
-msgstr ""
+msgstr "zeruaren kolorea"
 
-#: system_upgrade.py:316
+#: system_upgrade.py:315
 msgid "upgrade is already scheduled"
 msgstr ""
 
-#: system_upgrade.py:322
+#: system_upgrade.py:321
 #, python-format
 msgid "use '%s reboot' to begin the upgrade"
-msgstr ""
+msgstr "erabili '%s reboot' bertsio-berritzea hasteko"
