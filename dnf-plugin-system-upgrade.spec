@@ -1,5 +1,5 @@
 Name:       dnf-plugin-system-upgrade
-Version:    0.0.1
+Version:    0.2.0
 Release:    1%{?dist}
 Summary:    System Upgrade plugin for DNF
 Group:      System Environment/Base
@@ -82,5 +82,8 @@ make check PYTHON=%{__python3}
 %{python_sitelib}/dnf-plugins/system_upgrade.py*
 
 %changelog
+* Tue Aug 18 2015 Will Woods <wwoods@redhat.com> 0.2.0
+- Fix upgrade startup
+
 * Wed Aug 05 2015 Will Woods <wwoods@redhat.com> 0.0.1
 - Initial packaging
