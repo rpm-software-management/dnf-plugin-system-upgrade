@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-18 12:49-0400\n"
+"POT-Creation-Date: 2015-08-18 13:24-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: Tibetan\n"
@@ -26,6 +26,7 @@ msgstr ""
 msgid "Cleaning up downloaded data..."
 msgstr ""
 
+#. Translators: do not change "reboot" here
 #: system_upgrade.py:52
 #, python-format
 msgid "Download complete! Use 'dnf %s reboot' to start the upgrade."
@@ -100,6 +101,7 @@ msgstr ""
 msgid "upgrade is already scheduled"
 msgstr ""
 
+#. Translators: do not change "reboot" here
 #: system_upgrade.py:321
 #, python-format
 msgid "use '%s reboot' to begin the upgrade"
