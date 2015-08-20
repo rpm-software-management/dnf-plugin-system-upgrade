@@ -19,6 +19,9 @@ TEXTDOMAIN = dnf-plugin-system-upgrade
 LANGUAGES = $(patsubst po/%.po,%,$(wildcard po/*.po))
 MSGFILES = $(patsubst %,po/%.mo,$(LANGUAGES))
 
+BINDIR ?= /usr/bin
+FEDUP_SCRIPT = fedup.sh
+
 SERVICE = dnf-system-upgrade.service
 PLUGIN = system_upgrade.py
 
@@ -30,7 +33,7 @@ po/$(TEXTDOMAIN).pot: $(PLUGIN)
 po/%.mo : po/%.po
 	msgfmt $< -o $@
 
-install: $(PLUGIN) $(SERVICE) $(MSGFILES)
+install: $(PLUGIN) $(SERVICE) $(MSGFILES) $(FEDUP_SCRIPT)
 	$(INSTALL) -d $(DESTDIR)$(PLUGINDIR)
 	$(INSTALL) -m644 $(PLUGIN) $(DESTDIR)$(PLUGINDIR)
 	$(PYTHON) -m py_compile $(DESTDIR)$(PLUGINDIR)/$(PLUGIN)
@@ -39,6 +42,8 @@ install: $(PLUGIN) $(SERVICE) $(MSGFILES)
 	$(INSTALL) -d $(DESTDIR)$(TARGET_WANTSDIR)
 	$(INSTALL) -m644 $(SERVICE) $(DESTDIR)$(UNITDIR)
 	$(LN) -sf ../$(SERVICE) $(DESTDIR)$(TARGET_WANTSDIR)/$(SERVICE)
+	$(INSTALL) -d $(DESTDIR)$(BINDIR)
+	$(INSTALL) -m755 $(FEDUP_SCRIPT) $(DESTDIR)$(BINDIR)/fedup
 	for lang in $(LANGUAGES); do \
 	  langdir=$(DESTDIR)$(LOCALEDIR)/$${lang}/LC_MESSAGES; \
 	  $(INSTALL) -d $$langdir; \
