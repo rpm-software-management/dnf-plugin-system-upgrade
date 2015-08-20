@@ -10,6 +10,9 @@ Source0:    %{name}-%{version}.tar.gz
 Requires: python-%{name}
 Provides: dnf-command(system-upgrade)
 
+Provides: fedup
+Obsoletes: fedup < 0.9.2-3
+
 BuildArch: noarch
 BuildRequires: pkgconfig systemd gettext
 
@@ -73,6 +76,7 @@ make check PYTHON=%{__python3}
 %doc README.md
 %{_unitdir}/dnf-system-upgrade.service
 %{_unitdir}/system-update.target.wants/dnf-system-upgrade.service
+%{_bindir}/fedup
 
 %files -n python3-%{name}
 %{python3_sitelib}/dnf-plugins/system_upgrade.py
@@ -82,6 +86,9 @@ make check PYTHON=%{__python3}
 %{python_sitelib}/dnf-plugins/system_upgrade.py*
 
 %changelog
+* Thu Aug 20 2015 Will Woods <wwoods@redhat.com> 0.3.0
+- Add `fedup` backward-compatibility wrapper
+
 * Tue Aug 18 2015 Will Woods <wwoods@redhat.com> 0.2.0
 - Fix upgrade startup
 
