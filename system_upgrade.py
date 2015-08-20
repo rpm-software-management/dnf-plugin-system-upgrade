@@ -1,4 +1,4 @@
-# system_upgrade.py - handle major-version system upgrades.
+"""system_upgrade.py - DNF plugin to handle major-version system upgrades."""
 #
 # Copyright (c) 2015 Red Hat, Inc.
 #
@@ -82,7 +82,8 @@ class State(object):
 
     def _read(self):
         try:
-            self._data = json.load(open(self.statefile))
+            with open(self.statefile) as fp:
+                self._data = json.load(fp)
         except IOError:
             self._data = {}
 
@@ -104,20 +105,19 @@ class State(object):
             self.write()
 
     # helper function for creating properties. pylint: disable=protected-access
-    def _prop(section, option):  # pylint: disable=no-self-argument
+    def _prop(option): # pylint: disable=no-self-argument
         def setprop(self, value):
-            self._data.setdefault(section, {})[option] = value
-
+            self._data[option] = value
         def getprop(self):
-            return self._data.setdefault(section, {}).get(option)
+            return self._data.get(option)
         return property(getprop, setprop)
 
-    download_status = _prop("download", "status")
-    datadir = _prop("download", "datadir")
-    releasever = _prop("download", "releasever")
+    download_status = _prop("download_status")
+    datadir = _prop("datadir")
+    releasever = _prop("releasever")
 
-    upgrade_status = _prop("upgrade", "status")
-    distro_sync = _prop("upgrade", "distro-sync")
+    upgrade_status = _prop("upgrade_status")
+    distro_sync = _prop("distro_sync")
 
 # --- Plymouth output helpers -------------------------------------------------
 
