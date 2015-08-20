@@ -140,8 +140,43 @@ class I18NTestCase(unittest.TestCase):
 
 class ArgparseTestCase(unittest.TestCase):
     def test_actions_exist(self):
-        for phase in ('configure','run'):
+        for phase in ('configure', 'run'):
             for action in system_upgrade.ACTIONS:
                 fn = phase + '_' + action
                 func = getattr(system_upgrade.SystemUpgradeCommand, fn)
                 self.assertTrue(callable(func))
+
+class StateTestCase(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.statedir = tempfile.mkdtemp(prefix="state.test.")
+        cls.StateClass = system_upgrade.State
+        cls.StateClass.statefile = os.path.join(cls.statedir, "state")
+
+    def setUp(self):
+        self.state = self.StateClass()
+
+    def test_set_write_get(self):
+        path = "/some/stupid/path"
+        with self.state:
+            self.state.datadir = path
+        del self.state
+        self.state = self.StateClass()
+        self.assertEqual(self.state.datadir, path)
+
+    def test_clear(self):
+        self.state.clear()
+        del self.state
+        self.state = self.StateClass()
+        self.assertIs(self.state.datadir, None)
+
+    def test_bool_value(self):
+        with self.state:
+            self.state.distro_sync = True
+        del self.state
+        self.state = self.StateClass()
+        self.assertIs(self.state.distro_sync, True)
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.statedir)
