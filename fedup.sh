@@ -42,6 +42,7 @@ END_OF_MESSAGE
 
 BASECMD="dnf system-upgrade"
 dry_run=0
+action=''
 
 dnf_cmd=($BASECMD)
 
@@ -88,12 +89,20 @@ while [ $# -gt 0 ]; do
         ;;
         # --network became --releasever, basically
         --network)
+            if [ "$action" == "clean" ]; then
+                error "Can't do --network and --clean at the same time."
+            fi
+            action="download"
             newarg="${1/--network/--releasever}"
             dnf_cmd+=("download" "$newarg")
             [[ "$1" != *=* ]] && shift && dnf_cmd+=("$1")
         ;;
         # --clean is now the "clean" command
         --clean)
+            if [ "$action" == "download" ]; then
+                error "Can't do --network and --clean at the same time."
+            fi
+            action="clean"
             dnf_cmd+=("clean")
         ;;
         # like with `make -n`, just print what would have been executed
