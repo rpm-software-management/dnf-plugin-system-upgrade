@@ -5,7 +5,7 @@ Summary:    System Upgrade plugin for DNF
 Group:      System Environment/Base
 License:    GPLv2+
 URL:        https://github.com/rpm-software-management/dnf-plugin-system-upgrade
-Source0:    %{name}-%{version}.tar.gz
+Source0:    https://github.com/rpm-software-management/dnf-plugin-system-upgrade/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 
 Requires: python-%{name}
 Provides: dnf-command(system-upgrade)
