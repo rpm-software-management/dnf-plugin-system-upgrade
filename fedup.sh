@@ -27,8 +27,17 @@ error() {
     exit 1
 }
 
+quote_word() {
+    local numwords=$#; set -- $*
+    [ $numwords == $# ] && echo "$*" || echo "\"$*\""
+}
+quote_line() {
+    local line=$(while [ $# -gt 0 ]; do quote_word "$1"; shift; done)
+    echo $line
+}
+
 cat >&2 <<'END_OF_MESSAGE'
-NOTE: fedup has been replaced by `dnf system-upgrade`. Use that instead.
+NOTE: fedup has been replaced by 'dnf system-upgrade'. Use that instead.
 END_OF_MESSAGE
 
 BASECMD="dnf system-upgrade"
@@ -94,5 +103,7 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-echo Trying "'${dnf_cmd[@]}'"
+dnf_cmd_quoted=$(quote_line "${dnf_cmd[@]}")
+
+echo "Redirecting to '$dnf_cmd_quoted':"
 exec "${dnf_cmd[@]}"
