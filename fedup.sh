@@ -41,6 +41,7 @@ NOTE: fedup has been replaced by 'dnf system-upgrade'. Use that instead.
 END_OF_MESSAGE
 
 BASECMD="dnf system-upgrade"
+dry_run=0
 
 dnf_cmd=($BASECMD)
 
@@ -95,6 +96,10 @@ while [ $# -gt 0 ]; do
         --clean)
             dnf_cmd+=("clean")
         ;;
+        # like with `make -n`, just print what would have been executed
+        -n|--dry-run|--just-print)
+            dry_run=1
+        ;;
         # unknown argument
         *)
             error "unknown argument '$1'"
@@ -104,6 +109,11 @@ while [ $# -gt 0 ]; do
 done
 
 dnf_cmd_quoted=$(quote_line "${dnf_cmd[@]}")
+
+if [ $dry_run == 1 ]; then
+    echo $dnf_cmd_quoted
+    exit 0
+fi
 
 echo "Redirecting to '$dnf_cmd_quoted':"
 exec "${dnf_cmd[@]}"
