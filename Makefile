@@ -27,8 +27,8 @@ PLUGIN = system_upgrade.py
 
 build: $(MSGFILES)
 
-po/$(TEXTDOMAIN).pot: $(PLUGIN)
-	xgettext -c -s -d $(TEXTDOMAIN) -o $@ $?
+po/$(TEXTDOMAIN).pot: $(PLUGIN) $(FEDUP_SCRIPT)
+	xgettext -c -s -d $(TEXTDOMAIN) -o $@ $^
 
 po/%.mo : po/%.po
 	msgfmt $< -o $@
@@ -54,7 +54,7 @@ clean:
 	rm -rf *.py[co] __pycache__ dnf-plugin-system-upgrade-*.tar.gz po/*.mo
 
 check: po/en_GB.mo
-	$(PYTHON) -m $(PYTHON_UNITTEST_MODULE) test_system_upgrade
+	$(PYTHON) -m $(PYTHON_UNITTEST_MODULE) test_system_upgrade test_fedup_wrapper
 
 archive: version-check
 	git archive --prefix=dnf-plugin-system-upgrade-$(VERSION)/ \

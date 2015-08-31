@@ -18,12 +18,18 @@
 #
 # Author: Will Woods <wwoods@redhat.com>
 
+export TEXTDOMAIN="dnf-plugin-system-upgrade"
+export TEXTDOMAINDIR="${TEXTDOMAINDIR:-/usr/share/locale}"
+
+PROG=${0##*/}
 warn() {
-    echo "Warning: $@" >&2
+    local prefix="$(gettext warning:)" fmt="$1"; shift
+    printf "$PROG: $prefix $fmt\\n" "$@" >&2
 }
 
 error() {
-    echo "Error: $@" >&2
+    local prefix="$(gettext error:)" fmt="$1"; shift
+    printf "$PROG: $prefix $fmt\\n" "$@" >&2
     exit 1
 }
 
@@ -36,13 +42,13 @@ quote_line() {
     echo $line
 }
 
-cat >&2 <<'END_OF_MESSAGE'
-NOTE: fedup has been replaced by 'dnf system-upgrade'. Use that instead.
-END_OF_MESSAGE
+DEPRECATED_MSG=$(gettext "fedup has been replaced by 'dnf system-upgrade'. Use that instead.")
+echo "$DEPRECATED_MSG" >&2
 
 BASECMD="dnf system-upgrade"
 dry_run=0
 action=''
+ACTION_ERR_MSG=$(gettext "Can't do --network and --clean at the same time.")
 
 dnf_cmd=($BASECMD)
 
@@ -60,11 +66,13 @@ while [ $# -gt 0 ]; do
         ;;
         # ignore deprecated args
         --skipbootloader|--skipkernel|--resetbootloader)
-            warn "$1 is not used anymore. ignoring."
+            warnmsg=$(gettext "'%s' is not used anymore. ignoring.")
+            warn "$warnmsg" $flag
         ;;
-        # ignore deprecated args and their arguments
+        # ignore deprecated args that take arguments
         --instrepo*|--product)
-            warn "$1 is not used anymore. ignoring."
+            warnmsg=$(gettext "'%s' is not used anymore. ignoring.")
+            warn "$warnmsg" $flag
             [[ "$1" != *=* ]] && shift
         ;;
         # silently ignore old debugging options
@@ -73,25 +81,28 @@ while [ $# -gt 0 ]; do
         ;;
         # removed options. these cause errors.
         --debuglog)
-            error "Can't redirect DNF logs. Use DNF debug options instead."
+            errmsg=$(gettext "Can't redirect DNF logs. Use DNF debug options instead.")
+            error "$errmsg"
         ;;
         --enableplugin|--disableplugin)
-            error "Sorry, dnf doesn't support '$flag'"
+            errmsg=$(gettext "Sorry, dnf doesn't support '%s'")
+            error "$errmsg" $flag
         ;;
         --device|--iso|--add-install)
-            error "Sorry, dnf system-upgrade doesn't support '$flag'"
+            errmsg=$(gettext "Sorry, dnf system-upgrade doesn't support '%s'")
+            error "$errmsg" $flag
         ;;
         --expire-cache)
-            error "'$flag' removed. Use '$BASECMD download --refresh'."
+            errmsg=$(gettext "'--expire-cache' removed. Use 'dnf system-upgrade download --refresh'")
+            error "$errmsg"
         ;;
         --clean-metadata)
-            error "'$flag' removed. Use 'dnf clean metadata --releasever=VER'."
+            errmsg=$(gettext "'--clean-metadata' removed. Use 'dnf clean metadata --releasever=VER'")
+            error "$errmsg"
         ;;
         # --network became --releasever, basically
         --network)
-            if [ "$action" == "clean" ]; then
-                error "Can't do --network and --clean at the same time."
-            fi
+            [ "$action" == "clean" ] && error "$ACTION_ERR_MSG"
             action="download"
             newarg="${1/--network/--releasever}"
             dnf_cmd+=("download" "$newarg")
@@ -99,9 +110,7 @@ while [ $# -gt 0 ]; do
         ;;
         # --clean is now the "clean" command
         --clean)
-            if [ "$action" == "download" ]; then
-                error "Can't do --network and --clean at the same time."
-            fi
+            [ "$action" == "download" ] && error "$ACTION_ERR_MSG"
             action="clean"
             dnf_cmd+=("clean")
         ;;
@@ -109,9 +118,14 @@ while [ $# -gt 0 ]; do
         -n|--dry-run|--just-print)
             dry_run=1
         ;;
+        # for testing purposes only
+        --test-gettext)
+            echo $(gettext "the color of the sky") && exit 0
+        ;;
         # unknown argument
         *)
-            error "unknown argument '$1'"
+            errmsg=$(gettext "unknown argument '%s'")
+            error "$errmsg" "$1"
         ;;
     esac
     shift
@@ -124,5 +138,6 @@ if [ $dry_run == 1 ]; then
     exit 0
 fi
 
-echo "Redirecting to '$dnf_cmd_quoted':"
+redir_msg=$(gettext "Redirecting to '%s':")
+printf "$redir_msg\\n" "$dnf_cmd_quoted"
 exec "${dnf_cmd[@]}"

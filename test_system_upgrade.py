@@ -100,7 +100,7 @@ class PlymouthTransactionDisplayTestCase(unittest.TestCase):
 
 import os, tempfile, shutil, gettext
 @unittest.skipUnless(os.path.exists("po/en_GB.mo"), "make po/en_GB.mo first")
-class I18NTestCase(unittest.TestCase):
+class I18NTestCaseBase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.localedir = tempfile.mkdtemp(prefix='i18ntest')
@@ -110,11 +110,16 @@ class I18NTestCase(unittest.TestCase):
         shutil.copy2("po/en_GB.mo",
                      os.path.join(cls.msgdir, cls.msgfile))
 
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.localedir)
+
     def setUp(self):
         self.t = gettext.translation(system_upgrade.TEXTDOMAIN, self.localedir,
                                 languages=["en_GB"], fallback=True)
         self.gettext = self.t.gettext
 
+class I18NTestCase(I18NTestCaseBase):
     def test_selftest(self):
         self.assertIn(self.msgfile, os.listdir(self.msgdir))
         self.assertIn("en_GB", os.listdir(self.localedir))
@@ -133,10 +138,6 @@ class I18NTestCase(unittest.TestCase):
         msg = "the color of the sky"
         trans_msg = self.gettext(msg)
         self.assertNotEqual(msg, trans_msg)
-
-    @classmethod
-    def tearDownClass(cls):
-        shutil.rmtree(cls.localedir)
 
 class ArgparseTestCase(unittest.TestCase):
     def test_actions_exist(self):
