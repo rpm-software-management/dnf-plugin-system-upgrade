@@ -75,22 +75,29 @@ make check PYTHON=%{__python3}
 %license LICENSE
 %doc README.md
 %{_unitdir}/dnf-system-upgrade.service
+# FIXME: who owns this dir? how do we make sure it exists?
 %{_unitdir}/system-update.target.wants/dnf-system-upgrade.service
 %{_bindir}/fedup
 
 %files -n python3-%{name}
+%license LICENSE
 %{python3_sitelib}/dnf-plugins/system_upgrade.py
 %{python3_sitelib}/dnf-plugins/__pycache__/system_upgrade*.py*
 
 %files -n python2-%{name}
+%license LICENSE
 %{python_sitelib}/dnf-plugins/system_upgrade.py*
 
 %changelog
-* Thu Aug 20 2015 Will Woods <wwoods@redhat.com> 0.3.0
+* Mon Aug 31 2015 Will Woods <wwoods@redhat.com> 0.4.0-1
+- Make specfile meet Fedora packaging requirements
+- Add translations to `fedup` wrapper
+
+* Thu Aug 20 2015 Will Woods <wwoods@redhat.com> 0.3.0-1
 - Add `fedup` backward-compatibility wrapper
 
-* Tue Aug 18 2015 Will Woods <wwoods@redhat.com> 0.2.0
+* Tue Aug 18 2015 Will Woods <wwoods@redhat.com> 0.2.0-1
 - Fix upgrade startup
 
-* Wed Aug 05 2015 Will Woods <wwoods@redhat.com> 0.0.1
+* Wed Aug 05 2015 Will Woods <wwoods@redhat.com> 0.0.1-1
 - Initial packaging
