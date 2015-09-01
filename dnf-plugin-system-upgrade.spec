@@ -75,7 +75,7 @@ make check PYTHON=%{__python3}
 %license LICENSE
 %doc README.md
 %{_unitdir}/dnf-system-upgrade.service
-# FIXME: who owns this dir? how do we make sure it exists?
+%dir %{_unitdir}/system-update.target.wants
 %{_unitdir}/system-update.target.wants/dnf-system-upgrade.service
 %{_bindir}/fedup
 
@@ -90,7 +90,7 @@ make check PYTHON=%{__python3}
 
 %changelog
 * Mon Aug 31 2015 Will Woods <wwoods@redhat.com> 0.4.0-1
-- Make specfile meet Fedora packaging requirements
+- Meet Fedora packaging requirements
 - Add translations to `fedup` wrapper
 
 * Thu Aug 20 2015 Will Woods <wwoods@redhat.com> 0.3.0-1
