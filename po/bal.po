@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-18 13:24-0400\n"
+"POT-Creation-Date: 2015-08-31 18:33-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: Baluchi\n"
@@ -18,11 +18,31 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0\n"
 "X-Generator: Zanata 3.7.1\n"
 
+#: fedup.sh:69 fedup.sh:74
+msgid "'%s' is not used anymore. ignoring."
+msgstr ""
+
+#: fedup.sh:100
+msgid "'--clean-metadata' removed. Use 'dnf clean metadata --releasever=VER'"
+msgstr ""
+
+#: fedup.sh:96
+msgid "'--expire-cache' removed. Use 'dnf system-upgrade download --refresh'"
+msgstr ""
+
 #: system_upgrade.py:67
 msgid "--datadir: File exists"
 msgstr ""
 
-#: system_upgrade.py:390
+#: fedup.sh:51
+msgid "Can't do --network and --clean at the same time."
+msgstr ""
+
+#: fedup.sh:84
+msgid "Can't redirect DNF logs. Use DNF debug options instead."
+msgstr ""
+
+#: system_upgrade.py:391
 msgid "Cleaning up downloaded data..."
 msgstr ""
 
@@ -52,15 +72,27 @@ msgstr ""
 msgid "Prepare system for upgrade to a new release"
 msgstr ""
 
+#: fedup.sh:141
+msgid "Redirecting to '%s':"
+msgstr ""
+
 #: system_upgrade.py:168
 msgid "Running post-transaction scripts..."
 msgstr ""
 
-#: system_upgrade.py:364
+#: fedup.sh:88
+msgid "Sorry, dnf doesn't support '%s'"
+msgstr ""
+
+#: fedup.sh:92
+msgid "Sorry, dnf system-upgrade doesn't support '%s'"
+msgstr ""
+
+#: system_upgrade.py:365
 msgid "Starting system upgrade. This will take a while."
 msgstr ""
 
-#: system_upgrade.py:408
+#: system_upgrade.py:409
 msgid "Upgrade complete! Cleaning up and rebooting..."
 msgstr ""
 
@@ -76,7 +108,7 @@ msgstr ""
 msgid "action to perform"
 msgstr ""
 
-#: system_upgrade.py:323
+#: system_upgrade.py:324
 msgid "another upgrade tool is running. exiting quietly."
 msgstr ""
 
@@ -84,25 +116,41 @@ msgstr ""
 msgid "downgrade packages if the new release's version is older"
 msgstr ""
 
+#: fedup.sh:31
+msgid "error:"
+msgstr ""
+
+#: fedup.sh:45
+msgid "fedup has been replaced by 'dnf system-upgrade'. Use that instead."
+msgstr ""
+
 #: system_upgrade.py:208
 msgid "save downloaded data to this location"
 msgstr ""
 
-#: system_upgrade.py:313
+#: system_upgrade.py:314
 msgid "system is not ready for upgrade"
 msgstr ""
 
 #. Translators: This string is only used in unit tests.
-#: system_upgrade.py:34
+#: system_upgrade.py:34 fedup.sh:123
 msgid "the color of the sky"
 msgstr ""
 
-#: system_upgrade.py:315
+#: fedup.sh:127
+msgid "unknown argument '%s'"
+msgstr ""
+
+#: system_upgrade.py:316
 msgid "upgrade is already scheduled"
 msgstr ""
 
 #. Translators: do not change "reboot" here
-#: system_upgrade.py:321
+#: system_upgrade.py:322
 #, python-format
 msgid "use '%s reboot' to begin the upgrade"
+msgstr ""
+
+#: fedup.sh:26
+msgid "warning:"
 msgstr ""

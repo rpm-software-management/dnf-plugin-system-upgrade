@@ -1,15 +1,11 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+# Dennis Tobar <dennis.tobar@gmail.com>, 2015. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-18 13:24-0400\n"
-"PO-Revision-Date: \n"
-"Last-Translator: \n"
+"POT-Creation-Date: 2015-08-31 18:33-0400\n"
+"PO-Revision-Date: 2015-08-28 09:02-0400\n"
+"Last-Translator: Dennis Tobar <dennis.tobar@gmail.com>\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,51 +14,84 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "X-Generator: Zanata 3.7.1\n"
 
-#: system_upgrade.py:67
-msgid "--datadir: File exists"
+#: fedup.sh:69 fedup.sh:74
+msgid "'%s' is not used anymore. ignoring."
 msgstr ""
 
-#: system_upgrade.py:390
-msgid "Cleaning up downloaded data..."
+#: fedup.sh:100
+msgid "'--clean-metadata' removed. Use 'dnf clean metadata --releasever=VER'"
 msgstr ""
+
+#: fedup.sh:96
+msgid "'--expire-cache' removed. Use 'dnf system-upgrade download --refresh'"
+msgstr ""
+
+#: system_upgrade.py:67
+msgid "--datadir: File exists"
+msgstr "--datadir: Archivo existe"
+
+#: fedup.sh:51
+msgid "Can't do --network and --clean at the same time."
+msgstr ""
+
+#: fedup.sh:84
+msgid "Can't redirect DNF logs. Use DNF debug options instead."
+msgstr ""
+
+#: system_upgrade.py:391
+msgid "Cleaning up downloaded data..."
+msgstr "Limpiando los datos descargados..."
 
 #. Translators: do not change "reboot" here
 #: system_upgrade.py:52
 #, python-format
 msgid "Download complete! Use 'dnf %s reboot' to start the upgrade."
 msgstr ""
+"¡Descarga completa! Use 'dnf %s reboot' para iniciar la actualización."
 
 #: system_upgrade.py:54
 msgid "NOTE: this version of DNF will not show graphical upgrade progress."
-msgstr ""
+msgstr "NOTA: esta versión de DNF no muestra el progreso en forma gráfica."
 
 #: system_upgrade.py:50
 msgid "Need a --releasever greater than the current system version."
-msgstr ""
+msgstr "Necesita un --releasever mayor que la versión actual del sistema."
 
 #: system_upgrade.py:48
 msgid "No new kernel packages were found."
-msgstr ""
+msgstr "No se han encontrado paquetes nuevos de kernel."
 
 #: system_upgrade.py:229
 msgid "OPTIONS"
-msgstr ""
+msgstr "OPCIONES"
 
 #: system_upgrade.py:226
 msgid "Prepare system for upgrade to a new release"
+msgstr "Preparar el sistema para una nueva versión"
+
+#: fedup.sh:141
+msgid "Redirecting to '%s':"
 msgstr ""
 
 #: system_upgrade.py:168
 msgid "Running post-transaction scripts..."
+msgstr "Ejecutando los comandos post-transacción"
+
+#: fedup.sh:88
+msgid "Sorry, dnf doesn't support '%s'"
 msgstr ""
 
-#: system_upgrade.py:364
+#: fedup.sh:92
+msgid "Sorry, dnf system-upgrade doesn't support '%s'"
+msgstr ""
+
+#: system_upgrade.py:365
 msgid "Starting system upgrade. This will take a while."
-msgstr ""
+msgstr "Iniciando la actualización del sistema. Esto tomará un momento."
 
-#: system_upgrade.py:408
+#: system_upgrade.py:409
 msgid "Upgrade complete! Cleaning up and rebooting..."
-msgstr ""
+msgstr "¡Actualización completa! Limpiando y reiniciando..."
 
 #: system_upgrade.py:229
 msgid "VERSION"
@@ -70,39 +99,57 @@ msgstr ""
 
 #: system_upgrade.py:174
 msgid "Verifying"
-msgstr ""
+msgstr "Verificando"
 
 #: system_upgrade.py:210
 msgid "action to perform"
-msgstr ""
+msgstr "acción a desarrollar"
 
-#: system_upgrade.py:323
+#: system_upgrade.py:324
 msgid "another upgrade tool is running. exiting quietly."
 msgstr ""
+"existe otra herramienta de actualización en ejecución. saliendo "
+"silenciosamente. "
 
 #: system_upgrade.py:206
 msgid "downgrade packages if the new release's version is older"
+msgstr "usar paquetes antiguos si la versión nueva es antigua"
+
+#: fedup.sh:31
+msgid "error:"
+msgstr ""
+
+#: fedup.sh:45
+msgid "fedup has been replaced by 'dnf system-upgrade'. Use that instead."
 msgstr ""
 
 #: system_upgrade.py:208
 msgid "save downloaded data to this location"
-msgstr ""
+msgstr "guardar datos descargados a esta ubicación"
 
-#: system_upgrade.py:313
+#: system_upgrade.py:314
 msgid "system is not ready for upgrade"
-msgstr ""
+msgstr "sistema no está lista para actualizar"
 
 #. Translators: This string is only used in unit tests.
-#: system_upgrade.py:34
+#: system_upgrade.py:34 fedup.sh:123
 msgid "the color of the sky"
+msgstr "el color del cielo"
+
+#: fedup.sh:127
+msgid "unknown argument '%s'"
 msgstr ""
 
-#: system_upgrade.py:315
+#: system_upgrade.py:316
 msgid "upgrade is already scheduled"
-msgstr ""
+msgstr "la actualización ya está agendada"
 
 #. Translators: do not change "reboot" here
-#: system_upgrade.py:321
+#: system_upgrade.py:322
 #, python-format
 msgid "use '%s reboot' to begin the upgrade"
+msgstr "use '%s reboot' para iniciar la actualización"
+
+#: fedup.sh:26
+msgid "warning:"
 msgstr ""
