@@ -1,5 +1,5 @@
 Name:       dnf-plugin-system-upgrade
-Version:    0.3.0
+Version:    0.4.0
 Release:    1%{?dist}
 Summary:    System Upgrade plugin for DNF
 Group:      System Environment/Base
