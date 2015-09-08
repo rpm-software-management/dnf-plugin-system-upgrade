@@ -16,8 +16,8 @@ Requires: python2-%{name}
 
 Provides: dnf-command(system-upgrade)
 
-Provides: fedup
-Obsoletes: fedup < 0.9.2-3
+Provides: fedup = 0.9.3-1
+Obsoletes: fedup < 0.9.3-1
 
 %if 0%{?fedora} == 21
 # Fedora 21 has the necessary fixes backported to 1.0.6-2
