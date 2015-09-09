@@ -1,6 +1,6 @@
 Name:       dnf-plugin-system-upgrade
 Version:    0.4.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    System Upgrade plugin for DNF
 Group:      System Environment/Base
 License:    GPLv2+
@@ -12,6 +12,13 @@ Provides: dnf-command(system-upgrade)
 
 Provides: fedup
 Obsoletes: fedup < 0.9.2-3
+
+%if 0%{?fedora} == 21
+# Fedora 21 has the necessary fixes backported to 1.0.6-2
+Conflicts: PackageKit < 1.0.6-2
+%else
+Conflicts: PackageKit < 1.0.8
+%endif
 
 BuildArch: noarch
 BuildRequires: pkgconfig systemd gettext
@@ -89,6 +96,10 @@ make check PYTHON=%{__python3}
 %{python_sitelib}/dnf-plugins/system_upgrade.py*
 
 %changelog
+* Wed Sep 09 2015 Kalev Lember <klember@redhat.com> 0.4.0-2
+- Conflict with older PackageKit versions that didn't let other programs do
+  offline updates (#1259937)
+
 * Mon Aug 31 2015 Will Woods <wwoods@redhat.com> 0.4.0-1
 - Meet Fedora packaging requirements
 - Add translations to `fedup` wrapper
