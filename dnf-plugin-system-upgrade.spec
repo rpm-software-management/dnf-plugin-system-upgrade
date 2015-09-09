@@ -7,7 +7,13 @@ License:    GPLv2+
 URL:        https://github.com/rpm-software-management/dnf-plugin-system-upgrade
 Source0:    https://github.com/rpm-software-management/dnf-plugin-system-upgrade/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 
-Requires: python-%{name}
+%if 0%{?fedora} >= 23
+# DNF in Fedora 23 uses Python 3 by default
+Requires: python3-%{name}
+%else
+Requires: python2-%{name}
+%endif
+
 Provides: dnf-command(system-upgrade)
 
 Provides: fedup
@@ -99,6 +105,7 @@ make check PYTHON=%{__python3}
 * Wed Sep 09 2015 Kalev Lember <klember@redhat.com> 0.4.0-2
 - Conflict with older PackageKit versions that didn't let other programs do
   offline updates (#1259937)
+- Pull in the Python 3 version of the DNF plugin on Fedora 23 (#1260164)
 
 * Mon Aug 31 2015 Will Woods <wwoods@redhat.com> 0.4.0-1
 - Meet Fedora packaging requirements
