@@ -32,17 +32,25 @@ po/$(TEXTDOMAIN).pot: $(PLUGIN) $(FEDUP_SCRIPT)
 po/%.mo : po/%.po
 	msgfmt $< -o $@
 
-install: $(PLUGIN) $(SERVICE) $(MSGFILES) $(FEDUP_SCRIPT)
+install: install-plugin install-service install-bin install-lang
+
+install-plugin: $(PLUGIN)
 	$(INSTALL) -d $(DESTDIR)$(PLUGINDIR)
 	$(INSTALL) -m644 $(PLUGIN) $(DESTDIR)$(PLUGINDIR)
 	$(PYTHON) -m py_compile $(DESTDIR)$(PLUGINDIR)/$(PLUGIN)
 	$(PYTHON) -O -m py_compile $(DESTDIR)$(PLUGINDIR)/$(PLUGIN)
+
+install-service: $(SERVICE)
 	$(INSTALL) -d $(DESTDIR)$(UNITDIR)
 	$(INSTALL) -d $(DESTDIR)$(TARGET_WANTSDIR)
 	$(INSTALL) -m644 $(SERVICE) $(DESTDIR)$(UNITDIR)
 	$(LN) -sf ../$(SERVICE) $(DESTDIR)$(TARGET_WANTSDIR)/$(SERVICE)
+
+install-bin: $(FEDUP_SCRIPT)
 	$(INSTALL) -d $(DESTDIR)$(BINDIR)
 	$(INSTALL) -m755 $(FEDUP_SCRIPT) $(DESTDIR)$(BINDIR)/fedup
+
+install-lang: $(MSGFILES)
 	for lang in $(LANGUAGES); do \
 	  langdir=$(DESTDIR)$(LOCALEDIR)/$${lang}/LC_MESSAGES; \
 	  $(INSTALL) -d $$langdir; \
@@ -66,3 +74,4 @@ version-check:
 	grep '^Version:\s*$(VERSION)' dnf-plugin-system-upgrade.spec
 
 .PHONY: build install clean check archive version-check
+.PHONY: install-plugin install-service install-bin install-lang
