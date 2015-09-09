@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-08-31 18:33-0400\n"
-"PO-Revision-Date: 2015-08-26 08:37-0400\n"
+"PO-Revision-Date: 2015-09-06 06:55-0400\n"
 "Last-Translator: Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>\n"
 "Language-Team: Catalan\n"
 "MIME-Version: 1.0\n"
@@ -16,15 +16,19 @@ msgstr ""
 
 #: fedup.sh:69 fedup.sh:74
 msgid "'%s' is not used anymore. ignoring."
-msgstr ""
+msgstr "'%s' ja no s'utilitza més i s'ignora."
 
 #: fedup.sh:100
 msgid "'--clean-metadata' removed. Use 'dnf clean metadata --releasever=VER'"
 msgstr ""
+"'--clean-metadata' es va suprimir. Utilitzeu 'dnf clean metadata "
+"--releasever=VER'"
 
 #: fedup.sh:96
 msgid "'--expire-cache' removed. Use 'dnf system-upgrade download --refresh'"
 msgstr ""
+"'--expire-cache' es va suprimir. Utilitzeu 'dnf system-upgrade download "
+"--refresh'"
 
 #: system_upgrade.py:67
 msgid "--datadir: File exists"
@@ -32,11 +36,13 @@ msgstr "--datadir: Existeix el fitxer"
 
 #: fedup.sh:51
 msgid "Can't do --network and --clean at the same time."
-msgstr ""
+msgstr "No es pot fer --network i --clean alhora."
 
 #: fedup.sh:84
 msgid "Can't redirect DNF logs. Use DNF debug options instead."
 msgstr ""
+"No es poden redirigir els regisgres del DNF. En lloc seu, utilitzeu les "
+"opcions de depuració."
 
 #: system_upgrade.py:391
 msgid "Cleaning up downloaded data..."
@@ -57,7 +63,7 @@ msgstr ""
 
 #: system_upgrade.py:50
 msgid "Need a --releasever greater than the current system version."
-msgstr "Es necessari un --releasever superior a la versió actual del sistema."
+msgstr "Es necessita un --releasever superior a la versió actual del sistema."
 
 #: system_upgrade.py:48
 msgid "No new kernel packages were found."
@@ -73,7 +79,7 @@ msgstr "Prepara el sistema per actualitzar-se a un nou llançament"
 
 #: fedup.sh:141
 msgid "Redirecting to '%s':"
-msgstr ""
+msgstr "Es redirigeix a '%s':"
 
 #: system_upgrade.py:168
 msgid "Running post-transaction scripts..."
@@ -81,11 +87,11 @@ msgstr "S'executen les seqüències post-transacció..."
 
 #: fedup.sh:88
 msgid "Sorry, dnf doesn't support '%s'"
-msgstr ""
+msgstr "Ho sentim, dnf no admet '%s'"
 
 #: fedup.sh:92
 msgid "Sorry, dnf system-upgrade doesn't support '%s'"
-msgstr ""
+msgstr "Ho sentim, dnf system-upgrade no admet '%s'"
 
 #: system_upgrade.py:365
 msgid "Starting system upgrade. This will take a while."
@@ -97,7 +103,7 @@ msgstr "S'ha completat l'actualització. Neteja i reinici..."
 
 #: system_upgrade.py:229
 msgid "VERSION"
-msgstr ""
+msgstr "VERSIÓ"
 
 #: system_upgrade.py:174
 msgid "Verifying"
@@ -118,11 +124,13 @@ msgstr "reverteix els paquets si la versió del nou llançament és més antiga"
 
 #: fedup.sh:31
 msgid "error:"
-msgstr ""
+msgstr "error:"
 
 #: fedup.sh:45
 msgid "fedup has been replaced by 'dnf system-upgrade'. Use that instead."
 msgstr ""
+"fedup ha estat substituït per 'dnf system-upgrade'. Utilitzeu-lo en lloc "
+"seu."
 
 #: system_upgrade.py:208
 msgid "save downloaded data to this location"
@@ -130,7 +138,7 @@ msgstr "desa les dades baixades en aquesta localització"
 
 #: system_upgrade.py:314
 msgid "system is not ready for upgrade"
-msgstr "el sistema no està apunt per a l'actualització"
+msgstr "el sistema no està a punt per a l'actualització"
 
 #. Translators: This string is only used in unit tests.
 #: system_upgrade.py:34 fedup.sh:123
@@ -139,7 +147,7 @@ msgstr "el color del cel"
 
 #: fedup.sh:127
 msgid "unknown argument '%s'"
-msgstr ""
+msgstr "argument desconegut '%s'"
 
 #: system_upgrade.py:316
 msgid "upgrade is already scheduled"
@@ -153,4 +161,4 @@ msgstr "utilitzeu '%s reboot' per començar l'actualització"
 
 #: fedup.sh:26
 msgid "warning:"
-msgstr ""
+msgstr "advertència:"

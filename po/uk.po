@@ -1,15 +1,11 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+# Yuri Chornoivan <yurchor@ukr.net>, 2015. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-08-31 18:33-0400\n"
-"PO-Revision-Date: \n"
-"Last-Translator: \n"
+"PO-Revision-Date: 2015-09-01 02:26-0400\n"
+"Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -20,137 +16,153 @@ msgstr ""
 
 #: fedup.sh:69 fedup.sh:74
 msgid "'%s' is not used anymore. ignoring."
-msgstr ""
+msgstr " «%s» більше не використовується. Ігноруємо."
 
 #: fedup.sh:100
 msgid "'--clean-metadata' removed. Use 'dnf clean metadata --releasever=VER'"
 msgstr ""
+"«--clean-metadata» вилучено. Скористайтеся командою «dnf clean metadata "
+"--releasever=ВЕРСІЯ»"
 
 #: fedup.sh:96
 msgid "'--expire-cache' removed. Use 'dnf system-upgrade download --refresh'"
 msgstr ""
+"«--expire-cache» вилучено. Скористайтеся «dnf system-upgrade download "
+"--refresh»"
 
 #: system_upgrade.py:67
 msgid "--datadir: File exists"
-msgstr ""
+msgstr "--datadir: файл вже існує"
 
 #: fedup.sh:51
 msgid "Can't do --network and --clean at the same time."
-msgstr ""
+msgstr "Не можна використовувати --network і --clean одночасно."
 
 #: fedup.sh:84
 msgid "Can't redirect DNF logs. Use DNF debug options instead."
 msgstr ""
+"Не вдалося переспрямувати виведення журналу DNF. Скористайтеся краще "
+"параметрами діагностики DNF."
 
 #: system_upgrade.py:391
 msgid "Cleaning up downloaded data..."
-msgstr ""
+msgstr "Вилучаємо зайві отримані дані…"
 
 #. Translators: do not change "reboot" here
 #: system_upgrade.py:52
 #, python-format
 msgid "Download complete! Use 'dnf %s reboot' to start the upgrade."
 msgstr ""
+"Отримання даних завершено! Скористайтеся командою «dnf %s reboot» для "
+"запуску оновлення."
 
 #: system_upgrade.py:54
 msgid "NOTE: this version of DNF will not show graphical upgrade progress."
 msgstr ""
+"ЗАУВАЖЕННЯ: у цій версії DNF не передбачено графічного показу поступу "
+"оновлення."
 
 #: system_upgrade.py:50
 msgid "Need a --releasever greater than the current system version."
 msgstr ""
+"Слід вказати параметр --releasever із версією, що перевищує поточну версію "
+"системи."
 
 #: system_upgrade.py:48
 msgid "No new kernel packages were found."
-msgstr ""
+msgstr "Нових пакунків ядра не виявлено."
 
 #: system_upgrade.py:229
 msgid "OPTIONS"
-msgstr ""
+msgstr "ПАРАМЕТРИ"
 
 #: system_upgrade.py:226
 msgid "Prepare system for upgrade to a new release"
-msgstr ""
+msgstr "Приготувати систему до оновлення до нового випуску"
 
 #: fedup.sh:141
 msgid "Redirecting to '%s':"
-msgstr ""
+msgstr "Переспрямовуємо до «%s»:"
 
 #: system_upgrade.py:168
 msgid "Running post-transaction scripts..."
-msgstr ""
+msgstr "Запускаємо скрипти остаточної обробки…"
 
 #: fedup.sh:88
 msgid "Sorry, dnf doesn't support '%s'"
-msgstr ""
+msgstr "Вибачте, у dnf не передбачено підтримки «%s»"
 
 #: fedup.sh:92
 msgid "Sorry, dnf system-upgrade doesn't support '%s'"
-msgstr ""
+msgstr "Вибачте, у dnf system-upgrade не передбачено підтримки «%s»"
 
 #: system_upgrade.py:365
 msgid "Starting system upgrade. This will take a while."
-msgstr ""
+msgstr "Починаємо оновлення системи. Будь ласка, зачекайте."
 
 #: system_upgrade.py:409
 msgid "Upgrade complete! Cleaning up and rebooting..."
-msgstr ""
+msgstr "Оновлення завершено! Вилучаємо зайві дані і перезавантажуємо системи…"
 
 #: system_upgrade.py:229
 msgid "VERSION"
-msgstr ""
+msgstr "ВЕРСІЯ"
 
 #: system_upgrade.py:174
 msgid "Verifying"
-msgstr ""
+msgstr "Перевіряємо"
 
 #: system_upgrade.py:210
 msgid "action to perform"
-msgstr ""
+msgstr "дія, яку слід виконати"
 
 #: system_upgrade.py:324
 msgid "another upgrade tool is running. exiting quietly."
 msgstr ""
+"працює інший інструмент із оновлення системи, завершуємо роботу без "
+"додаткових повідомлень."
 
 #: system_upgrade.py:206
 msgid "downgrade packages if the new release's version is older"
-msgstr ""
+msgstr "знизити версію пакунків, якщо нова версія випуску є старішою"
 
 #: fedup.sh:31
 msgid "error:"
-msgstr ""
+msgstr "помилка:"
 
 #: fedup.sh:45
 msgid "fedup has been replaced by 'dnf system-upgrade'. Use that instead."
 msgstr ""
+"fedup замінено на «dnf system-upgrade». Отже, вам слід скористатися новою "
+"командою."
 
 #: system_upgrade.py:208
 msgid "save downloaded data to this location"
-msgstr ""
+msgstr "зберегти отримані дані до вказаного місця"
 
 #: system_upgrade.py:314
 msgid "system is not ready for upgrade"
-msgstr ""
+msgstr "система не готова до оновлення"
 
 #. Translators: This string is only used in unit tests.
 #: system_upgrade.py:34 fedup.sh:123
 msgid "the color of the sky"
-msgstr ""
+msgstr "колір неба"
 
 #: fedup.sh:127
 msgid "unknown argument '%s'"
-msgstr ""
+msgstr "невідомий аргумент «%s»"
 
 #: system_upgrade.py:316
 msgid "upgrade is already scheduled"
-msgstr ""
+msgstr "оновлення вже заплановано"
 
 #. Translators: do not change "reboot" here
 #: system_upgrade.py:322
 #, python-format
 msgid "use '%s reboot' to begin the upgrade"
-msgstr ""
+msgstr "скористайтеся командою «%s reboot», щоб розпочати оновлення"
 
 #: fedup.sh:26
 msgid "warning:"
-msgstr ""
+msgstr "попередження:"
