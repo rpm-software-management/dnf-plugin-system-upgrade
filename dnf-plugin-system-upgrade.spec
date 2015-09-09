@@ -1,6 +1,6 @@
 Name:       dnf-plugin-system-upgrade
-Version:    0.4.0
-Release:    2%{?dist}
+Version:    0.4.1
+Release:    1%{?dist}
 Summary:    System Upgrade plugin for DNF
 Group:      System Environment/Base
 License:    GPLv2+
@@ -71,7 +71,7 @@ make %{?_smp_mflags}
 %install
 make install DESTDIR=$RPM_BUILD_ROOT PYTHON=%{__python2}
 %find_lang %{name}
-make install DESTDIR=$RPM_BUILD_ROOT PYTHON=%{__python3}
+make install-plugin DESTDIR=$RPM_BUILD_ROOT PYTHON=%{__python3}
 
 %check
 make check PYTHON=%{__python2}
@@ -80,6 +80,8 @@ make check PYTHON=%{__python3}
 %files -f %{name}.lang
 %license LICENSE
 %doc README.md
+%{_mandir}/man8/dnf.plugin.system-upgrade.8*
+%{_mandir}/man8/fedup.8*
 %{_unitdir}/dnf-system-upgrade.service
 %dir %{_unitdir}/system-update.target.wants
 %{_unitdir}/system-update.target.wants/dnf-system-upgrade.service
@@ -95,6 +97,11 @@ make check PYTHON=%{__python3}
 %{python_sitelib}/dnf-plugins/system_upgrade.py*
 
 %changelog
+* Tue Sep 15 2015 Will Woods <wwoods@redhat.com> 0.4.1-1
+- Fix `dnf system-upgrade clean` (rhbz#1262145)
+- Fix duplicate messages in plymouth 'details' output (github#13)
+- Add man pages dnf.plugin.system-upgrade(8) and fedup(8)
+
 * Wed Sep 09 2015 Kalev Lember <klember@redhat.com> 0.4.0-2
 - Conflict with older PackageKit versions that didn't let other programs do
   offline updates (#1259937)
