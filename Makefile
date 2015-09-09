@@ -3,7 +3,6 @@ VERSION = 0.4.0
 LN ?= ln
 INSTALL ?= install -p
 PYTHON ?= python
-PYTHON_UNITTEST_MODULE ?= unittest
 
 PYTHON_VERSION=$(shell $(PYTHON) -c \
     "import sys; print(sys.version_info.major)")
@@ -51,10 +50,11 @@ install: $(PLUGIN) $(SERVICE) $(MSGFILES) $(FEDUP_SCRIPT)
 	done
 
 clean:
-	rm -rf *.py[co] __pycache__ dnf-plugin-system-upgrade-*.tar.gz po/*.mo
+	rm -rf *.py[co] __pycache__ tests/*.py[co] tests/__pycache__ \
+		dnf-plugin-system-upgrade-*.tar.gz po/*.mo
 
 check: po/en_GB.mo
-	$(PYTHON) -m $(PYTHON_UNITTEST_MODULE) test_system_upgrade test_fedup_wrapper
+	$(PYTHON) -m unittest discover tests
 
 archive: version-check
 	git archive --prefix=dnf-plugin-system-upgrade-$(VERSION)/ \
