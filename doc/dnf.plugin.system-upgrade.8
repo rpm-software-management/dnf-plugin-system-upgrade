@@ -1,0 +1,76 @@
+.TH "dnf.plugin.system\-upgrade" "8" "September 9, 2015" "0.4.0" ""
+
+.SH NAME
+.PP
+dnf system\-upgrade \- upgrade a system to a new major release
+
+.SH SYNOPSIS
+.B dnf system\-upgrade download \-\-releasever
+.I VERSION
+.RI [ OPTIONS ]
+.br
+.B dnf system\-upgrade reboot
+.br
+.B dnf system\-upgrade clean
+
+.SH DESCRIPTION
+.PP
+\f[B]dnf system\-upgrade\f[] is used to upgrade a system to a new major
+release.
+.PP
+The \f[B]download\f[] command downloads all the packages needed to
+upgrade to the given \f[I]VERSION\f[].
+.PP
+The \f[B]reboot\f[] command prepares the system to perform the upgrade
+and reboots. This can only be used after the \f[B]download\f[] command
+completes successfully.
+.PP
+The \f[B]clean\f[] command can be used to remove previously\-downloaded
+data. This happens automatically at the end of a successful upgrade.
+
+.SH OPTIONS
+.TP
+.BI \-\-releasever= VERSION
+REQUIRED. The version to upgrade to.
+Sets \f[I]$releasever\f[] in all enabled repos.
+Usually a number, or \f[B]rawhide\f[].
+.TP
+.B \-\-distro\-sync
+Behave like \f[B]dnf distro\-sync\f[]: always install packages from the
+new release, even if they are older than the currently\-installed
+version.
+.TP
+.BI \-\-datadir= DIRECTORY
+Save downloaded packages to \f[I]DIRECTORY\f[].
+\f[I]DIRECTORY\f[] must already exist.
+This directory \f[I]must\f[] be mounted automatically by the system or
+the upgrade will not work.
+The default is \f[C]/var/lib/dnf/system\-update\f[].
+
+.SH NOTES
+.PP
+This command replaces \f[B]fedup\f[].
+The backward\-compatibility wrapper program /usr/bin/fedup is provided
+only as a convenience, and may be removed in a future release.
+.PP
+Any problems encountered on your system after the upgrade completes
+should be reported to the maintainers of the affected components.
+In other words: if (for example) KDE stops working, report that to the KDE
+maintainers.
+
+.SH BUGS
+.PP
+Upgrading from install media (e.g. a DVD or .iso file) currently requires the
+user to manually set up a DNF repo and fstab entry for the media.
+
+.SH EXAMPLE
+.EX
+dnf system\-upgrade download \-\-releasever 23
+dnf system\-upgrade reboot
+.EE
+
+.SH SEE ALSO
+dnf(8) dnf.conf(5)
+
+.SH AUTHORS
+Will Woods <wwoods@redhat.com>

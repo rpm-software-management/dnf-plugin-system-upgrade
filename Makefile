@@ -24,6 +24,9 @@ FEDUP_SCRIPT = fedup.sh
 SERVICE = dnf-system-upgrade.service
 PLUGIN = system_upgrade.py
 
+MANDIR ?= /usr/share/man
+MANPAGE = doc/dnf.plugin.system-upgrade.8
+
 build: $(MSGFILES)
 
 po/$(TEXTDOMAIN).pot: $(PLUGIN) $(FEDUP_SCRIPT)
@@ -32,7 +35,7 @@ po/$(TEXTDOMAIN).pot: $(PLUGIN) $(FEDUP_SCRIPT)
 po/%.mo : po/%.po
 	msgfmt $< -o $@
 
-install: install-plugin install-service install-bin install-lang
+install: install-plugin install-service install-bin install-lang install-man
 
 install-plugin: $(PLUGIN)
 	$(INSTALL) -d $(DESTDIR)$(PLUGINDIR)
@@ -57,6 +60,11 @@ install-lang: $(MSGFILES)
 	  $(INSTALL) po/$${lang}.mo $${langdir}/$(TEXTDOMAIN).mo;\
 	done
 
+install-man: $(MANPAGE)
+	$(INSTALL) -d $(DESTDIR)$(MANDIR)/man8
+	$(INSTALL) -m644 $(MANPAGE) $(DESTDIR)$(MANDIR)/man8
+	$(LN) -sf $(notdir $(MANPAGE)) $(DESTDIR)$(MANDIR)/man8/fedup.8
+
 clean:
 	rm -rf *.py[co] __pycache__ tests/*.py[co] tests/__pycache__ \
 		dnf-plugin-system-upgrade-*.tar.gz po/*.mo
@@ -72,6 +80,7 @@ archive: version-check
 version-check:
 	git describe --tags $(VERSION)
 	grep '^Version:\s*$(VERSION)' dnf-plugin-system-upgrade.spec
+	grep '^\.TH .* "$(VERSION)"' $(MANPAGE)
 
 .PHONY: build install clean check archive version-check
-.PHONY: install-plugin install-service install-bin install-lang
+.PHONY: install-plugin install-service install-bin install-lang install-man
