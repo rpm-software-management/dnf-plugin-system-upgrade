@@ -202,10 +202,13 @@ class PluginArgumentParser(ArgumentParser):
 ACTIONS = ('download', 'clean', 'reboot', 'upgrade')
 def make_parser(prog):
     p = PluginArgumentParser(prog)
-    p.add_argument('--distro-sync', default=False, action='store_true',
-                   help=_("downgrade packages if the new release's version is older"))
-    p.add_argument('--datadir', default=DEFAULT_DATADIR,
+    g = p.add_argument_group(_("download options"))
+    g.add_argument('--releasever', metavar=_("VERSION"),
+                   help=_("release version (required)"))
+    g.add_argument('--datadir', default=DEFAULT_DATADIR,
                    help=_("save downloaded data to this location"))
+    g.add_argument('--distro-sync', default=False, action='store_true',
+                   help=_("downgrade packages if the new release's version is older"))
     p.add_argument('action', choices=ACTIONS,
                    help=_("action to perform"))
     return p
