@@ -37,7 +37,7 @@ This package provides the systemd services required to make the upgrade work.
 %{?python_provide:%python_provide python3-%{name}}
 Summary:    System Upgrade plugin for DNF
 Requires:   python3-dnf
-BuildRequires:  python3-devel python3-dnf python3-nose
+BuildRequires:  python3-devel python3-dnf
 %description -n python3-%{name}
 System Upgrade plugin for DNF (Python 3 version).
 This package provides the "system-upgrade" command.
@@ -47,13 +47,6 @@ This package provides the "system-upgrade" command.
 Summary:    System Upgrade plugin for DNF
 BuildRequires: python2-devel python-mock
 
-
-%if 0%{?fedora} >= 22
-BuildRequires:  python2-nose
-%else
-# Fedora 21 and earlier just call it 'python-nose'
-BuildRequires:  python-nose
-%endif
 
 %if 0%{?fedora} >= 22
 # TODO: update this once dnf is following the Python packaging guidelines
