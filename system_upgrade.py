@@ -156,6 +156,7 @@ class PlymouthTransactionDisplay(dnf.callback.LoggingTransactionDisplay):
     # so we need to call the superclass to get the normal CLI output
     call_super = ("1.0.1" <= DNFVERSION < "1.1.0")
 
+    # pylint: disable=too-many-arguments
     def event(self, package, action, te_cur, te_total, ts_cur, ts_total):
         if self.call_super:
             super(PlymouthTransactionDisplay, self).event(
@@ -312,11 +313,11 @@ class SystemUpgradeCommand(dnf.cli.Command):
         checkDNFVer()
 
     def check_reboot(self, basecmd, extargs):
-        # TODO: check that metadata + packages are still valid/present
         if not self.state.download_status == 'complete':
             raise dnf.cli.CliError(_("system is not ready for upgrade"))
         if os.path.lexists(MAGIC_SYMLINK):
             raise dnf.cli.CliError(_("upgrade is already scheduled"))
+        # FUTURE: checkRPMDBStatus(self.state.download_transaction_id)
         checkDNFVer()
 
     def check_upgrade(self, basecmd, extargs):
