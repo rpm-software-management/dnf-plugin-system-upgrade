@@ -58,6 +58,18 @@ NO_PLYMOUTH_PROGRESS_MSG = _(
 def reboot():
     check_call(["systemctl", "reboot"])
 
+# DNF-FIXME: dnf.util.clear_dir() doesn't delete regular files :/
+
+def clear_dir(path):
+    for entry in os.listdir(path):
+        try:
+            if os.path.isdir(path):
+                dnf.util.rm_rf(path)
+            else:
+                os.unlink(path)
+        except OSError:
+            pass
+
 def checkReleaseVer(conf):
     if dnf.rpm.detect_releasever(conf.installroot) == conf.releasever:
         raise dnf.cli.CliError(RELEASEVER_MSG)
@@ -393,7 +405,7 @@ class SystemUpgradeCommand(dnf.cli.Command):
     def run_clean(self, extcmds):
         if self.state.datadir:
             logger.info(_("Cleaning up downloaded data..."))
-            dnf.util.clear_dir(self.state.datadir)
+            clear_dir(self.state.datadir)
         self.state.clear()
 
     # == transaction_*: do stuff after a successful transaction ===============
