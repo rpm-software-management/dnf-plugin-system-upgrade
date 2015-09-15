@@ -181,3 +181,29 @@ class StateTestCase(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         shutil.rmtree(cls.statedir)
+
+class UtilTestCase(unittest.TestCase):
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp(prefix='util.test.')
+        self.dirs = ["dir1", "dir2"]
+        self.files = ["file1", "dir2/file2"]
+        for d in self.dirs:
+            os.makedirs(os.path.join(self.tmpdir, d))
+        for f in self.files:
+            with open(os.path.join(self.tmpdir, f), 'wt') as fobj:
+                fobj.write("hi there\n")
+
+    def test_self_test(self):
+        for d in self.dirs:
+            self.assertTrue(os.path.isdir(os.path.join(self.tmpdir, d)))
+        for f in self.files:
+            self.assertTrue(os.path.exists(os.path.join(self.tmpdir, f)))
+
+    def test_clear_dir(self):
+        self.assertTrue(os.path.isdir(self.tmpdir))
+        system_upgrade.clear_dir(self.tmpdir)
+        self.assertTrue(os.path.isdir(self.tmpdir))
+        self.assertEqual(os.listdir(self.tmpdir), [])
+
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir)

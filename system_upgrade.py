@@ -62,11 +62,12 @@ def reboot():
 
 def clear_dir(path):
     for entry in os.listdir(path):
+        fullpath = os.path.join(path, entry)
         try:
-            if os.path.isdir(path):
-                dnf.util.rm_rf(path)
+            if os.path.isdir(fullpath):
+                dnf.util.rm_rf(fullpath)
             else:
-                os.unlink(path)
+                os.unlink(fullpath)
         except OSError:
             pass
 
