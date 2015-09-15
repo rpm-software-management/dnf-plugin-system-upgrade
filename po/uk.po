@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-31 18:33-0400\n"
-"PO-Revision-Date: 2015-09-01 02:26-0400\n"
+"POT-Creation-Date: 2015-09-10 17:19-0400\n"
+"PO-Revision-Date: 2015-09-11 12:15-0400\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian\n"
 "MIME-Version: 1.0\n"
@@ -44,7 +44,7 @@ msgstr ""
 "Не вдалося переспрямувати виведення журналу DNF. Скористайтеся краще "
 "параметрами діагностики DNF."
 
-#: system_upgrade.py:391
+#: system_upgrade.py:393
 msgid "Cleaning up downloaded data..."
 msgstr "Вилучаємо зайві отримані дані…"
 
@@ -72,11 +72,11 @@ msgstr ""
 msgid "No new kernel packages were found."
 msgstr "Нових пакунків ядра не виявлено."
 
-#: system_upgrade.py:229
+#: system_upgrade.py:232
 msgid "OPTIONS"
 msgstr "ПАРАМЕТРИ"
 
-#: system_upgrade.py:226
+#: system_upgrade.py:229
 msgid "Prepare system for upgrade to a new release"
 msgstr "Приготувати систему до оновлення до нового випуску"
 
@@ -96,15 +96,15 @@ msgstr "Вибачте, у dnf не передбачено підтримки «
 msgid "Sorry, dnf system-upgrade doesn't support '%s'"
 msgstr "Вибачте, у dnf system-upgrade не передбачено підтримки «%s»"
 
-#: system_upgrade.py:365
+#: system_upgrade.py:367
 msgid "Starting system upgrade. This will take a while."
 msgstr "Починаємо оновлення системи. Будь ласка, зачекайте."
 
-#: system_upgrade.py:409
+#: system_upgrade.py:411
 msgid "Upgrade complete! Cleaning up and rebooting..."
 msgstr "Оновлення завершено! Вилучаємо зайві дані і перезавантажуємо системи…"
 
-#: system_upgrade.py:229
+#: system_upgrade.py:206 system_upgrade.py:232
 msgid "VERSION"
 msgstr "ВЕРСІЯ"
 
@@ -112,19 +112,23 @@ msgstr "ВЕРСІЯ"
 msgid "Verifying"
 msgstr "Перевіряємо"
 
-#: system_upgrade.py:210
+#: system_upgrade.py:213
 msgid "action to perform"
 msgstr "дія, яку слід виконати"
 
-#: system_upgrade.py:324
+#: system_upgrade.py:326
 msgid "another upgrade tool is running. exiting quietly."
 msgstr ""
 "працює інший інструмент із оновлення системи, завершуємо роботу без "
 "додаткових повідомлень."
 
-#: system_upgrade.py:206
+#: system_upgrade.py:211
 msgid "downgrade packages if the new release's version is older"
 msgstr "знизити версію пакунків, якщо нова версія випуску є старішою"
+
+#: system_upgrade.py:205
+msgid "download options"
+msgstr "параметри отримання даних"
 
 #: fedup.sh:31
 msgid "error:"
@@ -136,11 +140,15 @@ msgstr ""
 "fedup замінено на «dnf system-upgrade». Отже, вам слід скористатися новою "
 "командою."
 
-#: system_upgrade.py:208
+#: system_upgrade.py:207
+msgid "release version (required)"
+msgstr "версія випуску (обов’язково)"
+
+#: system_upgrade.py:209
 msgid "save downloaded data to this location"
 msgstr "зберегти отримані дані до вказаного місця"
 
-#: system_upgrade.py:314
+#: system_upgrade.py:316
 msgid "system is not ready for upgrade"
 msgstr "система не готова до оновлення"
 
@@ -153,12 +161,12 @@ msgstr "колір неба"
 msgid "unknown argument '%s'"
 msgstr "невідомий аргумент «%s»"
 
-#: system_upgrade.py:316
+#: system_upgrade.py:318
 msgid "upgrade is already scheduled"
 msgstr "оновлення вже заплановано"
 
 #. Translators: do not change "reboot" here
-#: system_upgrade.py:322
+#: system_upgrade.py:324
 #, python-format
 msgid "use '%s reboot' to begin the upgrade"
 msgstr "скористайтеся командою «%s reboot», щоб розпочати оновлення"

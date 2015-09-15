@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-31 18:33-0400\n"
-"PO-Revision-Date: 2015-09-06 06:55-0400\n"
+"POT-Creation-Date: 2015-09-10 17:19-0400\n"
+"PO-Revision-Date: 2015-09-11 06:14-0400\n"
 "Last-Translator: Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>\n"
 "Language-Team: Catalan\n"
 "MIME-Version: 1.0\n"
@@ -44,7 +44,7 @@ msgstr ""
 "No es poden redirigir els regisgres del DNF. En lloc seu, utilitzeu les "
 "opcions de depuració."
 
-#: system_upgrade.py:391
+#: system_upgrade.py:393
 msgid "Cleaning up downloaded data..."
 msgstr "Neteja de les dades baixades..."
 
@@ -69,11 +69,11 @@ msgstr "Es necessita un --releasever superior a la versió actual del sistema."
 msgid "No new kernel packages were found."
 msgstr "No s'han trobat nous paquets del nucli del sistema."
 
-#: system_upgrade.py:229
+#: system_upgrade.py:232
 msgid "OPTIONS"
 msgstr "OPCIONS"
 
-#: system_upgrade.py:226
+#: system_upgrade.py:229
 msgid "Prepare system for upgrade to a new release"
 msgstr "Prepara el sistema per actualitzar-se a un nou llançament"
 
@@ -93,15 +93,15 @@ msgstr "Ho sentim, dnf no admet '%s'"
 msgid "Sorry, dnf system-upgrade doesn't support '%s'"
 msgstr "Ho sentim, dnf system-upgrade no admet '%s'"
 
-#: system_upgrade.py:365
+#: system_upgrade.py:367
 msgid "Starting system upgrade. This will take a while."
 msgstr "S'inicia l'actualització del sistema. Això pot trigar una estona."
 
-#: system_upgrade.py:409
+#: system_upgrade.py:411
 msgid "Upgrade complete! Cleaning up and rebooting..."
 msgstr "S'ha completat l'actualització. Neteja i reinici..."
 
-#: system_upgrade.py:229
+#: system_upgrade.py:206 system_upgrade.py:232
 msgid "VERSION"
 msgstr "VERSIÓ"
 
@@ -109,18 +109,22 @@ msgstr "VERSIÓ"
 msgid "Verifying"
 msgstr "Verificar"
 
-#: system_upgrade.py:210
+#: system_upgrade.py:213
 msgid "action to perform"
 msgstr "l'acció a realitzar"
 
-#: system_upgrade.py:324
+#: system_upgrade.py:326
 msgid "another upgrade tool is running. exiting quietly."
 msgstr ""
 "ja s'està executant una altra eina d'actualització. Sortida silenciosa."
 
-#: system_upgrade.py:206
+#: system_upgrade.py:211
 msgid "downgrade packages if the new release's version is older"
 msgstr "reverteix els paquets si la versió del nou llançament és més antiga"
+
+#: system_upgrade.py:205
+msgid "download options"
+msgstr "opcions de baixada"
 
 #: fedup.sh:31
 msgid "error:"
@@ -132,11 +136,15 @@ msgstr ""
 "fedup ha estat substituït per 'dnf system-upgrade'. Utilitzeu-lo en lloc "
 "seu."
 
-#: system_upgrade.py:208
+#: system_upgrade.py:207
+msgid "release version (required)"
+msgstr "versió del llançament (necessari)"
+
+#: system_upgrade.py:209
 msgid "save downloaded data to this location"
 msgstr "desa les dades baixades en aquesta localització"
 
-#: system_upgrade.py:314
+#: system_upgrade.py:316
 msgid "system is not ready for upgrade"
 msgstr "el sistema no està a punt per a l'actualització"
 
@@ -149,12 +157,12 @@ msgstr "el color del cel"
 msgid "unknown argument '%s'"
 msgstr "argument desconegut '%s'"
 
-#: system_upgrade.py:316
+#: system_upgrade.py:318
 msgid "upgrade is already scheduled"
 msgstr "l'actualització ja està programada"
 
 #. Translators: do not change "reboot" here
-#: system_upgrade.py:322
+#: system_upgrade.py:324
 #, python-format
 msgid "use '%s reboot' to begin the upgrade"
 msgstr "utilitzeu '%s reboot' per començar l'actualització"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-31 18:33-0400\n"
+"POT-Creation-Date: 2015-09-10 17:19-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: Norwegian Nynorsk\n"
@@ -42,7 +42,7 @@ msgstr ""
 msgid "Can't redirect DNF logs. Use DNF debug options instead."
 msgstr ""
 
-#: system_upgrade.py:391
+#: system_upgrade.py:393
 msgid "Cleaning up downloaded data..."
 msgstr ""
 
@@ -64,11 +64,11 @@ msgstr ""
 msgid "No new kernel packages were found."
 msgstr ""
 
-#: system_upgrade.py:229
+#: system_upgrade.py:232
 msgid "OPTIONS"
 msgstr ""
 
-#: system_upgrade.py:226
+#: system_upgrade.py:229
 msgid "Prepare system for upgrade to a new release"
 msgstr ""
 
@@ -88,15 +88,15 @@ msgstr ""
 msgid "Sorry, dnf system-upgrade doesn't support '%s'"
 msgstr ""
 
-#: system_upgrade.py:365
+#: system_upgrade.py:367
 msgid "Starting system upgrade. This will take a while."
 msgstr ""
 
-#: system_upgrade.py:409
+#: system_upgrade.py:411
 msgid "Upgrade complete! Cleaning up and rebooting..."
 msgstr ""
 
-#: system_upgrade.py:229
+#: system_upgrade.py:206 system_upgrade.py:232
 msgid "VERSION"
 msgstr ""
 
@@ -104,16 +104,20 @@ msgstr ""
 msgid "Verifying"
 msgstr ""
 
-#: system_upgrade.py:210
+#: system_upgrade.py:213
 msgid "action to perform"
 msgstr ""
 
-#: system_upgrade.py:324
+#: system_upgrade.py:326
 msgid "another upgrade tool is running. exiting quietly."
 msgstr ""
 
-#: system_upgrade.py:206
+#: system_upgrade.py:211
 msgid "downgrade packages if the new release's version is older"
+msgstr ""
+
+#: system_upgrade.py:205
+msgid "download options"
 msgstr ""
 
 #: fedup.sh:31
@@ -124,11 +128,15 @@ msgstr ""
 msgid "fedup has been replaced by 'dnf system-upgrade'. Use that instead."
 msgstr ""
 
-#: system_upgrade.py:208
+#: system_upgrade.py:207
+msgid "release version (required)"
+msgstr ""
+
+#: system_upgrade.py:209
 msgid "save downloaded data to this location"
 msgstr ""
 
-#: system_upgrade.py:314
+#: system_upgrade.py:316
 msgid "system is not ready for upgrade"
 msgstr ""
 
@@ -141,12 +149,12 @@ msgstr ""
 msgid "unknown argument '%s'"
 msgstr ""
 
-#: system_upgrade.py:316
+#: system_upgrade.py:318
 msgid "upgrade is already scheduled"
 msgstr ""
 
 #. Translators: do not change "reboot" here
-#: system_upgrade.py:322
+#: system_upgrade.py:324
 #, python-format
 msgid "use '%s reboot' to begin the upgrade"
 msgstr ""
