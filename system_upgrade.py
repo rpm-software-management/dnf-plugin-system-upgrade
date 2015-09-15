@@ -59,7 +59,6 @@ def reboot():
     check_call(["systemctl", "reboot"])
 
 # DNF-FIXME: dnf.util.clear_dir() doesn't delete regular files :/
-
 def clear_dir(path):
     for entry in os.listdir(path):
         fullpath = os.path.join(path, entry)
@@ -407,7 +406,9 @@ class SystemUpgradeCommand(dnf.cli.Command):
         if self.state.datadir:
             logger.info(_("Cleaning up downloaded data..."))
             clear_dir(self.state.datadir)
-        self.state.clear()
+        with self.state:
+            self.state.download_status = None
+            self.state.upgrade_status = None
 
     # == transaction_*: do stuff after a successful transaction ===============
 
