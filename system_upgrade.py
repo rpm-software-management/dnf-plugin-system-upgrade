@@ -50,8 +50,6 @@ RELEASEVER_MSG = _(
     "Need a --releasever greater than the current system version.")
 DOWNLOAD_FINISHED_MSG = _( # Translators: do not change "reboot" here
     "Download complete! Use 'dnf %s reboot' to start the upgrade.")
-NO_PLYMOUTH_PROGRESS_MSG = _(
-    "NOTE: this version of DNF will not show graphical upgrade progress.")
 
 # --- Miscellaneous helper functions ------------------------------------------
 
@@ -80,8 +78,8 @@ def checkDataDir(datadir):
     # FUTURE NOTE: check for removable devices etc.
 
 def checkDNFVer():
-    if DNFVERSION < "1.0.1":
-        logger.warning(NO_PLYMOUTH_PROGRESS_MSG)
+    if DNFVERSION < "1.1.0":
+        raise dnf.cli.CliError(_("This plugin requires DNF 1.1.0 or later."))
 
 # --- State object - for tracking upgrade state between runs ------------------
 
@@ -162,29 +160,14 @@ class PlymouthOutput(object):
 # A single PlymouthOutput instance for us to use within this module
 Plymouth = PlymouthOutput()
 
-# A transaction display class that updates plymouth for us.
-class PlymouthTransactionDisplay(dnf.callback.LoggingTransactionDisplay):
-    # NOTE: before DNF 1.0.0 the CLI only used one TransactionDisplay object,
-    # so we need to call the superclass to get the normal CLI output
-    call_super = ("1.0.1" <= DNFVERSION < "1.1.0")
+# A TransactionProgress class that updates plymouth for us.
+class PlymouthTransactionProgress(dnf.callback.TransactionProgress):
+    # NOTE: I'm cheating here - this isn't part of the public DNF API
+    action = dnf.yum.rpmtrans.LoggingTransactionDisplay().action
 
     # pylint: disable=too-many-arguments
-    def event(self, package, action, te_cur, te_total, ts_cur, ts_total):
-        if self.call_super:
-            super(PlymouthTransactionDisplay, self).event(
-                package, action, te_cur, te_total, ts_cur, ts_total)
-        if not Plymouth.alive:
-            return
-        if action in self.action:
-            self._update_plymouth(package, action, ts_cur, ts_total)
-        elif action == self.TRANS_POST:
-            Plymouth.message(_("Running post-transaction scripts..."))
-
-    def verify_tsi_package(self, pkg, count, total):
-        if self.call_super:
-            super(PlymouthTransactionDisplay, self).verify_tsi_package(
-                pkg, count, total)
-        self._update_plymouth(pkg, _("Verifying"), count, total)
+    def progress(self, package, action, ti_done, ti_total, ts_done, ts_total):
+        self._update_plymouth(package, action, ts_done, ts_total)
 
     def _update_plymouth(self, package, action, current, total):
         Plymouth.progress(int(100.0 * current / total))
@@ -309,8 +292,7 @@ class SystemUpgradeCommand(dnf.cli.Command):
         self.cli.demands.cacheonly = True
         # and don't ask any questions (we confirmed all this beforehand)
         self.base.conf.assumeyes = True
-        # NOTE: this has no effect in DNF < 1.0.1
-        self.cli.demands.transaction_display = PlymouthTransactionDisplay()
+        self.cli.demands.transaction_display = PlymouthTransactionProgress()
 
     def configure_clean(self, args):
         self.cli.demands.root_user = True
