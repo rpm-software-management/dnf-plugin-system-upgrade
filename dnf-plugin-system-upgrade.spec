@@ -1,5 +1,5 @@
 Name:       dnf-plugin-system-upgrade
-Version:    0.4.1
+Version:    0.7.0
 Release:    1%{?dist}
 Summary:    System Upgrade plugin for DNF
 Group:      System Environment/Base
@@ -25,12 +25,7 @@ Requires: dnf
 Provides: fedup = 0.9.3-1
 Obsoletes: fedup < 0.9.3-1
 
-%if 0%{?fedora} == 21
-# Fedora 21 has the necessary fixes backported to 1.0.6-2
-Conflicts: PackageKit < 1.0.6-2
-%else
 Conflicts: PackageKit < 1.0.8
-%endif
 
 BuildArch: noarch
 BuildRequires: pkgconfig systemd gettext
@@ -42,7 +37,7 @@ This package provides the systemd services required to make the upgrade work.
 %package -n python3-%{name}
 %{?python_provide:%python_provide python3-%{name}}
 Summary:    System Upgrade plugin for DNF
-Requires:   python3-dnf
+Requires:   python3-dnf >= 1.1.0
 BuildRequires:  python3-devel python3-dnf
 %description -n python3-%{name}
 System Upgrade plugin for DNF (Python 3 version).
@@ -51,19 +46,9 @@ This package provides the "system-upgrade" command.
 %package -n python2-%{name}
 %{?python_provide:%python_provide python2-%{name}}
 Summary:    System Upgrade plugin for DNF
-BuildRequires: python2-devel python-mock
-
-
-%if 0%{?fedora} >= 22
-# TODO: update this once dnf is following the Python packaging guidelines
-Requires:       python-dnf
-BuildRequires:  python-dnf
-%else
-# F21 didn't split out python2-dnf from the main dnf package
-Requires:       dnf
-BuildRequires:  dnf
-%endif
-
+# TODO: change to 'python2-dnf' once that exists
+Requires:   python-dnf >= 1.1.0
+BuildRequires: python2-devel python-mock python-dnf
 %description -n python2-%{name}
 System Upgrade plugin for DNF (Python 2 version).
 This package provides the "system-upgrade" command.
@@ -115,6 +100,10 @@ fi
 %{python_sitelib}/dnf-plugins/system_upgrade.py*
 
 %changelog
+* Thu Oct 21 2015 Will Woods <wwoods@redhat.com> 0.7.0-1
+- Drop compatibility with DNF < 1.1.0; bump version number to avoid confusion.
+- Clean up stuff left behind by the old fedup package (#1264948)
+
 * Tue Sep 15 2015 Will Woods <wwoods@redhat.com> 0.4.1-1
 - Fix `dnf system-upgrade clean` (rhbz#1262145)
 - Fix duplicate messages in plymouth 'details' output (github#13)
