@@ -58,45 +58,44 @@ class PlymouthTestCase(unittest.TestCase):
         self.ply.set_mode("updates")
         call.assert_called_once_with((PLYMOUTH, "change-mode", "--updates"))
 
+from dnf.callback import (PKG_CLEANUP, PKG_DOWNGRADE, PKG_INSTALL, PKG_OBSOLETE,
+                          PKG_REINSTALL, PKG_REMOVE, PKG_UPGRADE, PKG_VERIFY,
+                          TRANS_POST)
+
 @patch('system_upgrade.call', return_value=0)
 class PlymouthTransactionProgressTestCase(unittest.TestCase):
+    actions = (PKG_CLEANUP, PKG_DOWNGRADE, PKG_INSTALL, PKG_OBSOLETE,
+               PKG_REINSTALL, PKG_REMOVE, PKG_UPGRADE, PKG_VERIFY,
+               TRANS_POST)
     # pylint: disable=protected-access
     def setUp(self):
         system_upgrade.Plymouth = system_upgrade.PlymouthOutput()
         self.display = system_upgrade.PlymouthTransactionProgress()
         self.pkg = "testpackage"
-        self.action = self.display.PKG_INSTALL
 
     def test_display(self, call):
-        self.display.progress(self.pkg, self.action, 0, 100, 1, 1000)
-        msg = self.display._fmt_event(self.pkg, self.action, 1, 1000)
-        # updating plymouth display means two plymouth calls
-        call.assert_has_calls([
-            mock.call((PLYMOUTH, "system-update", "--progress", "0")),
-            mock.call((PLYMOUTH, "display-message", "--text", msg))
-        ], any_order=True)
+        for action in self.actions:
+            self.display.progress(self.pkg, action, 0, 100, 1, 1000)
+            msg = self.display._fmt_event(self.pkg, action, 1, 1000)
+            # updating plymouth display means two plymouth calls
+            call.assert_has_calls([
+                mock.call((PLYMOUTH, "system-update", "--progress", "0")),
+                mock.call((PLYMOUTH, "display-message", "--text", msg))
+            ], any_order=True)
 
     def test_filter_calls(self, call):
+        action = PKG_INSTALL
         # event progress on the same transaction item -> one display update
         for te_cur in range(100):
-            self.display.progress(self.pkg, self.action, te_cur, 100, 1, 1000)
+            self.display.progress(self.pkg, action, te_cur, 100, 1, 1000)
         self.assertEqual(call.call_count, 2)
         # next item: new message ("[2/1000] ...") but percentage still 0
-        self.display.progress(self.pkg, self.action, 0, 100, 2, 1000)
-        msg = self.display._fmt_event(self.pkg, self.action, 2, 1000)
+        self.display.progress(self.pkg, action, 0, 100, 2, 1000)
+        msg = self.display._fmt_event(self.pkg, action, 2, 1000)
         # message was updated..
         call.assert_called_with((PLYMOUTH, "display-message", "--text", msg))
         # ..but no other new calls were made
         self.assertEqual(call.call_count, 3)
-
-    def test_verify(self, call):
-        with patch("system_upgrade._", return_value="Verifying"):
-            self.display.verify_tsi_package(self.pkg, 1, 1000)
-        msg = self.display._fmt_event(self.pkg, "Verifying", 1, 1000)
-        call.assert_has_calls([
-            mock.call((PLYMOUTH, "system-update", "--progress", "0")),
-            mock.call((PLYMOUTH, "display-message", "--text", msg))
-        ], any_order=True)
 
 import os, tempfile, shutil, gettext
 @unittest.skipUnless(os.path.exists("po/en_GB.mo"), "make po/en_GB.mo first")
