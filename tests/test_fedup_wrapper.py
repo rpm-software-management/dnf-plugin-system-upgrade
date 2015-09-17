@@ -82,13 +82,23 @@ class FedupTestCase(unittest.TestCase):
         self.assert_fedup_fails("--device", in_errmsg="dnf system-upgrade")
 
     def test_conflicting_actions(self):
-        self.assert_fedup_fails("--clean --network 23", in_errmsg="--clean")
+        self.assert_fedup_fails("--clean --network 23", in_errmsg="clean")
+        self.assert_fedup_fails("--clean --network 23", in_errmsg="download")
+        self.assert_fedup_fails("reboot --network 23", in_errmsg="reboot")
 
     def test_clean_metadata(self):
         self.assert_fedup_fails("--clean-metadata", in_errmsg="clean metadata")
 
     def test_expire_cache(self):
         self.assert_fedup_fails("--expire-cache", in_errmsg="--refresh")
+
+    def test_passthru(self):
+        for flag in "--best", "--allowerasing", "--disableplugin=pluggo":
+            self.assert_fedup_equiv("--network 23 %s" % flag,
+                                    "download --releasever 23 %s" % flag)
+
+    def test_reboot(self):
+        self.assert_fedup_equiv("reboot", "reboot")
 
 from test_system_upgrade import I18NTestCaseBase
 class I18NTestCase(I18NTestCaseBase):
