@@ -1,5 +1,5 @@
 Name:       dnf-plugin-system-upgrade
-Version:    0.4.1
+Version:    0.5.0
 Release:    1%{?dist}
 Summary:    System Upgrade plugin for DNF
 Group:      System Environment/Base
@@ -97,6 +97,9 @@ make check PYTHON=%{__python3}
 %{python_sitelib}/dnf-plugins/system_upgrade.py*
 
 %changelog
+* Thu Sep 17 2015 Will Woods <wwoods@redhat.com> 0.5.0-1
+- Fix missing console output in F21/DNF 0.6.x
+
 * Tue Sep 15 2015 Will Woods <wwoods@redhat.com> 0.4.1-1
 - Fix `dnf system-upgrade clean` (rhbz#1262145)
 - Fix duplicate messages in plymouth 'details' output (github#13)
