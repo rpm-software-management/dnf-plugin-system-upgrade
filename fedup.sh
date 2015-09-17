@@ -48,7 +48,7 @@ echo "$DEPRECATED_MSG" >&2
 BASECMD="dnf system-upgrade"
 dry_run=0
 action=''
-ACTION_ERR_MSG=$(gettext "Can't do --network and --clean at the same time.")
+ACTION_ERR_MSG=$(gettext "Can't do %s and %s at the same time.")
 
 dnf_cmd=($BASECMD)
 
@@ -59,8 +59,12 @@ while [ $# -gt 0 ]; do
         -h|--help|-v|--verbose|-d|--debug|-C|--cacheonly|--nogpgcheck)
             dnf_cmd+=("$1")
         ;;
+        # stuff fedup didn't support that we can still pass through
+        --best|--allowerasing)
+            dnf_cmd+=("$1")
+        ;;
         # pass through to DNF, with argument
-        --enablerepo|--disablerepo)
+        --enablerepo|--disablerepo|--disableplugin)
             dnf_cmd+=("$1")
             [[ "$1" != *=* ]] && shift && dnf_cmd+=("$1")
         ;;
@@ -84,7 +88,7 @@ while [ $# -gt 0 ]; do
             errmsg=$(gettext "Can't redirect DNF logs. Use DNF debug options instead.")
             error "$errmsg"
         ;;
-        --enableplugin|--disableplugin)
+        --enableplugin)
             errmsg=$(gettext "Sorry, dnf doesn't support '%s'")
             error "$errmsg" $flag
         ;;
@@ -102,7 +106,7 @@ while [ $# -gt 0 ]; do
         ;;
         # --network became --releasever, basically
         --network)
-            [ "$action" == "clean" ] && error "$ACTION_ERR_MSG"
+            [ -n "$action" ] && error "$ACTION_ERR_MSG" "$action" "download"
             action="download"
             newarg="${1/--network/--releasever}"
             dnf_cmd+=("download" "$newarg")
@@ -110,9 +114,15 @@ while [ $# -gt 0 ]; do
         ;;
         # --clean is now the "clean" command
         --clean)
-            [ "$action" == "download" ] && error "$ACTION_ERR_MSG"
+            [ -n "$action" ] && error "$ACTION_ERR_MSG" "$action" "clean"
             action="clean"
             dnf_cmd+=("clean")
+        ;;
+        # allow 'fedup reboot' as an alias for 'dnf system-upgrade reboot'
+        reboot)
+            [ -n "$action" ] && error "$ACTION_ERR_MSG" "$action" "reboot"
+            action="reboot"
+            dnf_cmd+=("reboot")
         ;;
         # like with `make -n`, just print what would have been executed
         -n|--dry-run|--just-print)
