@@ -59,16 +59,16 @@ class PlymouthTestCase(unittest.TestCase):
         call.assert_called_once_with((PLYMOUTH, "change-mode", "--updates"))
 
 @patch('system_upgrade.call', return_value=0)
-class PlymouthTransactionDisplayTestCase(unittest.TestCase):
+class PlymouthTransactionProgressTestCase(unittest.TestCase):
     # pylint: disable=protected-access
     def setUp(self):
         system_upgrade.Plymouth = system_upgrade.PlymouthOutput()
-        self.display = system_upgrade.PlymouthTransactionDisplay()
+        self.display = system_upgrade.PlymouthTransactionProgress()
         self.pkg = "testpackage"
         self.action = self.display.PKG_INSTALL
 
     def test_display(self, call):
-        self.display.event(self.pkg, self.action, 0, 100, 1, 1000)
+        self.display.progress(self.pkg, self.action, 0, 100, 1, 1000)
         msg = self.display._fmt_event(self.pkg, self.action, 1, 1000)
         # updating plymouth display means two plymouth calls
         call.assert_has_calls([
@@ -78,11 +78,11 @@ class PlymouthTransactionDisplayTestCase(unittest.TestCase):
 
     def test_filter_calls(self, call):
         # event progress on the same transaction item -> one display update
-        for te_current in range(100):
-            self.display.event(self.pkg, self.action, te_current, 100, 1, 1000)
+        for te_cur in range(100):
+            self.display.progress(self.pkg, self.action, te_cur, 100, 1, 1000)
         self.assertEqual(call.call_count, 2)
         # next item: new message ("[2/1000] ...") but percentage still 0
-        self.display.event(self.pkg, self.action, 0, 100, 2, 1000)
+        self.display.progress(self.pkg, self.action, 0, 100, 2, 1000)
         msg = self.display._fmt_event(self.pkg, self.action, 2, 1000)
         # message was updated..
         call.assert_called_with((PLYMOUTH, "display-message", "--text", msg))
