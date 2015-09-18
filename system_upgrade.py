@@ -159,6 +159,9 @@ class PlymouthOutput(object):
     def progress(self, percent):
         return self._plymouth("system-update", "--progress", str(percent))
 
+    def hide_splash(self):
+        return self._plymouth("hide-splash")
+
 # A single PlymouthOutput instance for us to use within this module
 Plymouth = PlymouthOutput()
 
@@ -379,6 +382,10 @@ class SystemUpgradeCommand(dnf.cli.Command):
         Plymouth.set_mode("updates")
         Plymouth.progress(0)
         Plymouth.message(_("Starting system upgrade. This will take a while."))
+
+        # Old DNF can't send progress to plymouth, so show the console
+        if DNFVERSION < "1.0.1":
+            Plymouth.hide_splash()
 
         # NOTE: We *assume* that depsolving here will yield the same
         # transaction as it did during the download, but we aren't doing
