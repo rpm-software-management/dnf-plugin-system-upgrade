@@ -170,6 +170,7 @@ class StateTestCase(unittest.TestCase):
         self.state = self.StateClass()
         self.assertIs(self.state.datadir, None)
 
+
     def test_bool_value(self):
         with self.state:
             self.state.distro_sync = True
@@ -206,3 +207,58 @@ class UtilTestCase(unittest.TestCase):
 
     def tearDown(self):
         shutil.rmtree(self.tmpdir)
+
+class CommandTestCaseBase(unittest.TestCase):
+    def setUp(self):
+        self.statedir = tempfile.mkdtemp(prefix="command.test.statedir.")
+        self.statefile = os.path.join(self.statedir, "state")
+        self.old_statefile = system_upgrade.State.statefile
+        system_upgrade.State.statefile = self.statefile
+        self.command = system_upgrade.SystemUpgradeCommand(mock.MagicMock)
+
+    def tearDown(self):
+        shutil.rmtree(self.statedir)
+        system_upgrade.State.statefile = self.old_statefile
+
+class CommandTestCase(CommandTestCaseBase):
+    # self-tests for the command test cases
+    def test_state(self):
+        # initial state: no status
+        self.assertEqual(self.command.state.download_status, None)
+        self.assertEqual(self.command.state.upgrade_status, None)
+        self.assertEqual(self.command.state.datadir, None)
+        # attribute error for non-existent state item
+        with self.assertRaises(AttributeError):
+            dummy = self.command.state.DOES_NOT_EXIST
+        # check the context stuff works like we expect
+        with self.command.state as state:
+            state.datadir = os.path.join(self.statedir, "datadir")
+            os.makedirs(state.datadir)
+        self.assertTrue(os.path.isdir(self.command.state.datadir))
+
+class CleanCommandTestCase(CommandTestCaseBase):
+    def test_run_clean(self):
+        # set up a datadir and pretend like we're ready to upgrade
+        datadir = os.path.join(self.statedir, "datadir")
+        os.makedirs(datadir)
+        fakerpm = os.path.join(datadir, "fake.rpm")
+        with open(fakerpm, "w") as outf:
+            outf.write("hi i am an rpm")
+        with self.command.state as state:
+            state.datadir = datadir
+            state.download_status = "complete"
+            state.upgrade_status = "ready"
+        # make sure the datadir and state info is set up OK
+        self.assertEqual(datadir, self.command.state.datadir)
+        self.assertTrue(os.path.isdir(datadir))
+        self.assertTrue(os.path.exists(fakerpm))
+        self.assertEqual(self.command.state.download_status, "complete")
+        self.assertEqual(self.command.state.upgrade_status, "ready")
+        # run cleanup
+        self.command.run_clean([])
+        # datadir remains, but is empty, and state is cleared
+        self.assertEqual(datadir, self.command.state.datadir)
+        self.assertTrue(os.path.isdir(datadir))
+        self.assertFalse(os.path.exists(fakerpm))
+        self.assertEqual(self.command.state.download_status, None)
+        self.assertEqual(self.command.state.upgrade_status, None)
