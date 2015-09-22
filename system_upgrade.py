@@ -17,6 +17,8 @@
 #
 # Author(s): Will Woods <wwoods@redhat.com>
 
+from __future__ import unicode_literals
+
 import os
 import json
 
