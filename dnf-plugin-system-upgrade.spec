@@ -77,6 +77,18 @@ make install-plugin DESTDIR=$RPM_BUILD_ROOT PYTHON=%{__python3}
 make check PYTHON=%{__python2}
 make check PYTHON=%{__python3}
 
+%pre
+# if we're replacing fedup, we need to make sure it cleans up its leftovers.
+# (see https://bugzilla.redhat.com/show_bug.cgi?id=1264948)
+if [ "$1" == 1 -a -x /usr/bin/fedup ]; then
+    # save the old package cache (if the new one isn't populated)
+    if [ -d /var/lib/system-upgrade ]; then
+        mv -f -T /var/lib/system-upgrade /var/lib/dnf/system-upgrade || :
+    fi
+    # clean up everything else
+    /usr/bin/fedup --clean || :
+fi
+
 %files -f %{name}.lang
 %license LICENSE
 %doc README.md
