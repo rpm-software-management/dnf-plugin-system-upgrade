@@ -80,7 +80,7 @@ def checkDataDir(datadir):
     # FUTURE NOTE: check for removable devices etc.
 
 def checkDNFVer():
-    if DNFVERSION < "1.1.0":
+    if DNFVERSION < StrictVersion("1.1.0"):
         raise dnf.cli.CliError(_("This plugin requires DNF 1.1.0 or later."))
 
 # --- State object - for tracking upgrade state between runs ------------------
