@@ -190,9 +190,9 @@ class PluginArgumentParser(ArgumentParser):
     def error(self, message):
         raise AttributeError(message)
 
-    def parse_known_args(self, args=None, namespace=None):
+    def parse_args(self, args=None, namespace=None):
         try:
-            return ArgumentParser.parse_known_args(self, args, namespace)
+            return ArgumentParser.parse_args(self, args, namespace)
         except AttributeError as e:
             self.print_help()
             raise dnf.exceptions.Error(str(e))
