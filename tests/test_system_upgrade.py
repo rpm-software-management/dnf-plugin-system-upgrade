@@ -242,7 +242,8 @@ class CommandTestCaseBase(unittest.TestCase):
         self.statefile = os.path.join(self.statedir, "state")
         self.old_statefile = system_upgrade.State.statefile
         system_upgrade.State.statefile = self.statefile
-        self.command = system_upgrade.SystemUpgradeCommand(mock.MagicMock)
+        self.cli=mock.MagicMock()
+        self.command = system_upgrade.SystemUpgradeCommand(cli=self.cli)
 
     def tearDown(self):
         shutil.rmtree(self.statedir)
@@ -265,6 +266,11 @@ class CommandTestCase(CommandTestCaseBase):
         self.assertTrue(os.path.isdir(self.command.state.datadir))
 
 class CleanCommandTestCase(CommandTestCaseBase):
+    def test_configure_clean(self):
+        self.cli.demands.root_user = None
+        self.command.configure_clean([])
+        self.assertTrue(self.cli.demands.root_user)
+
     def test_run_clean(self):
         # set up a datadir and pretend like we're ready to upgrade
         datadir = os.path.join(self.statedir, "datadir")
@@ -290,3 +296,51 @@ class CleanCommandTestCase(CommandTestCaseBase):
         self.assertFalse(os.path.exists(fakerpm))
         self.assertEqual(self.command.state.download_status, None)
         self.assertEqual(self.command.state.upgrade_status, None)
+
+class CheckDNFVerTestCase(unittest.TestCase):
+    def setUp(self):
+        self._saved_dnfversion = system_upgrade.DNFVERSION
+
+    def tearDown(self):
+        system_upgrade.DNFVERSION = self._saved_dnfversion
+
+    def test_dnfver_ok(self):
+        system_upgrade.DNFVERSION = system_upgrade.StrictVersion("1.1.0")
+        self.assertEqual(system_upgrade.checkDNFVer(), None)
+
+    def test_dnfver_old(self):
+        system_upgrade.DNFVERSION = system_upgrade.StrictVersion("1.0.0")
+        with self.assertRaises(dnf.cli.CliError):
+            system_upgrade.checkDNFVer()
+
+class RebootCheckCommandTestCase(CommandTestCaseBase):
+    def test_configure_reboot(self):
+        self.cli.demands.root_user = None
+        self.command.configure_reboot([])
+        self.assertTrue(self.cli.demands.root_user)
+
+    def check_reboot(self, status='complete', lexists=False, dnfverok=True):
+        with patch('system_upgrade.os.path.lexists') as lexists_func:
+            with patch('system_upgrade.checkDNFVer') as dnfver_func:
+                self.command.state.download_status = status
+                if dnfverok:
+                    dnfver_func.return_value = None
+                else:
+                    dnfver_func.side_effect = dnf.cli.CliError
+                lexists_func.return_value = lexists
+                self.command.check_reboot(None, None)
+
+    def test_check_reboot_ok(self):
+        self.check_reboot(status='complete', lexists=False, dnfverok=True)
+
+    def test_check_reboot_no_download(self):
+        with self.assertRaises(dnf.cli.CliError):
+            self.check_reboot(status=None, lexists=False, dnfverok=True)
+
+    def test_check_reboot_link_exists(self):
+        with self.assertRaises(dnf.cli.CliError):
+            self.check_reboot(status='complete', lexists=True, dnfverok=True)
+
+    def test_check_reboot_dnfver_bad(self):
+        with self.assertRaises(dnf.cli.CliError):
+            self.check_reboot(status='complete', lexists=False, dnfverok=False)
