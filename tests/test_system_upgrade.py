@@ -33,6 +33,11 @@ class PlymouthTestCase(unittest.TestCase):
         self.assertEqual(call.call_count, 2)
         self.assertTrue(self.ply.alive)
 
+    def test_mode_no_plymouth(self, call):
+        call.side_effect = OSError(2, 'No such file or directory')
+        self.ply.set_mode("updates")
+        self.assertFalse(self.ply.alive)
+
     def test_message(self, call):
         self.ply.message(self.msg)
         call.assert_called_once_with(self.msg_args)
