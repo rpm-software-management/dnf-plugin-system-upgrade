@@ -138,7 +138,30 @@ class I18NTestCase(I18NTestCaseBase):
         trans_msg = self.gettext(msg)
         self.assertNotEqual(msg, trans_msg)
 
+import dnf.exceptions
 class ArgparseTestCase(unittest.TestCase):
+    def setUp(self):
+        self.parser = system_upgrade.make_parser('argparse-testcase')
+
+    def assert_fails_with(self, args, message):
+        with mock.patch('system_upgrade.PluginArgumentParser.print_help') as ph:
+            with self.assertRaises(dnf.exceptions.Error) as cm:
+                self.parser.parse_args(args)
+            self.assertIn(message, str(cm.exception))
+            ph.assert_called_once_with()
+
+    def test_actions(self):
+        for action in system_upgrade.ACTIONS:
+            opts = self.parser.parse_args([action])
+            self.assertEqual(action, opts.action)
+
+    def test_bad_opts(self):
+        for bad_arg in ("--turbo", "--releaseversion=rawhide", "explode"):
+            self.assert_fails_with(["download", bad_arg], bad_arg)
+
+    def test_bad_action(self):
+        self.assert_fails_with(["explode"], "explode")
+
     def test_actions_exist(self):
         for phase in ('configure', 'run'):
             for action in system_upgrade.ACTIONS:
