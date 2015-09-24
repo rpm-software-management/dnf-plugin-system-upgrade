@@ -143,7 +143,10 @@ class PlymouthOutput(object):
     def _plymouth(self, cmd, *args):
         dupe_cmd = (args == self._last_args.get(cmd))
         if (self.alive and not dupe_cmd) or cmd == '--ping':
-            self.alive = (call((PLYMOUTH, cmd) + args) == 0)
+            try:
+                self.alive = (call((PLYMOUTH, cmd) + args) == 0)
+            except OSError:
+                self.alive = False
             self._last_args[cmd] = args
         return self.alive
 
