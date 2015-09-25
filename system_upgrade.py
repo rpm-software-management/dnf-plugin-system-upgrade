@@ -292,7 +292,9 @@ class SystemUpgradeCommand(dnf.cli.Command):
         self.cli.demands.resolving = True
         self.cli.demands.sack_activation = True
         # use the saved value for --datadir
-        self.base.repos.all().pkgdir = self.state.datadir
+        self.opts.datadir = self.state.datadir
+        self.opts.distro_sync = self.state.distro_sync
+        self.base.repos.all().pkgdir = self.opts.datadir
         # don't try to get new metadata, 'cuz we're offline
         self.cli.demands.cacheonly = True
         # and don't ask any questions (we confirmed all this beforehand)

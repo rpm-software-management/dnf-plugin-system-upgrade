@@ -242,7 +242,7 @@ class CommandTestCaseBase(unittest.TestCase):
         self.statefile = os.path.join(self.statedir, "state")
         self.old_statefile = system_upgrade.State.statefile
         system_upgrade.State.statefile = self.statefile
-        self.cli=mock.MagicMock()
+        self.cli = mock.MagicMock()
         self.command = system_upgrade.SystemUpgradeCommand(cli=self.cli)
 
     def tearDown(self):
@@ -344,3 +344,37 @@ class RebootCheckCommandTestCase(CommandTestCaseBase):
     def test_check_reboot_dnfver_bad(self):
         with self.assertRaises(dnf.cli.CliError):
             self.check_reboot(status='complete', lexists=False, dnfverok=False)
+
+class DownloadCommandTestCase(CommandTestCase):
+    def test_transaction_download(self):
+        pkg = mock.MagicMock()
+        pkg.name = "kernel"
+        self.cli.base.transaction.install_set = [pkg]
+        self.command.opts = mock.MagicMock()
+        self.command.opts.distro_sync = "distro_sync"
+        self.command.transaction_download()
+        with system_upgrade.State() as state:
+            self.assertEqual(state.download_status, "complete")
+            self.assertEqual(state.distro_sync, "distro_sync")
+
+class UpgradeCommandTestCase(CommandTestCase):
+    def test_configure_upgrade(self):
+        # simulate a download...
+        pkg = mock.MagicMock()
+        pkg.name = "kernel"
+        self.cli.base.transaction.install_set = [pkg]
+        self.command.opts = mock.MagicMock()
+        self.command.opts.distro_sync = "distro_sync"
+        # download finish...
+        self.command.transaction_download()
+        # blah blah blah pretend we're a new process now
+        self.cli.demands = mock.MagicMock()
+        self.command.opts = mock.MagicMock()
+        self.command.base.conf = mock.MagicMock()
+        # configure the upgrade
+        self.command.configure_upgrade([])
+        # did we reset the depsolving flags?
+        self.assertEqual(self.command.opts.distro_sync, "distro_sync")
+        # are we on autopilot?
+        self.assertTrue(self.command.base.conf.assumeyes)
+        self.assertTrue(self.cli.demands.cacheonly)
