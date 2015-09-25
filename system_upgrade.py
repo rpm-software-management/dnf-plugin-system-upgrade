@@ -289,20 +289,18 @@ class SystemUpgradeCommand(dnf.cli.Command):
         self.cli.demands.root_user = True
 
     def configure_upgrade(self, args):
-        # same as the download, but offline and non-interactive. so...
-        self.cli.demands.root_user = True
-        self.cli.demands.resolving = True
-        self.cli.demands.sack_activation = True
-        # use the saved value for --datadir, --allowerasing, etc.
-        self.opts.datadir = self.state.datadir
-        self.opts.distro_sync = self.state.distro_sync
+        # restore saved values for --datadir, --best, --allowerasing, etc.
         self.cli.demands.allow_erasing = self.state.allow_erasing
         self.base.conf.best = self.state.best
-        self.base.repos.all().pkgdir = self.opts.datadir
-        # don't try to get new metadata, 'cuz we're offline
+        self.opts.distro_sync = self.state.distro_sync
+        self.opts.datadir = self.state.datadir
+        # configure things the same as the download...
+        self.configure_download(args)
+        # except: don't try to get new metadata, 'cuz we're offline
         self.cli.demands.cacheonly = True
         # and don't ask any questions (we confirmed all this beforehand)
         self.base.conf.assumeyes = True
+        # finally, set up our plymouth progress display
         self.cli.demands.transaction_display = PlymouthTransactionProgress()
 
     def configure_clean(self, args):
