@@ -352,10 +352,14 @@ class DownloadCommandTestCase(CommandTestCase):
         self.cli.base.transaction.install_set = [pkg]
         self.command.opts = mock.MagicMock()
         self.command.opts.distro_sync = "distro_sync"
+        self.cli.demands.allow_erasing = "allow_erasing"
+        self.command.base.conf.best = "best"
         self.command.transaction_download()
         with system_upgrade.State() as state:
             self.assertEqual(state.download_status, "complete")
             self.assertEqual(state.distro_sync, "distro_sync")
+            self.assertEqual(state.allow_erasing, "allow_erasing")
+            self.assertEqual(state.best, "best")
 
 class UpgradeCommandTestCase(CommandTestCase):
     def test_configure_upgrade(self):
@@ -365,6 +369,8 @@ class UpgradeCommandTestCase(CommandTestCase):
         self.cli.base.transaction.install_set = [pkg]
         self.command.opts = mock.MagicMock()
         self.command.opts.distro_sync = "distro_sync"
+        self.cli.demands.allow_erasing = "allow_erasing"
+        self.command.base.conf.best = "best"
         # download finish...
         self.command.transaction_download()
         # blah blah blah pretend we're a new process now
@@ -375,6 +381,8 @@ class UpgradeCommandTestCase(CommandTestCase):
         self.command.configure_upgrade([])
         # did we reset the depsolving flags?
         self.assertEqual(self.command.opts.distro_sync, "distro_sync")
+        self.assertEqual(self.cli.demands.allow_erasing, "allow_erasing")
+        self.assertEqual(self.command.base.conf.best, "best")
         # are we on autopilot?
         self.assertTrue(self.command.base.conf.assumeyes)
         self.assertTrue(self.cli.demands.cacheonly)

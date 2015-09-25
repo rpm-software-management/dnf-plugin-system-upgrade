@@ -130,6 +130,8 @@ class State(object):
 
     upgrade_status = _prop("upgrade_status")
     distro_sync = _prop("distro_sync")
+    allow_erasing = _prop("allow_erasing")
+    best = _prop("best")
 
 # --- Plymouth output helpers -------------------------------------------------
 
@@ -291,9 +293,11 @@ class SystemUpgradeCommand(dnf.cli.Command):
         self.cli.demands.root_user = True
         self.cli.demands.resolving = True
         self.cli.demands.sack_activation = True
-        # use the saved value for --datadir
+        # use the saved value for --datadir, --allowerasing, etc.
         self.opts.datadir = self.state.datadir
         self.opts.distro_sync = self.state.distro_sync
+        self.cli.demands.allow_erasing = self.state.allow_erasing
+        self.base.conf.best = self.state.best
         self.base.repos.all().pkgdir = self.opts.datadir
         # don't try to get new metadata, 'cuz we're offline
         self.cli.demands.cacheonly = True
@@ -410,6 +414,8 @@ class SystemUpgradeCommand(dnf.cli.Command):
         with self.state:
             self.state.download_status = 'complete'
             self.state.distro_sync = self.opts.distro_sync
+            self.state.allow_erasing = self.cli.demands.allow_erasing
+            self.state.best = self.base.conf.best
         logger.info(DOWNLOAD_FINISHED_MSG, self.base.basecmd)
 
     def transaction_upgrade(self):
