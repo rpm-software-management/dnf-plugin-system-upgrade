@@ -146,19 +146,38 @@ class I18NTestCase(I18NTestCaseBase):
 import dnf.exceptions
 class ArgparseTestCase(unittest.TestCase):
     def setUp(self):
-        self.parser = system_upgrade.make_parser('argparse-testcase')
+        self.cmd = system_upgrade.SystemUpgradeCommand('argparse-testcase')
 
     def assert_fails_with(self, args, message):
         with mock.patch('system_upgrade.PluginArgumentParser.print_help') as ph:
             with self.assertRaises(dnf.exceptions.Error) as cm:
-                self.parser.parse_args(args)
+                self.cmd.parse_args(args)
             self.assertIn(message, str(cm.exception))
             ph.assert_called_once_with()
 
+    def assert_warning(self, args):
+        with mock.patch('system_upgrade.logger.warning') as warning:
+            self.cmd.parse_args(args)
+            warning.assert_called_once()
+
+    def assert_error(self, args, message):
+        with self.assertRaises(dnf.exceptions.Error) as cm:
+            self.cmd.parse_args(args)
+        self.assertIn(message, str(cm.exception))
+
     def test_actions(self):
         for action in system_upgrade.ACTIONS:
-            opts = self.parser.parse_args([action])
-            self.assertEqual(action, opts.action)
+            opts = self.cmd.parse_args([action])
+            self.assertEqual(opts.action, action)
+ 
+    def test_clean_compat(self):
+        opts = self.cmd.parse_args(['--clean'])
+        self.assertEqual(opts.action, 'clean')
+
+    def test_network_compat(self):
+        opts = self.cmd.parse_args(['--network=35'])
+        self.assertEqual(opts.action, 'download')
+        self.assertEqual(opts.releasever, '35')
 
     def test_bad_opts(self):
         for bad_arg in ("--turbo", "--releaseversion=rawhide", "explode"):
@@ -166,6 +185,43 @@ class ArgparseTestCase(unittest.TestCase):
 
     def test_bad_action(self):
         self.assert_fails_with(["explode"], "explode")
+
+    def test_conflicting_actions(self):
+        self.assert_error(['--clean', '--network', '23'], '--clean')
+        self.assert_error(['--clean', '--network=23'], '--clean')
+        self.assert_error(['--clean', '--network', '23'], '--network')
+        self.assert_error(['--clean', '--network=23'], '--network')
+        self.assert_error(['reboot', '--network', '23'], 'reboot')
+        self.assert_error(['reboot', '--network=23'], 'reboot')
+
+    def test_deprecated_opts(self):
+        for bad_arg in ('--skipbootloader',
+                        '--skipkernel',
+                        '--resetbootloader',
+                        '--instrepo=FOO',
+                        '--product=FOO'):
+            self.assert_warning(["download", bad_arg])
+
+    def test_silent_opts(self):
+        for bad_arg in ('--skippkgs',
+                        '--logtraceback'):
+            self.cmd.parse_args(["download", bad_arg])
+
+    def test_removed_opts(self):
+        for bad_arg in ('--expire-cache',
+                        '--clean-metadata',
+                        '--dry-run',
+                        '--just-print',
+                        '-n',
+                        '--debuglog=chunkstyle.log',
+                        '--enableplugin=FOO',
+                        '--device=FOO',
+                        '--iso=FOO',
+                        '--add-install=FOO'):
+            opt, _, foo = bad_arg.partition('=')
+            self.assert_error(["download", bad_arg], opt)
+            if foo:
+                self.assert_error(["download", bad_arg, foo], opt)
 
     def test_actions_exist(self):
         for phase in ('configure', 'run'):

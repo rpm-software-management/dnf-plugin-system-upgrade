@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 import os
 import json
 
+import argparse
 from argparse import ArgumentParser
 from subprocess import call, check_call
 
@@ -52,6 +53,29 @@ RELEASEVER_MSG = _(
     "Need a --releasever greater than the current system version.")
 DOWNLOAD_FINISHED_MSG = _( # Translators: do not change "reboot" here
     "Download complete! Use 'dnf %s reboot' to start the upgrade.")
+DEPRECATED_OPTION = _(
+    "'%s' is not used anymore. Ignoring.")
+REMOVED_OPTION = _(
+    "Sorry, dnf system-upgrade doesn't support '%(option)s'")
+REMOVED_OPTIONS = {
+    '--expire-cache':   _(
+        "'--expire-cache' removed. Use 'dnf system-upgrade download --refresh'"),
+    '--clean-metadata': _(
+        "'--clean-metadata' removed. Use 'dnf clean metadata --releasever=VER'"),
+    '--dry-run':     REMOVED_OPTION,
+    '--just-print':  REMOVED_OPTION,
+    '-n':            REMOVED_OPTION,
+
+    '--debuglog':       _(
+        "Can't redirect DNF logs with --debuglog. Use DNF debug options instead."),
+    '--enableplugin':   _(
+        "Sorry, dnf doesn't support '%(option)s'"),
+    '--device':      REMOVED_OPTION,
+    '--iso':         REMOVED_OPTION,
+    '--add-install': REMOVED_OPTION,
+    }
+NOT_TOGETHER = _(
+    "Can't do '%s' and '%s' at the same time.")
 
 # --- Miscellaneous helper functions ------------------------------------------
 
@@ -186,6 +210,15 @@ class PlymouthTransactionProgress(dnf.callback.TransactionProgress):
 
 # --- Argument parsing helpers ------------------------------------------------
 
+class DeprecatedOption(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        logger.warning(DEPRECATED_OPTION, option_string)
+
+class RemovedOption(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        message = REMOVED_OPTIONS[option_string] % dict(option=option_string)
+        raise dnf.exceptions.Error(message)
+
 # DNF-INTEGRATION-NOTE: this was borrowed from dnfpluginscore.ArgumentParser
 class PluginArgumentParser(ArgumentParser):
     def __init__(self, cmd, **kwargs):
@@ -212,7 +245,25 @@ def make_parser(prog):
                    help=_("save downloaded data to this location"))
     g.add_argument('--distro-sync', default=False, action='store_true',
                    help=_("downgrade packages if the new release's version is older"))
-    p.add_argument('action', choices=ACTIONS,
+    # deprecated fedup options - action aliases
+    p.add_argument('--network',
+                   help=argparse.SUPPRESS)
+    p.add_argument('--clean',
+                   help=argparse.SUPPRESS, action='store_true')
+    # deprecated fedup options
+    for arg in ('--skipbootloader', '--skipkernel', '--resetbootloader'):
+        p.add_argument(arg, nargs=0, help=argparse.SUPPRESS, action=DeprecatedOption)
+    for arg in ('--instrepo', '--product'):
+        p.add_argument(arg, nargs=1, help=argparse.SUPPRESS, action=DeprecatedOption)
+    # deprecated fedup options - ignore silently
+    p.add_argument('--skippkgs',
+                   '--logtraceback',
+                   help=argparse.SUPPRESS, action='store_false')
+    # deprecated fedup options - fail with error
+    p.add_argument(*REMOVED_OPTIONS.keys(),
+                   nargs='?', help=argparse.SUPPRESS, action=RemovedOption)
+
+    p.add_argument('action', choices=ACTIONS, nargs='?',
                    help=_("action to perform"))
     return p
 
@@ -242,7 +293,22 @@ class SystemUpgradeCommand(dnf.cli.Command):
     def parse_args(self, extargs):
         p = make_parser(self.aliases[0])
         opts = p.parse_args(extargs)
-        if not opts.action:
+        if opts.clean:
+            # --clean is a deprecated fedup alias for clean
+            if opts.action:
+                raise dnf.exceptions.Error(NOT_TOGETHER % ('--clean', opts.action))
+            if opts.network:
+                raise dnf.exceptions.Error(NOT_TOGETHER % ('--clean', '--network'))
+            opts.action = 'clean'
+        elif opts.network:
+            # --network is a deprecated fedup alias for download --releasever
+            if opts.action:
+                raise dnf.exceptions.Error(NOT_TOGETHER % ('--network', opts.action))
+            if opts.releasever:
+                raise dnf.exceptions.Error(NOT_TOGETHER % ('--network', '--releasver'))
+            opts.releasever = opts.network
+            opts.action = 'download'
+        elif not opts.action:
             dnf.cli.commands.err_mini_usage(self.cli, self.cli.base.basecmd)
             raise dnf.cli.CliError
         return opts
