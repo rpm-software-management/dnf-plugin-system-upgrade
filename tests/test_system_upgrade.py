@@ -9,7 +9,7 @@ except ImportError:
     import mock
 patch = mock.patch
 
-from system_upgrade import PLYMOUTH
+from system_upgrade import PLYMOUTH, CliError
 
 
 @patch('system_upgrade.call', return_value=0)
@@ -143,14 +143,13 @@ class I18NTestCase(I18NTestCaseBase):
         trans_msg = self.gettext(msg)
         self.assertNotEqual(msg, trans_msg)
 
-import dnf.exceptions
 class ArgparseTestCase(unittest.TestCase):
     def setUp(self):
         self.cmd = system_upgrade.SystemUpgradeCommand('argparse-testcase')
 
     def assert_fails_with(self, args, message):
         with mock.patch('system_upgrade.PluginArgumentParser.print_help') as ph:
-            with self.assertRaises(dnf.exceptions.Error) as cm:
+            with self.assertRaises(CliError) as cm:
                 self.cmd.parse_args(args)
             self.assertIn(message, str(cm.exception))
             ph.assert_called_once_with()
@@ -161,7 +160,7 @@ class ArgparseTestCase(unittest.TestCase):
             warning.assert_called_once()
 
     def assert_error(self, args, message):
-        with self.assertRaises(dnf.exceptions.Error) as cm:
+        with self.assertRaises(CliError) as cm:
             self.cmd.parse_args(args)
         self.assertIn(message, str(cm.exception))
 
@@ -366,7 +365,7 @@ class CheckDNFVerTestCase(unittest.TestCase):
 
     def test_dnfver_old(self):
         system_upgrade.DNFVERSION = system_upgrade.StrictVersion("1.0.0")
-        with self.assertRaises(dnf.cli.CliError):
+        with self.assertRaises(CliError):
             system_upgrade.checkDNFVer()
 
 class RebootCheckCommandTestCase(CommandTestCaseBase):
@@ -382,7 +381,7 @@ class RebootCheckCommandTestCase(CommandTestCaseBase):
                 if dnfverok:
                     dnfver_func.return_value = None
                 else:
-                    dnfver_func.side_effect = dnf.cli.CliError
+                    dnfver_func.side_effect = CliError
                 lexists_func.return_value = lexists
                 self.command.check_reboot(None, None)
 
@@ -390,15 +389,15 @@ class RebootCheckCommandTestCase(CommandTestCaseBase):
         self.check_reboot(status='complete', lexists=False, dnfverok=True)
 
     def test_check_reboot_no_download(self):
-        with self.assertRaises(dnf.cli.CliError):
+        with self.assertRaises(CliError):
             self.check_reboot(status=None, lexists=False, dnfverok=True)
 
     def test_check_reboot_link_exists(self):
-        with self.assertRaises(dnf.cli.CliError):
+        with self.assertRaises(CliError):
             self.check_reboot(status='complete', lexists=True, dnfverok=True)
 
     def test_check_reboot_dnfver_bad(self):
-        with self.assertRaises(dnf.cli.CliError):
+        with self.assertRaises(CliError):
             self.check_reboot(status='complete', lexists=False, dnfverok=False)
 
 class DownloadCommandTestCase(CommandTestCase):
@@ -419,7 +418,7 @@ class DownloadCommandTestCase(CommandTestCase):
 
     def test_transaction_download_no_kernel(self):
         self.cli.base.transaction.install_set = []
-        with self.assertRaises(dnf.exceptions.Error):
+        with self.assertRaises(CliError):
             self.command.transaction_download()
 
 class UpgradeCommandTestCase(CommandTestCase):

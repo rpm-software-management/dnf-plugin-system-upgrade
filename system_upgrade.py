@@ -28,6 +28,7 @@ from subprocess import call, check_call
 
 import dnf
 import dnf.cli
+from dnf.cli import CliError
 
 import gettext
 TEXTDOMAIN = 'dnf-plugin-system-upgrade' # NOTE: must match Makefile
@@ -96,16 +97,16 @@ def clear_dir(path):
 
 def checkReleaseVer(conf):
     if dnf.rpm.detect_releasever(conf.installroot) == conf.releasever:
-        raise dnf.cli.CliError(RELEASEVER_MSG)
+        raise CliError(RELEASEVER_MSG)
 
 def checkDataDir(datadir):
     if os.path.exists(datadir) and not os.path.isdir(datadir):
-        raise dnf.cli.CliError(_("--datadir: File exists"))
+        raise CliError(_("--datadir: File exists"))
     # FUTURE NOTE: check for removable devices etc.
 
 def checkDNFVer():
     if DNFVERSION < StrictVersion("1.1.0"):
-        raise dnf.cli.CliError(_("This plugin requires DNF 1.1.0 or later."))
+        raise CliError(_("This plugin requires DNF 1.1.0 or later."))
 
 # --- State object - for tracking upgrade state between runs ------------------
 
@@ -217,7 +218,7 @@ class DeprecatedOption(argparse.Action):
 class RemovedOption(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         message = REMOVED_OPTIONS[option_string] % dict(option=option_string)
-        raise dnf.exceptions.Error(message)
+        raise CliError(message)
 
 # DNF-INTEGRATION-NOTE: this was borrowed from dnfpluginscore.ArgumentParser
 class PluginArgumentParser(ArgumentParser):
@@ -233,7 +234,7 @@ class PluginArgumentParser(ArgumentParser):
             return ArgumentParser.parse_args(self, args, namespace)
         except AttributeError as e:
             self.print_help()
-            raise dnf.exceptions.Error(str(e))
+            raise CliError(str(e))
 
 ACTIONS = ('download', 'clean', 'reboot', 'upgrade')
 def make_parser(prog):
@@ -296,21 +297,21 @@ class SystemUpgradeCommand(dnf.cli.Command):
         if opts.clean:
             # --clean is a deprecated fedup alias for clean
             if opts.action:
-                raise dnf.exceptions.Error(NOT_TOGETHER % ('--clean', opts.action))
+                raise CliError(NOT_TOGETHER % ('--clean', opts.action))
             if opts.network:
-                raise dnf.exceptions.Error(NOT_TOGETHER % ('--clean', '--network'))
+                raise CliError(NOT_TOGETHER % ('--clean', '--network'))
             opts.action = 'clean'
         elif opts.network:
             # --network is a deprecated fedup alias for download --releasever
             if opts.action:
-                raise dnf.exceptions.Error(NOT_TOGETHER % ('--network', opts.action))
+                raise CliError(NOT_TOGETHER % ('--network', opts.action))
             if opts.releasever:
-                raise dnf.exceptions.Error(NOT_TOGETHER % ('--network', '--releasver'))
+                raise CliError(NOT_TOGETHER % ('--network', '--releasever'))
             opts.releasever = opts.network
             opts.action = 'download'
         elif not opts.action:
             dnf.cli.commands.err_mini_usage(self.cli, self.cli.base.basecmd)
-            raise dnf.cli.CliError
+            raise CliError
         return opts
 
     # Call sub-functions (like configure_download()) for each possible action.
@@ -385,15 +386,15 @@ class SystemUpgradeCommand(dnf.cli.Command):
 
     def check_reboot(self, basecmd, extargs):
         if not self.state.download_status == 'complete':
-            raise dnf.cli.CliError(_("system is not ready for upgrade"))
+            raise CliError(_("system is not ready for upgrade"))
         if os.path.lexists(MAGIC_SYMLINK):
-            raise dnf.cli.CliError(_("upgrade is already scheduled"))
+            raise CliError(_("upgrade is already scheduled"))
         # FUTURE: checkRPMDBStatus(self.state.download_transaction_id)
         checkDNFVer()
 
     def check_upgrade(self, basecmd, extargs):
         if not self.state.upgrade_status == 'ready':
-            raise dnf.cli.CliError( # Translators: do not change "reboot" here
+            raise CliError( # Translators: do not change "reboot" here
                 _("use '%s reboot' to begin the upgrade") % basecmd)
         if os.readlink(MAGIC_SYMLINK) != self.state.datadir:
             logger.info(_("another upgrade tool is running. exiting quietly."))
@@ -475,7 +476,7 @@ class SystemUpgradeCommand(dnf.cli.Command):
         # sanity check: we got a kernel, right?
         downloads = self.cli.base.transaction.install_set
         if not any(p.name.startswith('kernel') for p in downloads):
-            raise dnf.exceptions.Error(NO_KERNEL_MSG)
+            raise CliError(NO_KERNEL_MSG)
         # Okay! Write out the state so the upgrade can use it.
         with self.state:
             self.state.download_status = 'complete'
