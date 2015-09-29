@@ -247,8 +247,11 @@ def make_parser(prog):
                    help=_("release version (required)"))
     g.add_argument('--datadir', default=DEFAULT_DATADIR,
                    help=_("save downloaded data to this location"))
-    g.add_argument('--distro-sync', default=False, action='store_true',
-                   help=_("downgrade packages if the new release's version is older"))
+    # depsolver arguments for the download (carried on to upgrade)
+    g.add_argument('--distro-sync', default=True, action='store_true',
+                   help=argparse.SUPPRESS)
+    g.add_argument('--no-downgrade', dest='distro_sync', action='store_false',
+                   help=_("keep installed packages if the new release's version is older"))
     # deprecated fedup options - action aliases
     p.add_argument('--network',
                    help=argparse.SUPPRESS)
@@ -266,7 +269,7 @@ def make_parser(prog):
     # deprecated fedup options - fail with error
     p.add_argument(*REMOVED_OPTIONS.keys(),
                    nargs='?', help=argparse.SUPPRESS, action=RemovedOption)
-
+    # and, finally, the action itself
     p.add_argument('action', choices=ACTIONS, nargs='?',
                    help=_("action to perform"))
     return p
