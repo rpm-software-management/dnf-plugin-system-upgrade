@@ -37,7 +37,14 @@ _ = t.gettext
 # Translators: This string is only used in unit tests.
 _("the color of the sky")
 
+import uuid
+DOWNLOAD_FINISHED_ID = uuid.UUID('9348174c5cc74001a71ef26bd79d302e')
+REBOOT_REQUESTED_ID  = uuid.UUID('fef1cc509d5047268b83a3a553f54b43')
+UPGRADE_STARTED_ID   = uuid.UUID('3e0a5636d16b4ca4bbe5321d06c6aa62')
+UPGRADE_FINISHED_ID  = uuid.UUID('8cec00a1566f4d3594f116450395f06c')
+
 import logging
+from systemd import journal
 logger = logging.getLogger("dnf.plugin")
 
 from distutils.version import StrictVersion
@@ -323,6 +330,15 @@ class SystemUpgradeCommand(dnf.cli.Command):
             raise CliError
         return opts
 
+    def log_status(self, message, message_id):
+        "Log directly to the journal"
+        journal.send(message,
+                     MESSAGE_ID=message_id,
+                     PRIORITY=journal.LOG_NOTICE,
+                     SYSTEM_RELEASEVER=self.state.system_releasever,
+                     TARGET_RELEASEVER=self.state.target_releasever,
+                     DNF_VERSION=dnf.const.VERSION)
+
     # Call sub-functions (like configure_download()) for each possible action.
     # (this tidies things up quite a bit.)
     def configure(self, args):
@@ -427,6 +443,9 @@ class SystemUpgradeCommand(dnf.cli.Command):
         # set upgrade_status so that the upgrade can run
         with self.state:
             self.state.upgrade_status = 'ready'
+
+        self.log_status(_("Rebooting to perform upgrade."),
+                        REBOOT_REQUESTED_ID)
         reboot()
 
     def run_download(self, extcmds):
@@ -450,6 +469,10 @@ class SystemUpgradeCommand(dnf.cli.Command):
         # change the upgrade status (so we can detect crashed upgrades later)
         with self.state:
             self.state.upgrade_status = 'incomplete'
+
+        self.log_status(_("Starting system upgrade. This will take a while."),
+                        UPGRADE_STARTED_ID)
+
         # reset the splash mode and let the user know we're running
         Plymouth.set_mode("updates")
         Plymouth.progress(0)
@@ -493,14 +516,21 @@ class SystemUpgradeCommand(dnf.cli.Command):
         if not any(p.name.startswith('kernel') for p in downloads):
             raise CliError(NO_KERNEL_MSG)
         # Okay! Write out the state so the upgrade can use it.
+        system_ver = dnf.rpm.detect_releasever(self.base.conf.installroot)
         with self.state:
             self.state.download_status = 'complete'
             self.state.distro_sync = self.opts.distro_sync
             self.state.allow_erasing = self.cli.demands.allow_erasing
             self.state.best = self.base.conf.best
+            self.state.system_releasever = system_ver
+            self.state.target_releasever = self.base.conf.releasever
         logger.info(DOWNLOAD_FINISHED_MSG, self.base.basecmd)
+        self.log_status(_("Download finished."),
+                        DOWNLOAD_FINISHED_ID)
 
     def transaction_upgrade(self):
         Plymouth.message(_("Upgrade complete! Cleaning up and rebooting..."))
+        self.log_status(_("Upgrade complete! Cleaning up and rebooting..."),
+                        UPGRADE_FINISHED_ID)
         self.run_clean([])
         reboot()
