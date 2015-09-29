@@ -169,7 +169,7 @@ class ArgparseTestCase(unittest.TestCase):
         for action in system_upgrade.ACTIONS:
             opts = self.cmd.parse_args([action])
             self.assertEqual(opts.action, action)
- 
+
     def test_clean_compat(self):
         opts = self.cmd.parse_args(['--clean'])
         self.assertEqual(opts.action, 'clean')
@@ -218,10 +218,10 @@ class ArgparseTestCase(unittest.TestCase):
                         '--device=FOO',
                         '--iso=FOO',
                         '--add-install=FOO'):
-            opt, _, foo = bad_arg.partition('=')
+            opt, _, val = bad_arg.partition('=')
             self.assert_error(["download", bad_arg], opt)
-            if foo:
-                self.assert_error(["download", bad_arg, foo], opt)
+            if val:
+                self.assert_error(["download", bad_arg, val], opt)
 
     def test_actions_exist(self):
         for phase in ('configure', 'run'):
@@ -417,24 +417,21 @@ class DownloadCommandTestCase(CommandTestCase):
             self.assertEqual(state.allow_erasing, "allow_erasing")
             self.assertEqual(state.best, "best")
 
+    def test_transaction_download_no_kernel(self):
+        self.cli.base.transaction.install_set = []
+        with self.assertRaises(dnf.exceptions.Error):
+            self.command.transaction_download()
+
 class UpgradeCommandTestCase(CommandTestCase):
     def test_configure_upgrade(self):
-        # simulate a download...
-        pkg = mock.MagicMock()
-        pkg.name = "kernel"
-        self.cli.base.transaction.install_set = [pkg]
-        self.command.opts = mock.MagicMock()
-        self.command.opts.distro_sync = "distro_sync"
-        self.cli.demands.allow_erasing = "allow_erasing"
-        self.command.base.conf.best = "best"
-        # download finish...
-        self.command.transaction_download()
-        # blah blah blah pretend we're a new process now
-        self.cli.demands = mock.MagicMock()
-        self.command.opts = mock.MagicMock()
-        self.command.base.conf = mock.MagicMock()
-        # configure the upgrade
-        self.command.configure_upgrade([])
+        # write state like download would have
+        with self.command.state as state:
+            state.download_status = "complete"
+            state.distro_sync = "distro_sync"
+            state.allow_erasing = "allow_erasing"
+            state.best = "best"
+        # okay, now configure upgrade
+        self.command.configure(["upgrade"])
         # did we reset the depsolving flags?
         self.assertEqual(self.command.opts.distro_sync, "distro_sync")
         self.assertEqual(self.cli.demands.allow_erasing, "allow_erasing")
