@@ -236,9 +236,12 @@ class PluginArgumentParser(ArgumentParser):
             self.print_help()
             raise CliError(str(e))
 
-ACTIONS = ('download', 'clean', 'reboot', 'upgrade')
+ACTIONS = ('download', 'clean', 'reboot', 'upgrade', 'help')
 def make_parser(prog):
     p = PluginArgumentParser(prog)
+    # show help when passed --help-cmd, like dnf-plugins-core plugins
+    p.add_argument('--help-cmd', action='store_true', help=argparse.SUPPRESS)
+    # basic download options
     g = p.add_argument_group(_("download options"))
     g.add_argument('--releasever', metavar=_("VERSION"),
                    help=_("release version (required)"))
@@ -289,12 +292,15 @@ class SystemUpgradeCommand(dnf.cli.Command):
     def __init__(self, cli):
         super(SystemUpgradeCommand, self).__init__(cli)
         self.opts = None
+        self.parser = None
         self.state = State()
 
     def parse_args(self, extargs):
-        p = make_parser(self.aliases[0])
-        opts = p.parse_args(extargs)
-        if opts.clean:
+        self.parser = make_parser(self.aliases[0])
+        opts = self.parser.parse_args(extargs)
+        if opts.help_cmd:
+            opts.action = 'help'
+        elif opts.clean:
             # --clean is a deprecated fedup alias for clean
             if opts.action:
                 raise CliError(NOT_TOGETHER % ('--clean', opts.action))
@@ -335,6 +341,9 @@ class SystemUpgradeCommand(dnf.cli.Command):
             subfunc(*args)
 
     # == configure_*: set up action-specific demands ==========================
+
+    def configure_help(self, args):
+        pass
 
     def configure_download(self, args):
         self.cli.demands.root_user = True
@@ -402,6 +411,9 @@ class SystemUpgradeCommand(dnf.cli.Command):
         checkDNFVer()
 
     # == run_*: run the action/prep the transaction ===========================
+
+    def run_help(self, extcmds):
+        self.parser.print_help()
 
     def run_reboot(self, extcmds):
         # make the magic symlink
