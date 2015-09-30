@@ -401,6 +401,15 @@ class RebootCheckCommandTestCase(CommandTestCaseBase):
             self.check_reboot(status='complete', lexists=False, dnfverok=False)
 
 class DownloadCommandTestCase(CommandTestCase):
+    def test_configure_download(self):
+        self.command.configure(["download"])
+        self.assertTrue(self.cli.demands.root_user)
+        self.assertTrue(self.cli.demands.resolving)
+        self.assertTrue(self.cli.demands.sack_activation)
+        self.assertTrue(self.cli.demands.available_repos)
+        for repo in self.command.base.repos.values():
+            self.assertEqual(repo.pkgdir, self.command.opts.datadir)
+
     def test_transaction_download(self):
         pkg = mock.MagicMock()
         pkg.name = "kernel"
