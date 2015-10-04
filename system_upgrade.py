@@ -43,6 +43,8 @@ REBOOT_REQUESTED_ID  = uuid.UUID('fef1cc509d5047268b83a3a553f54b43')
 UPGRADE_STARTED_ID   = uuid.UUID('3e0a5636d16b4ca4bbe5321d06c6aa62')
 UPGRADE_FINISHED_ID  = uuid.UUID('8cec00a1566f4d3594f116450395f06c')
 
+ID_TO_IDENTIFY_BOOTS = UPGRADE_STARTED_ID
+
 import logging
 from systemd import journal
 logger = logging.getLogger("dnf.plugin")
@@ -216,6 +218,49 @@ class PlymouthTransactionProgress(dnf.callback.TransactionProgress):
         action = self.action.get(action, action)
         return "[%d/%d] %s %s..." % (current, total, action, package)
 
+# --- journal helpers -------------------------------------------------
+
+def find_boots(message_id):
+    """Find all boots with this message id.
+
+    Returns the entries of all found boots.
+    """
+    j = journal.Reader()
+    j.add_match(MESSAGE_ID=message_id.hex,  # identify the message
+                _UID=0)                     # prevent spoofing of logs
+
+    oldboot = None
+    for entry in j:
+        boot = entry['_BOOT_ID']
+        if boot == oldboot:
+            continue
+        oldboot = boot
+        yield entry
+
+def list_logs():
+    for n, entry in enumerate(find_boots(ID_TO_IDENTIFY_BOOTS)):
+        print('{} / {}: {}'.format(n + 1,
+                                   entry['_BOOT_ID'],
+                                   entry['__REALTIME_TIMESTAMP'].isoformat()))
+
+def pick_boot(message_id, n):
+    boots = list(find_boots(message_id))
+    # Positive indices index all found boots starting with 1 and going forward,
+    # zero is the current boot, and -1, -2, -3 are previous going backwards.
+    # This is the same as journalctl.
+    try:
+        if n == 0:
+            raise IndexError
+        elif n > 0:
+            n -= 1
+        return boots[n]['_BOOT_ID']
+    except IndexError:
+        raise CliError(_("Cannot find logs with this index."))
+
+def show_log(n):
+    boot_id = pick_boot(ID_TO_IDENTIFY_BOOTS, n)
+    check_call(['journalctl', '--boot', boot_id.hex])
+
 # --- Argument parsing helpers ------------------------------------------------
 
 class DeprecatedOption(argparse.Action):
@@ -243,7 +288,7 @@ class PluginArgumentParser(ArgumentParser):
             self.print_help()
             raise CliError(str(e))
 
-ACTIONS = ('download', 'clean', 'reboot', 'upgrade', 'help')
+ACTIONS = ('download', 'clean', 'reboot', 'upgrade', 'help', 'log')
 def make_parser(prog):
     p = PluginArgumentParser(prog)
     # show help when passed --help-cmd, like dnf-plugins-core plugins
@@ -276,9 +321,13 @@ def make_parser(prog):
     # deprecated fedup options - fail with error
     p.add_argument(*REMOVED_OPTIONS.keys(),
                    nargs='?', help=argparse.SUPPRESS, action=RemovedOption)
-    # and, finally, the action itself
+    # and, semi-finally, the action itself
     p.add_argument('action', choices=ACTIONS, nargs='?',
                    help=_("action to perform"))
+    # options for the log verb
+    g2 = p.add_argument_group(_("log options"))
+    g2.add_argument('number', type=int, nargs='?',
+                    help='which logs to show (-1 is last, etc)')
     return p
 
 # --- The actual Plugin and Command objects! ----------------------------------
@@ -403,6 +452,9 @@ class SystemUpgradeCommand(dnf.cli.Command):
     def configure_clean(self, args):
         self.cli.demands.root_user = True
 
+    def configure_log(self, args):
+        pass
+
     # == check_*: do any action-specific checks ===============================
 
     def check_download(self, basecmd, extargs):
@@ -507,6 +559,14 @@ class SystemUpgradeCommand(dnf.cli.Command):
         with self.state:
             self.state.download_status = None
             self.state.upgrade_status = None
+
+    def run_log(self, extcmds):
+        assert extcmds[0] == 'log'
+        if len(extcmds) == 1:
+            list_logs()
+        else:
+            n = int(extcmds[1])
+            show_log(n)
 
     # == transaction_*: do stuff after a successful transaction ===============
 
