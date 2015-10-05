@@ -1,4 +1,4 @@
-"""system_upgrade.py - DNF plugin to handle major-version system upgrades."""
+# -*- coding: utf-8 -*-
 #
 # Copyright (c) 2015 Red Hat, Inc.
 #
@@ -16,6 +16,8 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 # Author(s): Will Woods <wwoods@redhat.com>
+
+"""system_upgrade.py - DNF plugin to handle major-version system upgrades."""
 
 from __future__ import unicode_literals
 
@@ -238,10 +240,17 @@ def find_boots(message_id):
         yield entry
 
 def list_logs():
+    print(_('Following boots appear to contain upgrade logs:'))
+    n = -1
     for n, entry in enumerate(find_boots(ID_TO_IDENTIFY_BOOTS)):
-        print('{} / {}: {}'.format(n + 1,
-                                   entry['_BOOT_ID'],
-                                   entry['__REALTIME_TIMESTAMP'].isoformat()))
+        print('{} / {.hex}: {:%Y-%m-%d %H:%M:%S} {}→{}'.format(
+            n + 1,
+            entry['_BOOT_ID'],
+            entry['__REALTIME_TIMESTAMP'],
+            entry.get('SYSTEM_RELEASEVER', '??'),
+            entry.get('TARGET_RELEASEVER', '??')))
+    if n == -1:
+        print(_('-- no logs were found --'))
 
 def pick_boot(message_id, n):
     boots = list(find_boots(message_id))
@@ -304,7 +313,7 @@ def make_parser(prog):
                    help=argparse.SUPPRESS)
     g.add_argument('--no-downgrade', dest='distro_sync', action='store_false',
                    help=_("keep installed packages if the new release's version is older"))
-    # deprecated fedup options - action aliases
+    # deprecated fedup options — action aliases
     p.add_argument('--network',
                    help=argparse.SUPPRESS)
     p.add_argument('--clean',
@@ -314,11 +323,11 @@ def make_parser(prog):
         p.add_argument(arg, nargs=0, help=argparse.SUPPRESS, action=DeprecatedOption)
     for arg in ('--instrepo', '--product'):
         p.add_argument(arg, nargs=1, help=argparse.SUPPRESS, action=DeprecatedOption)
-    # deprecated fedup options - ignore silently
+    # deprecated fedup options — ignore silently
     p.add_argument('--skippkgs',
                    '--logtraceback',
                    help=argparse.SUPPRESS, action='store_false')
-    # deprecated fedup options - fail with error
+    # deprecated fedup options — fail with error
     p.add_argument(*REMOVED_OPTIONS.keys(),
                    nargs='?', help=argparse.SUPPRESS, action=RemovedOption)
     # and, semi-finally, the action itself
