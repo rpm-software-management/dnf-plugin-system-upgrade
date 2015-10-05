@@ -162,7 +162,8 @@ class State(object):
 
     download_status = _prop("download_status")
     datadir = _prop("datadir")
-    releasever = _prop("releasever")
+    target_releasever = _prop("target_releasever")
+    system_releasever = _prop("system_releasever")
 
     upgrade_status = _prop("upgrade_status")
     distro_sync = _prop("distro_sync")
@@ -500,7 +501,7 @@ class SystemUpgradeCommand(dnf.cli.Command):
         os.symlink(self.state.datadir, MAGIC_SYMLINK)
         # write releasever into the flag file so it can be read by systemd
         with open(SYSTEMD_FLAG_FILE, 'w') as flagfile:
-            flagfile.write("RELEASEVER=%s\n" % self.state.releasever)
+            flagfile.write("RELEASEVER=%s\n" % self.state.target_releasever)
         # set upgrade_status so that the upgrade can run
         with self.state:
             self.state.upgrade_status = 'ready'
@@ -519,10 +520,10 @@ class SystemUpgradeCommand(dnf.cli.Command):
         if self.opts.datadir == DEFAULT_DATADIR:
             dnf.util.ensure_dir(self.opts.datadir)
 
-        with self.state:
-            self.state.download_status = 'downloading'
-            self.state.releasever = self.base.conf.releasever
-            self.state.datadir = self.opts.datadir
+        with self.state as state:
+            state.download_status = 'downloading'
+            state.target_releasever = self.base.conf.releasever
+            state.datadir = self.opts.datadir
 
     def run_upgrade(self, extcmds):
         # Delete symlink ASAP to avoid reboot loops
@@ -586,13 +587,13 @@ class SystemUpgradeCommand(dnf.cli.Command):
             raise CliError(NO_KERNEL_MSG)
         # Okay! Write out the state so the upgrade can use it.
         system_ver = dnf.rpm.detect_releasever(self.base.conf.installroot)
-        with self.state:
-            self.state.download_status = 'complete'
-            self.state.distro_sync = self.opts.distro_sync
-            self.state.allow_erasing = self.cli.demands.allow_erasing
-            self.state.best = self.base.conf.best
-            self.state.system_releasever = system_ver
-            self.state.target_releasever = self.base.conf.releasever
+        with self.state as state:
+            state.download_status = 'complete'
+            state.distro_sync = self.opts.distro_sync
+            state.allow_erasing = self.cli.demands.allow_erasing
+            state.best = self.base.conf.best
+            state.system_releasever = system_ver
+            state.target_releasever = self.base.conf.releasever
         logger.info(DOWNLOAD_FINISHED_MSG, self.base.basecmd)
         self.log_status(_("Download finished."),
                         DOWNLOAD_FINISHED_ID)
