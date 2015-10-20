@@ -27,8 +27,9 @@ There's also a `fedup`-compatible wrapper script, so this works too:
 #### Finding upgrade logs
 
 Everything printed by `dnf` during the upgrade is in the system journal.
-Use `journalctl --list-boots` to show a list of system boots, and
-`journalctl -b -[NUM]` to display the log that corresponds to the upgrade.
+Run `dnf system-upgrade log` to see a list of boots during which an
+upgrade was attempted. Use `dnf system-upgrade log [NUM]`, where
+`[NUM]` is usually -1, to see the logs for that boot using journalctl.
 
 #### Enable debug shell on `/dev/tty9`
 

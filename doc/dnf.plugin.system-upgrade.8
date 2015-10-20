@@ -12,6 +12,9 @@ dnf system\-upgrade \- upgrade a system to a new major release
 .B dnf system\-upgrade reboot
 .br
 .B dnf system\-upgrade clean
+.br
+.B dnf system\-upgrade log
+.RI [ NUMBER ]
 
 .SH DESCRIPTION
 .PP
@@ -27,6 +30,13 @@ completes successfully.
 .PP
 The \f[B]clean\f[] command can be used to remove previously\-downloaded
 data. This happens automatically at the end of a successful upgrade.
+.PP
+The \f[B]log\f[] command can be used to see a list of boots during
+which an upgrade was attempted. The logs for one of the boots can
+be shown by specifying one of the numbers in the first column.
+Negative numbers can be used to number the boots from last to first.
+In effect, \f[B]log -1\f[] can be used to see the logs for the last
+attempt.
 
 .SH OPTIONS
 .TP
@@ -70,7 +80,9 @@ dnf system\-upgrade reboot
 .EE
 
 .SH SEE ALSO
-dnf(8) dnf.conf(5)
+dnf(8),
+dnf.conf(5),
+journalctl(1)
 
 .SH AUTHORS
 Will Woods <wwoods@redhat.com>

@@ -1,4 +1,4 @@
-"""system_upgrade.py - DNF plugin to handle major-version system upgrades."""
+# -*- coding: utf-8 -*-
 #
 # Copyright (c) 2015 Red Hat, Inc.
 #
@@ -16,6 +16,8 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 # Author(s): Will Woods <wwoods@redhat.com>
+
+"""system_upgrade.py - DNF plugin to handle major-version system upgrades."""
 
 from __future__ import unicode_literals
 
@@ -37,7 +39,16 @@ _ = t.gettext
 # Translators: This string is only used in unit tests.
 _("the color of the sky")
 
+import uuid
+DOWNLOAD_FINISHED_ID = uuid.UUID('9348174c5cc74001a71ef26bd79d302e')
+REBOOT_REQUESTED_ID  = uuid.UUID('fef1cc509d5047268b83a3a553f54b43')
+UPGRADE_STARTED_ID   = uuid.UUID('3e0a5636d16b4ca4bbe5321d06c6aa62')
+UPGRADE_FINISHED_ID  = uuid.UUID('8cec00a1566f4d3594f116450395f06c')
+
+ID_TO_IDENTIFY_BOOTS = UPGRADE_STARTED_ID
+
 import logging
+from systemd import journal
 logger = logging.getLogger("dnf.plugin")
 
 from distutils.version import StrictVersion
@@ -151,7 +162,8 @@ class State(object):
 
     download_status = _prop("download_status")
     datadir = _prop("datadir")
-    releasever = _prop("releasever")
+    target_releasever = _prop("target_releasever")
+    system_releasever = _prop("system_releasever")
 
     upgrade_status = _prop("upgrade_status")
     distro_sync = _prop("distro_sync")
@@ -209,6 +221,56 @@ class PlymouthTransactionProgress(dnf.callback.TransactionProgress):
         action = self.action.get(action, action)
         return "[%d/%d] %s %s..." % (current, total, action, package)
 
+# --- journal helpers -------------------------------------------------
+
+def find_boots(message_id):
+    """Find all boots with this message id.
+
+    Returns the entries of all found boots.
+    """
+    j = journal.Reader()
+    j.add_match(MESSAGE_ID=message_id.hex,  # identify the message
+                _UID=0)                     # prevent spoofing of logs
+
+    oldboot = None
+    for entry in j:
+        boot = entry['_BOOT_ID']
+        if boot == oldboot:
+            continue
+        oldboot = boot
+        yield entry
+
+def list_logs():
+    print(_('Following boots appear to contain upgrade logs:'))
+    n = -1
+    for n, entry in enumerate(find_boots(ID_TO_IDENTIFY_BOOTS)):
+        print('{} / {.hex}: {:%Y-%m-%d %H:%M:%S} {}→{}'.format(
+            n + 1,
+            entry['_BOOT_ID'],
+            entry['__REALTIME_TIMESTAMP'],
+            entry.get('SYSTEM_RELEASEVER', '??'),
+            entry.get('TARGET_RELEASEVER', '??')))
+    if n == -1:
+        print(_('-- no logs were found --'))
+
+def pick_boot(message_id, n):
+    boots = list(find_boots(message_id))
+    # Positive indices index all found boots starting with 1 and going forward,
+    # zero is the current boot, and -1, -2, -3 are previous going backwards.
+    # This is the same as journalctl.
+    try:
+        if n == 0:
+            raise IndexError
+        elif n > 0:
+            n -= 1
+        return boots[n]['_BOOT_ID']
+    except IndexError:
+        raise CliError(_("Cannot find logs with this index."))
+
+def show_log(n):
+    boot_id = pick_boot(ID_TO_IDENTIFY_BOOTS, n)
+    check_call(['journalctl', '--boot', boot_id.hex])
+
 # --- Argument parsing helpers ------------------------------------------------
 
 class DeprecatedOption(argparse.Action):
@@ -236,7 +298,7 @@ class PluginArgumentParser(ArgumentParser):
             self.print_help()
             raise CliError(str(e))
 
-ACTIONS = ('download', 'clean', 'reboot', 'upgrade', 'help')
+ACTIONS = ('download', 'clean', 'reboot', 'upgrade', 'help', 'log')
 def make_parser(prog):
     p = PluginArgumentParser(prog)
     # show help when passed --help-cmd, like dnf-plugins-core plugins
@@ -252,7 +314,7 @@ def make_parser(prog):
                    help=argparse.SUPPRESS)
     g.add_argument('--no-downgrade', dest='distro_sync', action='store_false',
                    help=_("keep installed packages if the new release's version is older"))
-    # deprecated fedup options - action aliases
+    # deprecated fedup options — action aliases
     p.add_argument('--network',
                    help=argparse.SUPPRESS)
     p.add_argument('--clean',
@@ -262,16 +324,20 @@ def make_parser(prog):
         p.add_argument(arg, nargs=0, help=argparse.SUPPRESS, action=DeprecatedOption)
     for arg in ('--instrepo', '--product'):
         p.add_argument(arg, nargs=1, help=argparse.SUPPRESS, action=DeprecatedOption)
-    # deprecated fedup options - ignore silently
+    # deprecated fedup options — ignore silently
     p.add_argument('--skippkgs',
                    '--logtraceback',
                    help=argparse.SUPPRESS, action='store_false')
-    # deprecated fedup options - fail with error
+    # deprecated fedup options — fail with error
     p.add_argument(*REMOVED_OPTIONS.keys(),
                    nargs='?', help=argparse.SUPPRESS, action=RemovedOption)
-    # and, finally, the action itself
+    # and, semi-finally, the action itself
     p.add_argument('action', choices=ACTIONS, nargs='?',
                    help=_("action to perform"))
+    # options for the log verb
+    g2 = p.add_argument_group(_("log options"))
+    g2.add_argument('number', type=int, nargs='?',
+                    help='which logs to show (-1 is last, etc)')
     return p
 
 # --- The actual Plugin and Command objects! ----------------------------------
@@ -322,6 +388,15 @@ class SystemUpgradeCommand(dnf.cli.Command):
             dnf.cli.commands.err_mini_usage(self.cli, self.cli.base.basecmd)
             raise CliError
         return opts
+
+    def log_status(self, message, message_id):
+        "Log directly to the journal"
+        journal.send(message,
+                     MESSAGE_ID=message_id,
+                     PRIORITY=journal.LOG_NOTICE,
+                     SYSTEM_RELEASEVER=self.state.system_releasever,
+                     TARGET_RELEASEVER=self.state.target_releasever,
+                     DNF_VERSION=dnf.const.VERSION)
 
     # Call sub-functions (like configure_download()) for each possible action.
     # (this tidies things up quite a bit.)
@@ -387,6 +462,9 @@ class SystemUpgradeCommand(dnf.cli.Command):
     def configure_clean(self, args):
         self.cli.demands.root_user = True
 
+    def configure_log(self, args):
+        pass
+
     # == check_*: do any action-specific checks ===============================
 
     def check_download(self, basecmd, extargs):
@@ -423,10 +501,13 @@ class SystemUpgradeCommand(dnf.cli.Command):
         os.symlink(self.state.datadir, MAGIC_SYMLINK)
         # write releasever into the flag file so it can be read by systemd
         with open(SYSTEMD_FLAG_FILE, 'w') as flagfile:
-            flagfile.write("RELEASEVER=%s\n" % self.state.releasever)
+            flagfile.write("RELEASEVER=%s\n" % self.state.target_releasever)
         # set upgrade_status so that the upgrade can run
         with self.state:
             self.state.upgrade_status = 'ready'
+
+        self.log_status(_("Rebooting to perform upgrade."),
+                        REBOOT_REQUESTED_ID)
         reboot()
 
     def run_download(self, extcmds):
@@ -439,10 +520,10 @@ class SystemUpgradeCommand(dnf.cli.Command):
         if self.opts.datadir == DEFAULT_DATADIR:
             dnf.util.ensure_dir(self.opts.datadir)
 
-        with self.state:
-            self.state.download_status = 'downloading'
-            self.state.releasever = self.base.conf.releasever
-            self.state.datadir = self.opts.datadir
+        with self.state as state:
+            state.download_status = 'downloading'
+            state.target_releasever = self.base.conf.releasever
+            state.datadir = self.opts.datadir
 
     def run_upgrade(self, extcmds):
         # Delete symlink ASAP to avoid reboot loops
@@ -450,6 +531,10 @@ class SystemUpgradeCommand(dnf.cli.Command):
         # change the upgrade status (so we can detect crashed upgrades later)
         with self.state:
             self.state.upgrade_status = 'incomplete'
+
+        self.log_status(_("Starting system upgrade. This will take a while."),
+                        UPGRADE_STARTED_ID)
+
         # reset the splash mode and let the user know we're running
         Plymouth.set_mode("updates")
         Plymouth.progress(0)
@@ -485,6 +570,14 @@ class SystemUpgradeCommand(dnf.cli.Command):
             self.state.download_status = None
             self.state.upgrade_status = None
 
+    def run_log(self, extcmds):
+        assert extcmds[0] == 'log'
+        if len(extcmds) == 1:
+            list_logs()
+        else:
+            n = int(extcmds[1])
+            show_log(n)
+
     # == transaction_*: do stuff after a successful transaction ===============
 
     def transaction_download(self):
@@ -493,14 +586,21 @@ class SystemUpgradeCommand(dnf.cli.Command):
         if not any(p.name.startswith('kernel') for p in downloads):
             raise CliError(NO_KERNEL_MSG)
         # Okay! Write out the state so the upgrade can use it.
-        with self.state:
-            self.state.download_status = 'complete'
-            self.state.distro_sync = self.opts.distro_sync
-            self.state.allow_erasing = self.cli.demands.allow_erasing
-            self.state.best = self.base.conf.best
+        system_ver = dnf.rpm.detect_releasever(self.base.conf.installroot)
+        with self.state as state:
+            state.download_status = 'complete'
+            state.distro_sync = self.opts.distro_sync
+            state.allow_erasing = self.cli.demands.allow_erasing
+            state.best = self.base.conf.best
+            state.system_releasever = system_ver
+            state.target_releasever = self.base.conf.releasever
         logger.info(DOWNLOAD_FINISHED_MSG, self.base.basecmd)
+        self.log_status(_("Download finished."),
+                        DOWNLOAD_FINISHED_ID)
 
     def transaction_upgrade(self):
         Plymouth.message(_("Upgrade complete! Cleaning up and rebooting..."))
+        self.log_status(_("Upgrade complete! Cleaning up and rebooting..."),
+                        UPGRADE_FINISHED_ID)
         self.run_clean([])
         reboot()
