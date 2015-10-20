@@ -18,6 +18,10 @@ Requires: python-systemd
 
 Provides: dnf-command(system-upgrade)
 
+# The plugin itself doesn't technically require dnf, but /usr/bin/fedup does.
+# So either we split out a subpackage for /usr/bin/fedup or we Require dnf.
+Requires: dnf
+
 Provides: fedup = 0.9.3-1
 Obsoletes: fedup < 0.9.3-1
 
