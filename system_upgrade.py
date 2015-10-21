@@ -88,6 +88,8 @@ REMOVED_OPTIONS = {
     }
 NOT_TOGETHER = _(
     "Can't do '%s' and '%s' at the same time.")
+CANT_RESET_RELEASEVER = _(
+    "Sorry, you need to use 'download --releasever' instead of '--network'")
 
 # --- Miscellaneous helper functions ------------------------------------------
 
@@ -384,6 +386,10 @@ class SystemUpgradeCommand(dnf.cli.Command):
                 raise CliError(NOT_TOGETHER % ('--network', '--releasever'))
             opts.releasever = opts.network
             opts.action = 'download'
+            if opts.releasever != self.base.conf.releasever:
+                # it's too late to set releasever here, so this can't work.
+                # (see https://bugzilla.redhat.com/show_bug.cgi?id=1212341)
+                raise CliError(CANT_RESET_RELEASEVER)
         elif not opts.action:
             dnf.cli.commands.err_mini_usage(self.cli, self.cli.base.basecmd)
             raise CliError
