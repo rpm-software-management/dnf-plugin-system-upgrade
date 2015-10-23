@@ -108,9 +108,13 @@ def clear_dir(path):
         except OSError:
             pass
 
-def checkReleaseVer(conf):
+def checkReleaseVer(conf, target=None):
     if dnf.rpm.detect_releasever(conf.installroot) == conf.releasever:
         raise CliError(RELEASEVER_MSG)
+    if target and target != conf.releasever:
+        # it's too late to set releasever here, so this can't work.
+        # (see https://bugzilla.redhat.com/show_bug.cgi?id=1212341)
+        raise CliError(CANT_RESET_RELEASEVER)
 
 def checkDataDir(datadir):
     if os.path.exists(datadir) and not os.path.isdir(datadir):
@@ -386,10 +390,6 @@ class SystemUpgradeCommand(dnf.cli.Command):
                 raise CliError(NOT_TOGETHER % ('--network', '--releasever'))
             opts.releasever = opts.network
             opts.action = 'download'
-            if opts.releasever != self.base.conf.releasever:
-                # it's too late to set releasever here, so this can't work.
-                # (see https://bugzilla.redhat.com/show_bug.cgi?id=1212341)
-                raise CliError(CANT_RESET_RELEASEVER)
         elif not opts.action:
             dnf.cli.commands.err_mini_usage(self.cli, self.cli.base.basecmd)
             raise CliError
@@ -476,7 +476,7 @@ class SystemUpgradeCommand(dnf.cli.Command):
     def check_download(self, basecmd, extargs):
         dnf.cli.commands.checkGPGKey(self.base, self.cli)
         dnf.cli.commands.checkEnabledRepo(self.base)
-        checkReleaseVer(self.base.conf)
+        checkReleaseVer(self.base.conf, target=self.opts.releasever)
         checkDataDir(self.opts.datadir)
         checkDNFVer()
 
