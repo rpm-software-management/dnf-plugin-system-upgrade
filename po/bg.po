@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-10 17:19-0400\n"
+"POT-Creation-Date: 2015-10-23 15:51-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: Bulgarian\n"
@@ -16,149 +16,156 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: bg\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"X-Generator: Zanata 3.7.1\n"
+"X-Generator: Zanata 3.7.3\n"
 
-#: fedup.sh:69 fedup.sh:74
-msgid "'%s' is not used anymore. ignoring."
+#: system_upgrade.py:69
+#, python-format
+msgid "'%s' is not used anymore. Ignoring."
 msgstr ""
 
-#: fedup.sh:100
+#: system_upgrade.py:76
 msgid "'--clean-metadata' removed. Use 'dnf clean metadata --releasever=VER'"
 msgstr ""
 
-#: fedup.sh:96
+#: system_upgrade.py:74
 msgid "'--expire-cache' removed. Use 'dnf system-upgrade download --refresh'"
 msgstr ""
 
-#: system_upgrade.py:67
+#: system_upgrade.py:260
+msgid "-- no logs were found --"
+msgstr ""
+
+#: system_upgrade.py:121
 msgid "--datadir: File exists"
 msgstr ""
 
-#: fedup.sh:51
-msgid "Can't do --network and --clean at the same time."
+#: system_upgrade.py:90
+#, python-format
+msgid "Can't do '%s' and '%s' at the same time."
 msgstr ""
 
-#: fedup.sh:84
-msgid "Can't redirect DNF logs. Use DNF debug options instead."
+#: system_upgrade.py:82
+msgid ""
+"Can't redirect DNF logs with --debuglog. Use DNF debug options instead."
 msgstr ""
 
-#: system_upgrade.py:393
+#: system_upgrade.py:274
+msgid "Cannot find logs with this index."
+msgstr ""
+
+#: system_upgrade.py:573
 msgid "Cleaning up downloaded data..."
 msgstr ""
 
 #. Translators: do not change "reboot" here
-#: system_upgrade.py:52
+#: system_upgrade.py:67
 #, python-format
 msgid "Download complete! Use 'dnf %s reboot' to start the upgrade."
 msgstr ""
 
-#: system_upgrade.py:54
-msgid "NOTE: this version of DNF will not show graphical upgrade progress."
+#: system_upgrade.py:604
+msgid "Download finished."
 msgstr ""
 
-#: system_upgrade.py:50
+#: system_upgrade.py:65
 msgid "Need a --releasever greater than the current system version."
 msgstr ""
 
-#: system_upgrade.py:48
+#: system_upgrade.py:63
 msgid "No new kernel packages were found."
 msgstr ""
 
-#: system_upgrade.py:232
+#: system_upgrade.py:365
 msgid "OPTIONS"
 msgstr ""
 
-#: system_upgrade.py:229
+#: system_upgrade.py:362
 msgid "Prepare system for upgrade to a new release"
 msgstr ""
 
-#: fedup.sh:141
-msgid "Redirecting to '%s':"
+#: system_upgrade.py:515
+msgid "Rebooting to perform upgrade."
 msgstr ""
 
-#: system_upgrade.py:168
-msgid "Running post-transaction scripts..."
+#: system_upgrade.py:84
+#, python-format
+msgid "Sorry, dnf doesn't support '%(option)s'"
 msgstr ""
 
-#: fedup.sh:88
-msgid "Sorry, dnf doesn't support '%s'"
+#: system_upgrade.py:71
+#, python-format
+msgid "Sorry, dnf system-upgrade doesn't support '%(option)s'"
 msgstr ""
 
-#: fedup.sh:92
-msgid "Sorry, dnf system-upgrade doesn't support '%s'"
+#: system_upgrade.py:92
+msgid "Sorry, you need to use 'download --releasever' instead of '--network'"
 msgstr ""
 
-#: system_upgrade.py:367
+#: system_upgrade.py:541 system_upgrade.py:547
 msgid "Starting system upgrade. This will take a while."
 msgstr ""
 
-#: system_upgrade.py:411
+#: system_upgrade.py:250
+msgid "The following boots appear to contain upgrade logs:"
+msgstr ""
+
+#: system_upgrade.py:126
+msgid "This plugin requires DNF 1.1.0 or later."
+msgstr ""
+
+#: system_upgrade.py:608 system_upgrade.py:609
 msgid "Upgrade complete! Cleaning up and rebooting..."
 msgstr ""
 
-#: system_upgrade.py:206 system_upgrade.py:232
+#: system_upgrade.py:314 system_upgrade.py:365
 msgid "VERSION"
 msgstr ""
 
-#: system_upgrade.py:174
-msgid "Verifying"
-msgstr ""
-
-#: system_upgrade.py:213
+#: system_upgrade.py:342
 msgid "action to perform"
 msgstr ""
 
-#: system_upgrade.py:326
+#: system_upgrade.py:496
 msgid "another upgrade tool is running. exiting quietly."
 msgstr ""
 
-#: system_upgrade.py:211
-msgid "downgrade packages if the new release's version is older"
-msgstr ""
-
-#: system_upgrade.py:205
+#. basic download options
+#: system_upgrade.py:313
 msgid "download options"
 msgstr ""
 
-#: fedup.sh:31
-msgid "error:"
+#: system_upgrade.py:322
+msgid "keep installed packages if the new release's version is older"
 msgstr ""
 
-#: fedup.sh:45
-msgid "fedup has been replaced by 'dnf system-upgrade'. Use that instead."
+#. options for the log verb
+#: system_upgrade.py:344
+msgid "log options"
 msgstr ""
 
-#: system_upgrade.py:207
+#: system_upgrade.py:315
 msgid "release version (required)"
 msgstr ""
 
-#: system_upgrade.py:209
+#: system_upgrade.py:317
 msgid "save downloaded data to this location"
 msgstr ""
 
-#: system_upgrade.py:316
+#: system_upgrade.py:485
 msgid "system is not ready for upgrade"
 msgstr ""
 
 #. Translators: This string is only used in unit tests.
-#: system_upgrade.py:34 fedup.sh:123
+#: system_upgrade.py:40
 msgid "the color of the sky"
 msgstr ""
 
-#: fedup.sh:127
-msgid "unknown argument '%s'"
-msgstr ""
-
-#: system_upgrade.py:318
+#: system_upgrade.py:487
 msgid "upgrade is already scheduled"
 msgstr ""
 
 #. Translators: do not change "reboot" here
-#: system_upgrade.py:324
+#: system_upgrade.py:494
 #, python-format
 msgid "use '%s reboot' to begin the upgrade"
-msgstr ""
-
-#: fedup.sh:26
-msgid "warning:"
 msgstr ""
