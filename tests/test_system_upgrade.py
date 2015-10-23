@@ -418,6 +418,8 @@ class DownloadCommandTestCase(CommandTestCase):
         self.command.opts.distro_sync = "distro_sync"
         self.cli.demands.allow_erasing = "allow_erasing"
         self.command.base.conf.best = "best"
+        self.command.base.conf.installroot = "/"
+        self.command.base.conf.releasever = "35"
         self.command.transaction_download()
         with system_upgrade.State() as state:
             self.assertEqual(state.download_status, "complete")
@@ -447,3 +449,17 @@ class UpgradeCommandTestCase(CommandTestCase):
         # are we on autopilot?
         self.assertTrue(self.command.base.conf.assumeyes)
         self.assertTrue(self.cli.demands.cacheonly)
+
+class LogCommandTestCase(CommandTestCase):
+    def test_configure_log(self):
+        self.command.configure(["log"])
+
+    def test_run_log_list(self):
+        with patch('system_upgrade.list_logs') as list_logs:
+            self.command.run_log(["log"])
+        list_logs.assert_called_once_with()
+
+    def test_run_log_prev(self):
+        with patch('system_upgrade.show_log') as show_log:
+            self.command.run_log(["log", "-2"])
+        show_log.assert_called_once_with(-2)
