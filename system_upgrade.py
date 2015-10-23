@@ -247,7 +247,7 @@ def find_boots(message_id):
         yield entry
 
 def list_logs():
-    print(_('Following boots appear to contain upgrade logs:'))
+    print(_('The following boots appear to contain upgrade logs:'))
     n = -1
     for n, entry in enumerate(find_boots(ID_TO_IDENTIFY_BOOTS)):
         print('{} / {.hex}: {:%Y-%m-%d %H:%M:%S} {}→{}'.format(
