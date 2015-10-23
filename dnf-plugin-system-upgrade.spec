@@ -10,10 +10,8 @@ Source0:    https://github.com/rpm-software-management/dnf-plugin-system-upgrade
 %if 0%{?fedora} >= 23
 # DNF in Fedora 23 uses Python 3 by default
 Requires: python3-%{name}
-Requires: python3-systemd
 %else
 Requires: python2-%{name}
-Requires: python-systemd
 %endif
 
 Provides: dnf-command(system-upgrade)
@@ -38,6 +36,7 @@ This package provides the systemd services required to make the upgrade work.
 %{?python_provide:%python_provide python3-%{name}}
 Summary:    System Upgrade plugin for DNF
 Requires:   python3-dnf >= 1.1.0
+Requires:   systemd-python3
 BuildRequires:  python3-devel python3-dnf
 %description -n python3-%{name}
 System Upgrade plugin for DNF (Python 3 version).
@@ -48,6 +47,7 @@ This package provides the "system-upgrade" command.
 Summary:    System Upgrade plugin for DNF
 # TODO: change to 'python2-dnf' once that exists
 Requires:   python-dnf >= 1.1.0
+Requires:   systemd-python
 BuildRequires: python2-devel python-mock python-dnf
 %description -n python2-%{name}
 System Upgrade plugin for DNF (Python 2 version).
