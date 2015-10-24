@@ -122,8 +122,7 @@ def checkDataDir(datadir):
     # FUTURE NOTE: check for removable devices etc.
 
 def checkDNFVer():
-    if DNFVERSION < StrictVersion("1.1.0"):
-        raise CliError(_("This plugin requires DNF 1.1.0 or later."))
+    pass # XXX: do we require a specific DNF version for F21?
 
 # --- State object - for tracking upgrade state between runs ------------------
 
@@ -212,23 +211,6 @@ class PlymouthOutput(object):
 
 # A single PlymouthOutput instance for us to use within this module
 Plymouth = PlymouthOutput()
-
-# A TransactionProgress class that updates plymouth for us.
-class PlymouthTransactionProgress(dnf.callback.TransactionProgress):
-    # NOTE: I'm cheating here - this isn't part of the public DNF API
-    action = dnf.yum.rpmtrans.LoggingTransactionDisplay().action
-
-    # pylint: disable=too-many-arguments
-    def progress(self, package, action, ti_done, ti_total, ts_done, ts_total):
-        self._update_plymouth(package, action, ts_done, ts_total)
-
-    def _update_plymouth(self, package, action, current, total):
-        Plymouth.progress(int(100.0 * current / total))
-        Plymouth.message(self._fmt_event(package, action, current, total))
-
-    def _fmt_event(self, package, action, current, total):
-        action = self.action.get(action, action)
-        return "[%d/%d] %s %s..." % (current, total, action, package)
 
 # --- journal helpers -------------------------------------------------
 
@@ -466,7 +448,6 @@ class SystemUpgradeCommand(dnf.cli.Command):
         self.cli.demands.cacheonly = True
         # and don't ask any questions (we confirmed all this beforehand)
         self.base.conf.assumeyes = True
-        self.cli.demands.transaction_display = PlymouthTransactionProgress()
 
     def configure_clean(self, args):
         self.cli.demands.root_user = True

@@ -63,45 +63,6 @@ class PlymouthTestCase(unittest.TestCase):
         self.ply.set_mode("updates")
         call.assert_called_once_with((PLYMOUTH, "change-mode", "--updates"))
 
-from dnf.callback import (PKG_CLEANUP, PKG_DOWNGRADE, PKG_INSTALL, PKG_OBSOLETE,
-                          PKG_REINSTALL, PKG_REMOVE, PKG_UPGRADE, PKG_VERIFY,
-                          TRANS_POST)
-
-@patch('system_upgrade.call', return_value=0)
-class PlymouthTransactionProgressTestCase(unittest.TestCase):
-    actions = (PKG_CLEANUP, PKG_DOWNGRADE, PKG_INSTALL, PKG_OBSOLETE,
-               PKG_REINSTALL, PKG_REMOVE, PKG_UPGRADE, PKG_VERIFY,
-               TRANS_POST)
-    # pylint: disable=protected-access
-    def setUp(self):
-        system_upgrade.Plymouth = system_upgrade.PlymouthOutput()
-        self.display = system_upgrade.PlymouthTransactionProgress()
-        self.pkg = "testpackage"
-
-    def test_display(self, call):
-        for action in self.actions:
-            self.display.progress(self.pkg, action, 0, 100, 1, 1000)
-            msg = self.display._fmt_event(self.pkg, action, 1, 1000)
-            # updating plymouth display means two plymouth calls
-            call.assert_has_calls([
-                mock.call((PLYMOUTH, "system-update", "--progress", "0")),
-                mock.call((PLYMOUTH, "display-message", "--text", msg))
-            ], any_order=True)
-
-    def test_filter_calls(self, call):
-        action = PKG_INSTALL
-        # event progress on the same transaction item -> one display update
-        for te_cur in range(100):
-            self.display.progress(self.pkg, action, te_cur, 100, 1, 1000)
-        self.assertEqual(call.call_count, 2)
-        # next item: new message ("[2/1000] ...") but percentage still 0
-        self.display.progress(self.pkg, action, 0, 100, 2, 1000)
-        msg = self.display._fmt_event(self.pkg, action, 2, 1000)
-        # message was updated..
-        call.assert_called_with((PLYMOUTH, "display-message", "--text", msg))
-        # ..but no other new calls were made
-        self.assertEqual(call.call_count, 3)
-
 import os, tempfile, shutil, gettext
 @unittest.skipUnless(os.path.exists("po/en_GB.mo"), "make po/en_GB.mo first")
 class I18NTestCaseBase(unittest.TestCase):
@@ -351,22 +312,6 @@ class CleanCommandTestCase(CommandTestCaseBase):
         self.assertFalse(os.path.exists(fakerpm))
         self.assertEqual(self.command.state.download_status, None)
         self.assertEqual(self.command.state.upgrade_status, None)
-
-class CheckDNFVerTestCase(unittest.TestCase):
-    def setUp(self):
-        self._saved_dnfversion = system_upgrade.DNFVERSION
-
-    def tearDown(self):
-        system_upgrade.DNFVERSION = self._saved_dnfversion
-
-    def test_dnfver_ok(self):
-        system_upgrade.DNFVERSION = system_upgrade.StrictVersion("1.1.0")
-        self.assertEqual(system_upgrade.checkDNFVer(), None)
-
-    def test_dnfver_old(self):
-        system_upgrade.DNFVERSION = system_upgrade.StrictVersion("1.0.0")
-        with self.assertRaises(CliError):
-            system_upgrade.checkDNFVer()
 
 class RebootCheckCommandTestCase(CommandTestCaseBase):
     def test_configure_reboot(self):
