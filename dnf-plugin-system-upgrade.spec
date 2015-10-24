@@ -7,12 +7,8 @@ License:    GPLv2+
 URL:        https://github.com/rpm-software-management/dnf-plugin-system-upgrade
 Source0:    https://github.com/rpm-software-management/dnf-plugin-system-upgrade/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 
-%if 0%{?fedora} >= 23
-# DNF in Fedora 23 uses Python 3 by default
-Requires: python3-%{name}
-%else
+# NOTE: 0.5.x is F21-only, so we're gonna always want the python2 version
 Requires: python2-%{name}
-%endif
 
 Provides: dnf-command(system-upgrade)
 
@@ -23,7 +19,8 @@ Requires: dnf
 Provides: fedup = 0.9.3-1
 Obsoletes: fedup < 0.9.3-1
 
-Conflicts: PackageKit < 1.0.8
+# Fedora 21 has the necessary fixes backported to 1.0.6-2
+Conflicts: PackageKit < 1.0.6-2
 
 BuildArch: noarch
 BuildRequires: pkgconfig systemd gettext
@@ -35,7 +32,7 @@ This package provides the systemd services required to make the upgrade work.
 %package -n python3-%{name}
 %{?python_provide:%python_provide python3-%{name}}
 Summary:    System Upgrade plugin for DNF
-Requires:   python3-dnf >= 1.1.0
+Requires:   python3-dnf
 Requires:   systemd-python3
 BuildRequires:  python3-devel python3-dnf
 %description -n python3-%{name}
@@ -45,10 +42,10 @@ This package provides the "system-upgrade" command.
 %package -n python2-%{name}
 %{?python_provide:%python_provide python2-%{name}}
 Summary:    System Upgrade plugin for DNF
-# TODO: change to 'python2-dnf' once that exists
-Requires:   python-dnf >= 1.1.0
+# In F21 the dnf python library is in the 'dnf' package
+Requires:   dnf
 Requires:   systemd-python
-BuildRequires: python2-devel python-mock python-dnf
+BuildRequires: python2-devel python-mock dnf
 %description -n python2-%{name}
 System Upgrade plugin for DNF (Python 2 version).
 This package provides the "system-upgrade" command.
