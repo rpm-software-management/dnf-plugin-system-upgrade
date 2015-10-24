@@ -101,6 +101,9 @@ fi
 
 %changelog
 * Thu Oct 21 2015 Will Woods <wwoods@redhat.com> 0.7.0-1
+- Add `log` subcommand (to show upgrade logs)
+- Fix upgrades on systems without `plymouth` installed
+- Fix upgrades using `--best` or `--allowerasing` (#1266589)
 - Drop compatibility with DNF < 1.1.0; bump version number to avoid confusion.
 - Clean up stuff left behind by the old fedup package (#1264948)
 
