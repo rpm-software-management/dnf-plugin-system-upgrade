@@ -1,15 +1,11 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+# Mario Blättermann <mario.blaettermann@gmail.com>, 2015. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-23 15:51-0400\n"
-"PO-Revision-Date: \n"
-"Last-Translator: \n"
+"PO-Revision-Date: 2015-10-24 01:46-0400\n"
+"Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,151 +17,172 @@ msgstr ""
 #: system_upgrade.py:69
 #, python-format
 msgid "'%s' is not used anymore. Ignoring."
-msgstr ""
+msgstr "»%s« wird nicht mehr verwendet, wird ignoriert."
 
 #: system_upgrade.py:76
 msgid "'--clean-metadata' removed. Use 'dnf clean metadata --releasever=VER'"
 msgstr ""
+"»--clean-metadata« wurde entfernt. Verwenden Sie »dnf clean metadata "
+"--releasever=VER«"
 
 #: system_upgrade.py:74
 msgid "'--expire-cache' removed. Use 'dnf system-upgrade download --refresh'"
 msgstr ""
+"»--expire-cache« wurde entfernt. Verwenden Sie »dnf system-upgrade download "
+"--refresh«"
 
 #: system_upgrade.py:260
 msgid "-- no logs were found --"
-msgstr ""
+msgstr "-- keine Protokolle gefunden --"
 
 #: system_upgrade.py:121
 msgid "--datadir: File exists"
-msgstr ""
+msgstr "--datadir: Datei existiert"
 
 #: system_upgrade.py:90
 #, python-format
 msgid "Can't do '%s' and '%s' at the same time."
-msgstr ""
+msgstr "»%s« und »%s« können nicht gleichzeitig ausgeführt werden."
 
 #: system_upgrade.py:82
 msgid ""
 "Can't redirect DNF logs with --debuglog. Use DNF debug options instead."
 msgstr ""
+"DNF-Protokolle können nicht mit --debuglog weitergeleitet werden. Verwenden "
+"Sie stattdessen die Debug-Optionen von DNF."
 
 #: system_upgrade.py:274
 msgid "Cannot find logs with this index."
-msgstr ""
+msgstr "Protokolle mit diesem Index können nicht gefunden werden."
 
 #: system_upgrade.py:573
 msgid "Cleaning up downloaded data..."
-msgstr ""
+msgstr "Heruntergeladene Daten werden aufgeräumt …"
 
 #. Translators: do not change "reboot" here
 #: system_upgrade.py:67
 #, python-format
 msgid "Download complete! Use 'dnf %s reboot' to start the upgrade."
 msgstr ""
+"Download abgeschlossen! Rufen Sie »%s reboot« auf, um mit der "
+"Systemaktualisierung zu beginnen."
 
 #: system_upgrade.py:604
 msgid "Download finished."
-msgstr ""
+msgstr "Download abgeschlossen."
 
 #: system_upgrade.py:65
 msgid "Need a --releasever greater than the current system version."
 msgstr ""
+"Der Wert für --releasever muss größer sein als der des aktuellen Systems."
 
 #: system_upgrade.py:63
 msgid "No new kernel packages were found."
-msgstr ""
+msgstr "Es wurden keine neuen Kernel-Pakete gefunden."
 
 #: system_upgrade.py:365
 msgid "OPTIONS"
-msgstr ""
+msgstr "OPTIONEN"
 
 #: system_upgrade.py:362
 msgid "Prepare system for upgrade to a new release"
 msgstr ""
+"System für die Aktualisierung auf eine neue Release-Version vorbereiten"
 
 #: system_upgrade.py:515
 msgid "Rebooting to perform upgrade."
-msgstr ""
+msgstr "System wird zur Ausführung der Aktualisierung neu gestartet."
 
 #: system_upgrade.py:84
 #, python-format
 msgid "Sorry, dnf doesn't support '%(option)s'"
-msgstr ""
+msgstr "Entschuldigung, »%(option)s« wird von dnf nicht unterstützt."
 
 #: system_upgrade.py:71
 #, python-format
 msgid "Sorry, dnf system-upgrade doesn't support '%(option)s'"
 msgstr ""
+"Entschuldigung, »%(option)s« wird von dnf system-upgrade nicht unterstützt."
 
 #: system_upgrade.py:92
 msgid "Sorry, you need to use 'download --releasever' instead of '--network'"
 msgstr ""
+"Entschuldigung, Sie müssen »download --releasever« anstatt »--network« "
+"verwenden"
 
 #: system_upgrade.py:541 system_upgrade.py:547
 msgid "Starting system upgrade. This will take a while."
-msgstr ""
+msgstr "Die Systemaktualisierung wird gestartet. Das kann einige Zeit dauern."
 
 #: system_upgrade.py:250
 msgid "The following boots appear to contain upgrade logs:"
 msgstr ""
+"Die folgenden Startvorgänge scheinen Aktualisierungsprotokolle zu enthalten:"
 
 #: system_upgrade.py:126
 msgid "This plugin requires DNF 1.1.0 or later."
-msgstr ""
+msgstr "Dieses Plugin benötigt DNF in Version 1.1.0 oder neuer."
 
 #: system_upgrade.py:608 system_upgrade.py:609
 msgid "Upgrade complete! Cleaning up and rebooting..."
 msgstr ""
+"Systemaktualisierung abgeschlossen! Es wird aufgeräumt und das System neu "
+"gestartet …"
 
 #: system_upgrade.py:314 system_upgrade.py:365
 msgid "VERSION"
-msgstr ""
+msgstr "VERSION"
 
 #: system_upgrade.py:342
 msgid "action to perform"
-msgstr ""
+msgstr "auszuführende Aktion"
 
 #: system_upgrade.py:496
 msgid "another upgrade tool is running. exiting quietly."
 msgstr ""
+"Ein anderes Systemaktualisierungswerkzeug läuft bereits, Vorgang wird "
+"abgebrochen."
 
 #. basic download options
 #: system_upgrade.py:313
 msgid "download options"
-msgstr ""
+msgstr "Download-Optionen"
 
 #: system_upgrade.py:322
 msgid "keep installed packages if the new release's version is older"
 msgstr ""
+"installierte Pakete behalten, wenn deren Version neuer als die des "
+"aktualisierten Systems ist"
 
 #. options for the log verb
 #: system_upgrade.py:344
 msgid "log options"
-msgstr ""
+msgstr "Protokoll-Optionen"
 
 #: system_upgrade.py:315
 msgid "release version (required)"
-msgstr ""
+msgstr "Release-Version (required)"
 
 #: system_upgrade.py:317
 msgid "save downloaded data to this location"
-msgstr ""
+msgstr "heruntergeladene Daten an diesem Ort speichern"
 
 #: system_upgrade.py:485
 msgid "system is not ready for upgrade"
-msgstr ""
+msgstr "System ist nicht bereit für die Aktualisierung"
 
 #. Translators: This string is only used in unit tests.
 #: system_upgrade.py:40
 msgid "the color of the sky"
-msgstr ""
+msgstr "die Farbe des Himmels"
 
 #: system_upgrade.py:487
 msgid "upgrade is already scheduled"
-msgstr ""
+msgstr "Systemaktualisierung ist bereits geplant"
 
 #. Translators: do not change "reboot" here
 #: system_upgrade.py:494
 #, python-format
 msgid "use '%s reboot' to begin the upgrade"
 msgstr ""
+"Rufen Sie »%s reboot« auf, um mit der Systemaktualisierung zu beginnen."

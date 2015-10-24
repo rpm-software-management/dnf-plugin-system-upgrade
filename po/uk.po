@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-23 15:51-0400\n"
-"PO-Revision-Date: 2015-09-11 12:15-0400\n"
+"PO-Revision-Date: 2015-10-24 03:01-0400\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian\n"
 "MIME-Version: 1.0\n"
@@ -17,7 +17,7 @@ msgstr ""
 #: system_upgrade.py:69
 #, python-format
 msgid "'%s' is not used anymore. Ignoring."
-msgstr ""
+msgstr " «%s» більше не використовується. Ігноруємо."
 
 #: system_upgrade.py:76
 msgid "'--clean-metadata' removed. Use 'dnf clean metadata --releasever=VER'"
@@ -33,7 +33,7 @@ msgstr ""
 
 #: system_upgrade.py:260
 msgid "-- no logs were found --"
-msgstr ""
+msgstr "-- журналів не знайдено --"
 
 #: system_upgrade.py:121
 msgid "--datadir: File exists"
@@ -42,16 +42,18 @@ msgstr "--datadir: файл вже існує"
 #: system_upgrade.py:90
 #, python-format
 msgid "Can't do '%s' and '%s' at the same time."
-msgstr ""
+msgstr "Не можна виконувати «%s» і «%s» одночасно."
 
 #: system_upgrade.py:82
 msgid ""
 "Can't redirect DNF logs with --debuglog. Use DNF debug options instead."
 msgstr ""
+"Не вдалося переспрямувати виведення журналу DNF за допомогою --debuglog. "
+"Скористайтеся краще параметрами діагностики DNF."
 
 #: system_upgrade.py:274
 msgid "Cannot find logs with this index."
-msgstr ""
+msgstr "Не вдалося знайти журнал із цим покажчиком."
 
 #: system_upgrade.py:573
 msgid "Cleaning up downloaded data..."
@@ -67,7 +69,7 @@ msgstr ""
 
 #: system_upgrade.py:604
 msgid "Download finished."
-msgstr ""
+msgstr "Отримання даних завершено."
 
 #: system_upgrade.py:65
 msgid "Need a --releasever greater than the current system version."
@@ -89,21 +91,22 @@ msgstr "Приготувати систему до оновлення до но�
 
 #: system_upgrade.py:515
 msgid "Rebooting to perform upgrade."
-msgstr ""
+msgstr "Перезавантажуємо систему для завершення оновлення."
 
 #: system_upgrade.py:84
 #, python-format
 msgid "Sorry, dnf doesn't support '%(option)s'"
-msgstr ""
+msgstr "Вибачте, підтримки «%(option)s» не передбачено"
 
 #: system_upgrade.py:71
 #, python-format
 msgid "Sorry, dnf system-upgrade doesn't support '%(option)s'"
-msgstr ""
+msgstr "Вибачте, у dnf system-upgrade не передбачено підтримки «%(option)s»"
 
 #: system_upgrade.py:92
 msgid "Sorry, you need to use 'download --releasever' instead of '--network'"
 msgstr ""
+"Вибачте, слід використовувати «download --releasever», а не «--network»"
 
 #: system_upgrade.py:541 system_upgrade.py:547
 msgid "Starting system upgrade. This will take a while."
@@ -111,11 +114,11 @@ msgstr "Починаємо оновлення системи. Будь ласк�
 
 #: system_upgrade.py:250
 msgid "The following boots appear to contain upgrade logs:"
-msgstr ""
+msgstr "Здається, журнали оновлення містяться у записах таких завантажень:"
 
 #: system_upgrade.py:126
 msgid "This plugin requires DNF 1.1.0 or later."
-msgstr ""
+msgstr "Для роботи цього додатка потрібна DNF 1.1.0 або новіша версія."
 
 #: system_upgrade.py:608 system_upgrade.py:609
 msgid "Upgrade complete! Cleaning up and rebooting..."
@@ -142,12 +145,12 @@ msgstr "параметри отримання даних"
 
 #: system_upgrade.py:322
 msgid "keep installed packages if the new release's version is older"
-msgstr ""
+msgstr "зберігати встановлені пакунки, якщо версія нового випуску є старішою"
 
 #. options for the log verb
 #: system_upgrade.py:344
 msgid "log options"
-msgstr ""
+msgstr "параметри ведення журналу"
 
 #: system_upgrade.py:315
 msgid "release version (required)"

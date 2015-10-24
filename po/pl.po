@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-23 15:51-0400\n"
-"PO-Revision-Date: 2015-09-11 01:12-0400\n"
+"PO-Revision-Date: 2015-10-24 02:33-0400\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish\n"
 "MIME-Version: 1.0\n"
@@ -18,7 +18,7 @@ msgstr ""
 #: system_upgrade.py:69
 #, python-format
 msgid "'%s' is not used anymore. Ignoring."
-msgstr ""
+msgstr "„%s” nie jest już używane. Ignorowanie."
 
 #: system_upgrade.py:76
 msgid "'--clean-metadata' removed. Use 'dnf clean metadata --releasever=VER'"
@@ -34,7 +34,7 @@ msgstr ""
 
 #: system_upgrade.py:260
 msgid "-- no logs were found --"
-msgstr ""
+msgstr "-- nie odnaleziono dzienników --"
 
 #: system_upgrade.py:121
 msgid "--datadir: File exists"
@@ -43,16 +43,18 @@ msgstr "--datadir: plik istnieje"
 #: system_upgrade.py:90
 #, python-format
 msgid "Can't do '%s' and '%s' at the same time."
-msgstr ""
+msgstr "Nie można wykonać „%s” i „%s” w tym samym czasie."
 
 #: system_upgrade.py:82
 msgid ""
 "Can't redirect DNF logs with --debuglog. Use DNF debug options instead."
 msgstr ""
+"Nie można przekazać dzienników programu DNF za pomocą opcji „--debuglog”. "
+"Należy użyć opcji debugowania programu DNF zamiast tego."
 
 #: system_upgrade.py:274
 msgid "Cannot find logs with this index."
-msgstr ""
+msgstr "Nie można odnaleźć dzienników za pomocą tego indeksu."
 
 #: system_upgrade.py:573
 msgid "Cleaning up downloaded data..."
@@ -68,12 +70,12 @@ msgstr ""
 
 #: system_upgrade.py:604
 msgid "Download finished."
-msgstr ""
+msgstr "Ukończono pobieranie."
 
 #: system_upgrade.py:65
 msgid "Need a --releasever greater than the current system version."
 msgstr ""
-"Parametr --releasever wymaga wartości wyższej niż wersja obecnego systemu."
+"Parametr „--releasever” wymaga wartości wyższej niż wersja obecnego systemu."
 
 #: system_upgrade.py:63
 msgid "No new kernel packages were found."
@@ -89,21 +91,21 @@ msgstr "Przygotowuje system do aktualizacji do nowego wydania"
 
 #: system_upgrade.py:515
 msgid "Rebooting to perform upgrade."
-msgstr ""
+msgstr "Ponowne uruchamianie, aby wykonać aktualizację."
 
 #: system_upgrade.py:84
 #, python-format
 msgid "Sorry, dnf doesn't support '%(option)s'"
-msgstr ""
+msgstr "Program DNF nie obsługuje opcji „%(option)s”"
 
 #: system_upgrade.py:71
 #, python-format
 msgid "Sorry, dnf system-upgrade doesn't support '%(option)s'"
-msgstr ""
+msgstr "Polecenie „dnf system-upgrade” nie obsługuje opcji „%(option)s”"
 
 #: system_upgrade.py:92
 msgid "Sorry, you need to use 'download --releasever' instead of '--network'"
-msgstr ""
+msgstr "Należy użyć opcji „download --releasever” zamiast „--network”"
 
 #: system_upgrade.py:541 system_upgrade.py:547
 msgid "Starting system upgrade. This will take a while."
@@ -111,11 +113,11 @@ msgstr "Rozpoczynanie aktualizacji systemu. Może to chwilę zająć."
 
 #: system_upgrade.py:250
 msgid "The following boots appear to contain upgrade logs:"
-msgstr ""
+msgstr "Następujące uruchomienia zawierają dzienniki aktualizacji:"
 
 #: system_upgrade.py:126
 msgid "This plugin requires DNF 1.1.0 or later."
-msgstr ""
+msgstr "Ta wtyczka wymaga programu DNF w wersji 1.1.0 lub późniejszej."
 
 #: system_upgrade.py:608 system_upgrade.py:609
 msgid "Upgrade complete! Cleaning up and rebooting..."
@@ -143,11 +145,12 @@ msgstr "opcje pobierania"
 #: system_upgrade.py:322
 msgid "keep installed packages if the new release's version is older"
 msgstr ""
+"zachowuje zainstalowane pakiety, jeśli wersja nowego wydania jest starsza"
 
 #. options for the log verb
 #: system_upgrade.py:344
 msgid "log options"
-msgstr ""
+msgstr "opcje dziennika"
 
 #: system_upgrade.py:315
 msgid "release version (required)"
