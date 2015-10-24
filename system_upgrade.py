@@ -361,7 +361,7 @@ class SystemUpgradeCommand(dnf.cli.Command):
     aliases = ('system-upgrade', 'fedup')
     summary = _("Prepare system for upgrade to a new release")
     # NOTE: upgrade isn't meant to be invoked by users, so it's not in usage
-    usage = "[%s] [download --releasever=%s|reboot|clean]" % (
+    usage = "[%s] [download --releasever=%s|reboot|clean|log]" % (
         _("OPTIONS"), _("VERSION"))
 
     def __init__(self, cli):
