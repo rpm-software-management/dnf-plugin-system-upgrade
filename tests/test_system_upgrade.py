@@ -9,7 +9,7 @@ except ImportError:
     import mock
 patch = mock.patch
 
-from system_upgrade import PLYMOUTH
+from system_upgrade import PLYMOUTH, CliError
 
 
 @patch('system_upgrade.call', return_value=0)
@@ -32,6 +32,11 @@ class PlymouthTestCase(unittest.TestCase):
         self.ply.ping()
         self.assertEqual(call.call_count, 2)
         self.assertTrue(self.ply.alive)
+
+    def test_mode_no_plymouth(self, call):
+        call.side_effect = OSError(2, 'No such file or directory')
+        self.ply.set_mode("updates")
+        self.assertFalse(self.ply.alive)
 
     def test_message(self, call):
         self.ply.message(self.msg)
@@ -58,45 +63,44 @@ class PlymouthTestCase(unittest.TestCase):
         self.ply.set_mode("updates")
         call.assert_called_once_with((PLYMOUTH, "change-mode", "--updates"))
 
+from dnf.callback import (PKG_CLEANUP, PKG_DOWNGRADE, PKG_INSTALL, PKG_OBSOLETE,
+                          PKG_REINSTALL, PKG_REMOVE, PKG_UPGRADE, PKG_VERIFY,
+                          TRANS_POST)
+
 @patch('system_upgrade.call', return_value=0)
-class PlymouthTransactionDisplayTestCase(unittest.TestCase):
+class PlymouthTransactionProgressTestCase(unittest.TestCase):
+    actions = (PKG_CLEANUP, PKG_DOWNGRADE, PKG_INSTALL, PKG_OBSOLETE,
+               PKG_REINSTALL, PKG_REMOVE, PKG_UPGRADE, PKG_VERIFY,
+               TRANS_POST)
     # pylint: disable=protected-access
     def setUp(self):
         system_upgrade.Plymouth = system_upgrade.PlymouthOutput()
-        self.display = system_upgrade.PlymouthTransactionDisplay()
+        self.display = system_upgrade.PlymouthTransactionProgress()
         self.pkg = "testpackage"
-        self.action = self.display.PKG_INSTALL
 
     def test_display(self, call):
-        self.display.event(self.pkg, self.action, 0, 100, 1, 1000)
-        msg = self.display._fmt_event(self.pkg, self.action, 1, 1000)
-        # updating plymouth display means two plymouth calls
-        call.assert_has_calls([
-            mock.call((PLYMOUTH, "system-update", "--progress", "0")),
-            mock.call((PLYMOUTH, "display-message", "--text", msg))
-        ], any_order=True)
+        for action in self.actions:
+            self.display.progress(self.pkg, action, 0, 100, 1, 1000)
+            msg = self.display._fmt_event(self.pkg, action, 1, 1000)
+            # updating plymouth display means two plymouth calls
+            call.assert_has_calls([
+                mock.call((PLYMOUTH, "system-update", "--progress", "0")),
+                mock.call((PLYMOUTH, "display-message", "--text", msg))
+            ], any_order=True)
 
     def test_filter_calls(self, call):
+        action = PKG_INSTALL
         # event progress on the same transaction item -> one display update
-        for te_current in range(100):
-            self.display.event(self.pkg, self.action, te_current, 100, 1, 1000)
+        for te_cur in range(100):
+            self.display.progress(self.pkg, action, te_cur, 100, 1, 1000)
         self.assertEqual(call.call_count, 2)
         # next item: new message ("[2/1000] ...") but percentage still 0
-        self.display.event(self.pkg, self.action, 0, 100, 2, 1000)
-        msg = self.display._fmt_event(self.pkg, self.action, 2, 1000)
+        self.display.progress(self.pkg, action, 0, 100, 2, 1000)
+        msg = self.display._fmt_event(self.pkg, action, 2, 1000)
         # message was updated..
         call.assert_called_with((PLYMOUTH, "display-message", "--text", msg))
         # ..but no other new calls were made
         self.assertEqual(call.call_count, 3)
-
-    def test_verify(self, call):
-        with patch("system_upgrade._", return_value="Verifying"):
-            self.display.verify_tsi_package(self.pkg, 1, 1000)
-        msg = self.display._fmt_event(self.pkg, "Verifying", 1, 1000)
-        call.assert_has_calls([
-            mock.call((PLYMOUTH, "system-update", "--progress", "0")),
-            mock.call((PLYMOUTH, "display-message", "--text", msg))
-        ], any_order=True)
 
 import os, tempfile, shutil, gettext
 @unittest.skipUnless(os.path.exists("po/en_GB.mo"), "make po/en_GB.mo first")
@@ -140,6 +144,84 @@ class I18NTestCase(I18NTestCaseBase):
         self.assertNotEqual(msg, trans_msg)
 
 class ArgparseTestCase(unittest.TestCase):
+    def setUp(self):
+        self.cmd = system_upgrade.SystemUpgradeCommand('argparse-testcase')
+
+    def assert_fails_with(self, args, message):
+        with mock.patch('system_upgrade.PluginArgumentParser.print_help') as ph:
+            with self.assertRaises(CliError) as cm:
+                self.cmd.parse_args(args)
+            self.assertIn(message, str(cm.exception))
+            ph.assert_called_once_with()
+
+    def assert_warning(self, args):
+        with mock.patch('system_upgrade.logger.warning') as warning:
+            self.cmd.parse_args(args)
+            warning.assert_called_once()
+
+    def assert_error(self, args, message):
+        with self.assertRaises(CliError) as cm:
+            self.cmd.parse_args(args)
+        self.assertIn(message, str(cm.exception))
+
+    def test_actions(self):
+        for action in system_upgrade.ACTIONS:
+            opts = self.cmd.parse_args([action])
+            self.assertEqual(opts.action, action)
+
+    def test_clean_compat(self):
+        opts = self.cmd.parse_args(['--clean'])
+        self.assertEqual(opts.action, 'clean')
+
+    def test_network_compat(self):
+        opts = self.cmd.parse_args(['--network=35'])
+        self.assertEqual(opts.action, 'download')
+        self.assertEqual(opts.releasever, '35')
+
+    def test_bad_opts(self):
+        for bad_arg in ("--turbo", "--releaseversion=rawhide", "explode"):
+            self.assert_fails_with(["download", bad_arg], bad_arg)
+
+    def test_bad_action(self):
+        self.assert_fails_with(["explode"], "explode")
+
+    def test_conflicting_actions(self):
+        self.assert_error(['--clean', '--network', '23'], '--clean')
+        self.assert_error(['--clean', '--network=23'], '--clean')
+        self.assert_error(['--clean', '--network', '23'], '--network')
+        self.assert_error(['--clean', '--network=23'], '--network')
+        self.assert_error(['reboot', '--network', '23'], 'reboot')
+        self.assert_error(['reboot', '--network=23'], 'reboot')
+
+    def test_deprecated_opts(self):
+        for bad_arg in ('--skipbootloader',
+                        '--skipkernel',
+                        '--resetbootloader',
+                        '--instrepo=FOO',
+                        '--product=FOO'):
+            self.assert_warning(["download", bad_arg])
+
+    def test_silent_opts(self):
+        for bad_arg in ('--skippkgs',
+                        '--logtraceback'):
+            self.cmd.parse_args(["download", bad_arg])
+
+    def test_removed_opts(self):
+        for bad_arg in ('--expire-cache',
+                        '--clean-metadata',
+                        '--dry-run',
+                        '--just-print',
+                        '-n',
+                        '--debuglog=chunkstyle.log',
+                        '--enableplugin=FOO',
+                        '--device=FOO',
+                        '--iso=FOO',
+                        '--add-install=FOO'):
+            opt, _, val = bad_arg.partition('=')
+            self.assert_error(["download", bad_arg], opt)
+            if val:
+                self.assert_error(["download", bad_arg, val], opt)
+
     def test_actions_exist(self):
         for phase in ('configure', 'run'):
             for action in system_upgrade.ACTIONS:
@@ -170,6 +252,7 @@ class StateTestCase(unittest.TestCase):
         del self.state
         self.state = self.StateClass()
         self.assertIs(self.state.datadir, None)
+
 
     def test_bool_value(self):
         with self.state:
@@ -207,3 +290,176 @@ class UtilTestCase(unittest.TestCase):
 
     def tearDown(self):
         shutil.rmtree(self.tmpdir)
+
+class CommandTestCaseBase(unittest.TestCase):
+    def setUp(self):
+        self.statedir = tempfile.mkdtemp(prefix="command.test.statedir.")
+        self.statefile = os.path.join(self.statedir, "state")
+        self.old_statefile = system_upgrade.State.statefile
+        system_upgrade.State.statefile = self.statefile
+        self.cli = mock.MagicMock()
+        self.command = system_upgrade.SystemUpgradeCommand(cli=self.cli)
+
+    def tearDown(self):
+        shutil.rmtree(self.statedir)
+        system_upgrade.State.statefile = self.old_statefile
+
+class CommandTestCase(CommandTestCaseBase):
+    # self-tests for the command test cases
+    def test_state(self):
+        # initial state: no status
+        self.assertEqual(self.command.state.download_status, None)
+        self.assertEqual(self.command.state.upgrade_status, None)
+        self.assertEqual(self.command.state.datadir, None)
+        # attribute error for non-existent state item
+        with self.assertRaises(AttributeError):
+            dummy = self.command.state.DOES_NOT_EXIST
+        # check the context stuff works like we expect
+        with self.command.state as state:
+            state.datadir = os.path.join(self.statedir, "datadir")
+            os.makedirs(state.datadir)
+        self.assertTrue(os.path.isdir(self.command.state.datadir))
+
+class CleanCommandTestCase(CommandTestCaseBase):
+    def test_configure_clean(self):
+        self.cli.demands.root_user = None
+        self.command.configure_clean([])
+        self.assertTrue(self.cli.demands.root_user)
+
+    def test_run_clean(self):
+        # set up a datadir and pretend like we're ready to upgrade
+        datadir = os.path.join(self.statedir, "datadir")
+        os.makedirs(datadir)
+        fakerpm = os.path.join(datadir, "fake.rpm")
+        with open(fakerpm, "w") as outf:
+            outf.write("hi i am an rpm")
+        with self.command.state as state:
+            state.datadir = datadir
+            state.download_status = "complete"
+            state.upgrade_status = "ready"
+        # make sure the datadir and state info is set up OK
+        self.assertEqual(datadir, self.command.state.datadir)
+        self.assertTrue(os.path.isdir(datadir))
+        self.assertTrue(os.path.exists(fakerpm))
+        self.assertEqual(self.command.state.download_status, "complete")
+        self.assertEqual(self.command.state.upgrade_status, "ready")
+        # run cleanup
+        self.command.run_clean([])
+        # datadir remains, but is empty, and state is cleared
+        self.assertEqual(datadir, self.command.state.datadir)
+        self.assertTrue(os.path.isdir(datadir))
+        self.assertFalse(os.path.exists(fakerpm))
+        self.assertEqual(self.command.state.download_status, None)
+        self.assertEqual(self.command.state.upgrade_status, None)
+
+class CheckDNFVerTestCase(unittest.TestCase):
+    def setUp(self):
+        self._saved_dnfversion = system_upgrade.DNFVERSION
+
+    def tearDown(self):
+        system_upgrade.DNFVERSION = self._saved_dnfversion
+
+    def test_dnfver_ok(self):
+        system_upgrade.DNFVERSION = system_upgrade.StrictVersion("1.1.0")
+        self.assertEqual(system_upgrade.checkDNFVer(), None)
+
+    def test_dnfver_old(self):
+        system_upgrade.DNFVERSION = system_upgrade.StrictVersion("1.0.0")
+        with self.assertRaises(CliError):
+            system_upgrade.checkDNFVer()
+
+class RebootCheckCommandTestCase(CommandTestCaseBase):
+    def test_configure_reboot(self):
+        self.cli.demands.root_user = None
+        self.command.configure_reboot([])
+        self.assertTrue(self.cli.demands.root_user)
+
+    def check_reboot(self, status='complete', lexists=False, dnfverok=True):
+        with patch('system_upgrade.os.path.lexists') as lexists_func:
+            with patch('system_upgrade.checkDNFVer') as dnfver_func:
+                self.command.state.download_status = status
+                if dnfverok:
+                    dnfver_func.return_value = None
+                else:
+                    dnfver_func.side_effect = CliError
+                lexists_func.return_value = lexists
+                self.command.check_reboot(None, None)
+
+    def test_check_reboot_ok(self):
+        self.check_reboot(status='complete', lexists=False, dnfverok=True)
+
+    def test_check_reboot_no_download(self):
+        with self.assertRaises(CliError):
+            self.check_reboot(status=None, lexists=False, dnfverok=True)
+
+    def test_check_reboot_link_exists(self):
+        with self.assertRaises(CliError):
+            self.check_reboot(status='complete', lexists=True, dnfverok=True)
+
+    def test_check_reboot_dnfver_bad(self):
+        with self.assertRaises(CliError):
+            self.check_reboot(status='complete', lexists=False, dnfverok=False)
+
+class DownloadCommandTestCase(CommandTestCase):
+    def test_configure_download(self):
+        self.command.configure(["download"])
+        self.assertTrue(self.cli.demands.root_user)
+        self.assertTrue(self.cli.demands.resolving)
+        self.assertTrue(self.cli.demands.sack_activation)
+        self.assertTrue(self.cli.demands.available_repos)
+        for repo in self.command.base.repos.values():
+            self.assertEqual(repo.pkgdir, self.command.opts.datadir)
+
+    def test_transaction_download(self):
+        pkg = mock.MagicMock()
+        pkg.name = "kernel"
+        self.cli.base.transaction.install_set = [pkg]
+        self.command.opts = mock.MagicMock()
+        self.command.opts.distro_sync = "distro_sync"
+        self.cli.demands.allow_erasing = "allow_erasing"
+        self.command.base.conf.best = "best"
+        self.command.base.conf.installroot = "/"
+        self.command.base.conf.releasever = "35"
+        self.command.transaction_download()
+        with system_upgrade.State() as state:
+            self.assertEqual(state.download_status, "complete")
+            self.assertEqual(state.distro_sync, "distro_sync")
+            self.assertEqual(state.allow_erasing, "allow_erasing")
+            self.assertEqual(state.best, "best")
+
+    def test_transaction_download_no_kernel(self):
+        self.cli.base.transaction.install_set = []
+        with self.assertRaises(CliError):
+            self.command.transaction_download()
+
+class UpgradeCommandTestCase(CommandTestCase):
+    def test_configure_upgrade(self):
+        # write state like download would have
+        with self.command.state as state:
+            state.download_status = "complete"
+            state.distro_sync = "distro_sync"
+            state.allow_erasing = "allow_erasing"
+            state.best = "best"
+        # okay, now configure upgrade
+        self.command.configure(["upgrade"])
+        # did we reset the depsolving flags?
+        self.assertEqual(self.command.opts.distro_sync, "distro_sync")
+        self.assertEqual(self.cli.demands.allow_erasing, "allow_erasing")
+        self.assertEqual(self.command.base.conf.best, "best")
+        # are we on autopilot?
+        self.assertTrue(self.command.base.conf.assumeyes)
+        self.assertTrue(self.cli.demands.cacheonly)
+
+class LogCommandTestCase(CommandTestCase):
+    def test_configure_log(self):
+        self.command.configure(["log"])
+
+    def test_run_log_list(self):
+        with patch('system_upgrade.list_logs') as list_logs:
+            self.command.run_log(["log"])
+        list_logs.assert_called_once_with()
+
+    def test_run_log_prev(self):
+        with patch('system_upgrade.show_log') as show_log:
+            self.command.run_log(["log", "-2"])
+        show_log.assert_called_once_with(-2)

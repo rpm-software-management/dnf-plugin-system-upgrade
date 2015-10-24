@@ -16,15 +16,14 @@ Requires: python2-%{name}
 
 Provides: dnf-command(system-upgrade)
 
+# The plugin itself doesn't technically require dnf, but /usr/bin/fedup does.
+# So either we split out a subpackage for /usr/bin/fedup or we Require dnf.
+Requires: dnf
+
 Provides: fedup = 0.9.3-1
 Obsoletes: fedup < 0.9.3-1
 
-%if 0%{?fedora} == 21
-# Fedora 21 has the necessary fixes backported to 1.0.6-2
-Conflicts: PackageKit < 1.0.6-2
-%else
 Conflicts: PackageKit < 1.0.8
-%endif
 
 BuildArch: noarch
 BuildRequires: pkgconfig systemd gettext
@@ -36,7 +35,8 @@ This package provides the systemd services required to make the upgrade work.
 %package -n python3-%{name}
 %{?python_provide:%python_provide python3-%{name}}
 Summary:    System Upgrade plugin for DNF
-Requires:   python3-dnf
+Requires:   python3-dnf >= 1.1.0
+Requires:   systemd-python3
 BuildRequires:  python3-devel python3-dnf
 %description -n python3-%{name}
 System Upgrade plugin for DNF (Python 3 version).
@@ -45,19 +45,10 @@ This package provides the "system-upgrade" command.
 %package -n python2-%{name}
 %{?python_provide:%python_provide python2-%{name}}
 Summary:    System Upgrade plugin for DNF
-BuildRequires: python2-devel python-mock
-
-
-%if 0%{?fedora} >= 22
-# TODO: update this once dnf is following the Python packaging guidelines
-Requires:       python-dnf
-BuildRequires:  python-dnf
-%else
-# F21 didn't split out python2-dnf from the main dnf package
-Requires:       dnf
-BuildRequires:  dnf
-%endif
-
+# TODO: change to 'python2-dnf' once that exists
+Requires:   python-dnf >= 1.1.0
+Requires:   systemd-python
+BuildRequires: python2-devel python-mock python-dnf
 %description -n python2-%{name}
 System Upgrade plugin for DNF (Python 2 version).
 This package provides the "system-upgrade" command.
@@ -76,6 +67,18 @@ make install-plugin DESTDIR=$RPM_BUILD_ROOT PYTHON=%{__python3}
 %check
 make check PYTHON=%{__python2}
 make check PYTHON=%{__python3}
+
+%pre
+# if we're replacing fedup, we need to make sure it cleans up its leftovers.
+# (see https://bugzilla.redhat.com/show_bug.cgi?id=1264948)
+if [ "$1" == 1 -a -x /usr/bin/fedup ]; then
+    # save the old package cache (if the new one isn't populated)
+    if [ -d /var/lib/system-upgrade ]; then
+        mv -f -T /var/lib/system-upgrade /var/lib/dnf/system-upgrade || :
+    fi
+    # clean up everything else
+    /usr/bin/fedup --clean || :
+fi
 
 %files -f %{name}.lang
 %license LICENSE
@@ -97,8 +100,13 @@ make check PYTHON=%{__python3}
 %{python_sitelib}/dnf-plugins/system_upgrade.py*
 
 %changelog
-* Thu Sep 17 2015 Will Woods <wwoods@redhat.com> 0.5.0-1
+* Thu Oct 21 2015 Will Woods <wwoods@redhat.com> 0.5.0-1
 - Fix missing console output in F21/DNF 0.6.x
+- Add `log` subcommand (to show upgrade logs)
+- Fix upgrades on systems without `plymouth` installed
+- Fix upgrades using `--best` or `--allowerasing` (#1266589)
+- Drop compatibility with DNF < 1.1.0; bump version number to avoid confusion.
+- Clean up stuff left behind by the old fedup package (#1264948)
 
 * Tue Sep 15 2015 Will Woods <wwoods@redhat.com> 0.4.1-1
 - Fix `dnf system-upgrade clean` (rhbz#1262145)

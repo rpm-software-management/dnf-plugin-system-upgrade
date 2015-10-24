@@ -1,4 +1,4 @@
-.TH "dnf.plugin.system\-upgrade" "8" "September 9, 2015" "0.5.0" ""
+.TH "dnf.plugin.system\-upgrade" "8" "October 21, 2015" "0.5.0" ""
 
 .SH NAME
 .PP
@@ -12,21 +12,39 @@ dnf system\-upgrade \- upgrade a system to a new major release
 .B dnf system\-upgrade reboot
 .br
 .B dnf system\-upgrade clean
+.br
+.B dnf system\-upgrade log
+.RI [ NUMBER ]
 
 .SH DESCRIPTION
 .PP
-\f[B]dnf system\-upgrade\f[] is used to upgrade a system to a new major
-release.
+\f[B]dnf system\-upgrade\f[] can be used to upgrade a Fedora system to a new
+major release. It replaces \f[B]fedup\f[] (the old \f[I]Fed\f[]ora
+\f[I]Up\f[]grade tool); for backward compatibility it accepts \f[B]fedup\f[]
+command\-line options whenever possible.
 .PP
-The \f[B]download\f[] command downloads all the packages needed to
-upgrade to the given \f[I]VERSION\f[].
-.PP
-The \f[B]reboot\f[] command prepares the system to perform the upgrade
-and reboots. This can only be used after the \f[B]download\f[] command
-completes successfully.
-.PP
-The \f[B]clean\f[] command can be used to remove previously\-downloaded
-data. This happens automatically at the end of a successful upgrade.
+\f[B]dnf system\-upgrade\f[] accepts the following commands:
+.TP
+.B download
+Downloads everything needed to upgrade to a new major release.
+.TP
+.B reboot
+Prepares the system to perform the upgrade, and reboots to start the upgrade.
+This can only be used after the \f[B]download\f[] command completes
+successfully.
+.TP
+.B clean
+Remove previously\-downloaded data.
+This happens automatically at the end of a successful upgrade.
+.TP
+.B log
+Used to see a list of boots during which an upgrade was attempted, or show
+the logs from an upgrade attempt.
+The logs for one of the boots can
+be shown by specifying one of the numbers in the first column.
+Negative numbers can be used to number the boots from last to first.
+For example, \f[B]log -1\f[] can be used to see the logs for the last
+upgrade attempt.
 
 .SH OPTIONS
 .TP
@@ -38,7 +56,12 @@ Usually a number, or \f[B]rawhide\f[].
 .B \-\-distro\-sync
 Behave like \f[B]dnf distro\-sync\f[]: always install packages from the
 new release, even if they are older than the currently\-installed
-version.
+version. This is the default behavior.
+.TP
+.B \-\-no\-downgrade
+Behave like \f[B]dnf update\f[]: do not install packages from the new release
+if they are older than what is currently installed. This is the opposite of
+\f[B]\-\-distro\-sync\f[]. If both are specified, the last option will be used.
 .TP
 .BI \-\-datadir= DIRECTORY
 Save downloaded packages to \f[I]DIRECTORY\f[].
@@ -49,14 +72,14 @@ The default is \f[C]/var/lib/dnf/system\-update\f[].
 
 .SH NOTES
 .PP
-This command replaces \f[B]fedup\f[].
-The backward\-compatibility wrapper program /usr/bin/fedup is provided
-only as a convenience, and may be removed in a future release.
+The \f[B]fedup\f[] command is provided as a convenience; it is essentially just
+an alias for \f[B]dnf system\-upgrade\f[].
 .PP
-Any problems encountered on your system after the upgrade completes
-should be reported to the maintainers of the affected components.
-In other words: if (for example) KDE stops working, report that to the KDE
-maintainers.
+\f[B]dnf system\-upgrade reboot\f[] does not create a "System Upgrade" boot
+item. The upgrade will start regardless of which boot item is chosen.
+.PP
+Since this is a DNF plugin, options accepted by \f[B]dnf\f[] are also valid
+here. See \f[B]dnf\f[](8) for more information.
 
 .SH BUGS
 .PP
@@ -66,14 +89,46 @@ boot splash screen.
 Upgrading from install media (e.g. a DVD or .iso file) currently requires the
 user to manually set up a DNF repo and fstab entry for the media.
 
-.SH EXAMPLE
+.SH EXAMPLES
+.SS Typical upgrade usage
 .EX
 dnf system\-upgrade download \-\-releasever 23
 dnf system\-upgrade reboot
 .EE
+.SS Show logs from last upgrade attempt
+.EX
+dnf system-upgrade log \-1
+.EE
+
+.SH REPORTING BUGS
+.PP
+Bugs should be filed here:
+.IP
+https://bugzilla.redhat.com/
+.PP
+For more info on filing bugs, see the Fedora Project wiki:
+.IP
+https://fedoraproject.org/wiki/How_to_file_a_bug_report
+.br
+https://fedoraproject.org/wiki/Bugs_and_feature_requests
+.PP
+Please include \f[C]/var/log/dnf.log\f[] and the output of
+\f[B]dnf system\-upgrade log -1\f[] (if applicable) in your bug reports.
+.PP
+Problems with dependency solving during download are best reported
+to the maintainers of the package(s) with the dependency problems.
+.PP
+Similarly, problems encountered on your system after the upgrade completes
+should be reported to the maintainers of the affected components.
+In other words: if (for example) KDE stops working, it's best if you report
+that to the KDE maintainers.
 
 .SH SEE ALSO
-dnf(8) dnf.conf(5)
+dnf(8),
+dnf.conf(5),
+journalctl(1)
+.SS Project homepage
+https://github.com/rpm-software-management/dnf-plugin-system-upgrade
 
 .SH AUTHORS
 Will Woods <wwoods@redhat.com>
