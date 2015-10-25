@@ -395,6 +395,14 @@ class UpgradeCommandTestCase(CommandTestCase):
         self.assertTrue(self.command.base.conf.assumeyes)
         self.assertTrue(self.cli.demands.cacheonly)
 
+    def test_version_check(self):
+        from system_upgrade import StrictVersion
+        DNFVERSION = StrictVersion("0.6.4")
+        self.assertTrue(DNFVERSION < StrictVersion("1.0.1"))
+        self.assertTrue(DNFVERSION < StrictVersion("1.1.0"))
+        self.assertTrue(DNFVERSION == StrictVersion("0.6.4"))
+        self.assertTrue(DNFVERSION > StrictVersion("0.5.0"))
+
 class LogCommandTestCase(CommandTestCase):
     def test_configure_log(self):
         self.command.configure(["log"])

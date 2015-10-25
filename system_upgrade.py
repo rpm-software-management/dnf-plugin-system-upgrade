@@ -531,7 +531,7 @@ class SystemUpgradeCommand(dnf.cli.Command):
         Plymouth.message(_("Starting system upgrade. This will take a while."))
 
         # Old DNF can't send progress to plymouth, so show the console
-        if DNFVERSION < "1.0.1":
+        if DNFVERSION < StrictVersion("1.0.1"):
             Plymouth.hide_splash()
 
         # NOTE: We *assume* that depsolving here will yield the same
