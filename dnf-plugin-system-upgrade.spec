@@ -16,8 +16,11 @@ Provides: dnf-command(system-upgrade)
 # So either we split out a subpackage for /usr/bin/fedup or we Require dnf.
 Requires: dnf
 
+# This replaces the old fedup package..
 Provides: fedup = 0.9.3-1
 Obsoletes: fedup < 0.9.3-1
+# ..just for cleanliness, obsolete fedup-dracut too. (#1275085)
+Obsoletes: fedup-dracut
 
 # Fedora 21 has the necessary fixes backported to 1.0.6-2
 Conflicts: PackageKit < 1.0.6-2
