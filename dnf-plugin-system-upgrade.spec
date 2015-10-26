@@ -25,6 +25,11 @@ Obsoletes: fedup < 0.9.3-1
 
 Conflicts: PackageKit < 1.0.8
 
+# distro-sync upgrade doesn't work with old libsolv and hawkey. See
+# https://bugzilla.redhat.com/show_bug.cgi?id=1260989
+Requires: libsolv >= 0.6.14-2
+Requires: hawkey >= 0.6.2-1
+
 BuildArch: noarch
 BuildRequires: pkgconfig systemd gettext
 
