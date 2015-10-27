@@ -108,7 +108,7 @@ fi
 %{python_sitelib}/dnf-plugins/system_upgrade.py*
 
 %changelog
-* Thu Oct 21 2015 Will Woods <wwoods@redhat.com> 0.7.0-1
+* Tue Oct 27 2015 Will Woods <wwoods@redhat.com> 0.7.0-1
 - Add `log` subcommand (to show upgrade logs)
 - Fix upgrades on systems without `plymouth` installed
 - Fix upgrades using `--best` or `--allowerasing` (#1266589)
