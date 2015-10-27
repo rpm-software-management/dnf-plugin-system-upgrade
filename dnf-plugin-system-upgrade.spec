@@ -105,7 +105,7 @@ fi
 %{python_sitelib}/dnf-plugins/system_upgrade.py*
 
 %changelog
-* Thu Oct 21 2015 Will Woods <wwoods@redhat.com> 0.5.0-1
+* Tue Oct 27 2015 Will Woods <wwoods@redhat.com> 0.5.0-1
 - Fix missing console output in F21/DNF 0.6.x
 - Add `log` subcommand (to show upgrade logs)
 - Fix upgrades on systems without `plymouth` installed
