@@ -42,6 +42,20 @@ class PlymouthTestCase(unittest.TestCase):
         self.ply.message(self.msg)
         call.assert_called_once_with(self.msg_args)
 
+    def test_hide_message(self, call):
+        messages = ("first", "middle", "BONUS", "last")
+        for m in messages:
+            self.ply.message(m)
+        hidem = lambda m: mock.call((PLYMOUTH, "hide-message", "--text", m))
+        dispm = lambda m: mock.call((PLYMOUTH, "display-message", "--text", m))
+        m1, m2, m3, m4 = messages
+        call.assert_has_calls([
+            dispm(m1),
+            hidem(m1), dispm(m2),
+            hidem(m2), dispm(m3),
+            hidem(m3), dispm(m4),
+        ])
+
     def test_message_dupe(self, call):
         self.ply.message(self.msg)
         self.ply.message(self.msg)
@@ -90,17 +104,33 @@ class PlymouthTransactionProgressTestCase(unittest.TestCase):
 
     def test_filter_calls(self, call):
         action = PKG_INSTALL
-        # event progress on the same transaction item -> one display update
-        for te_cur in range(100):
+        # first display update -> set percentage and text
+        self.display.progress(self.pkg, action, 0, 100, 1, 1000)
+        msg1 = self.display._fmt_event(self.pkg, action, 1, 1000)
+        call.assert_has_calls([
+            mock.call((PLYMOUTH, "system-update", "--progress", "0")),
+            mock.call((PLYMOUTH, "display-message", "--text", msg1)),
+        ])
+
+        # event progress on the same transaction item.
+        # no new calls to plymouth because the percentage and text don't change
+        for te_cur in range(1, 100):
             self.display.progress(self.pkg, action, te_cur, 100, 1, 1000)
-        self.assertEqual(call.call_count, 2)
-        # next item: new message ("[2/1000] ...") but percentage still 0
+        call.assert_has_calls([
+            mock.call((PLYMOUTH, "system-update", "--progress", "0")),
+            mock.call((PLYMOUTH, "display-message", "--text", msg1)),
+        ])
+
+        # new item: new message ("[2/1000] ..."), but percentage still 0..
         self.display.progress(self.pkg, action, 0, 100, 2, 1000)
-        msg = self.display._fmt_event(self.pkg, action, 2, 1000)
-        # message was updated..
-        call.assert_called_with((PLYMOUTH, "display-message", "--text", msg))
-        # ..but no other new calls were made
-        self.assertEqual(call.call_count, 3)
+        # old message hidden, new message displayed. no new percentage.
+        msg2 = self.display._fmt_event(self.pkg, action, 2, 1000)
+        call.assert_has_calls([
+            mock.call((PLYMOUTH, "system-update", "--progress", "0")),
+            mock.call((PLYMOUTH, "display-message", "--text", msg1)),
+            mock.call((PLYMOUTH, "hide-message", "--text", msg1)),
+            mock.call((PLYMOUTH, "display-message", "--text", msg2)),
+        ])
 
 import os, tempfile, shutil, gettext
 @unittest.skipUnless(os.path.exists("po/en_GB.mo"), "make po/en_GB.mo first")
