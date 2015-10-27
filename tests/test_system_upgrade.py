@@ -42,6 +42,20 @@ class PlymouthTestCase(unittest.TestCase):
         self.ply.message(self.msg)
         call.assert_called_once_with(self.msg_args)
 
+    def test_hide_message(self, call):
+        messages = ("first", "middle", "BONUS", "last")
+        for m in messages:
+            self.ply.message(m)
+        hidem = lambda m: mock.call((PLYMOUTH, "hide-message", "--text", m))
+        dispm = lambda m: mock.call((PLYMOUTH, "display-message", "--text", m))
+        m1, m2, m3, m4 = messages
+        call.assert_has_calls([
+            dispm(m1),
+            hidem(m1), dispm(m2),
+            hidem(m2), dispm(m3),
+            hidem(m3), dispm(m4),
+        ])
+
     def test_message_dupe(self, call):
         self.ply.message(self.msg)
         self.ply.message(self.msg)
