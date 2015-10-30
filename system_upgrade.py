@@ -502,8 +502,8 @@ class SystemUpgradeCommand(dnf.cli.Command):
         with open(SYSTEMD_FLAG_FILE, 'w') as flagfile:
             flagfile.write("RELEASEVER=%s\n" % self.state.target_releasever)
         # set upgrade_status so that the upgrade can run
-        with self.state:
-            self.state.upgrade_status = 'ready'
+        with self.state as state:
+            state.upgrade_status = 'ready'
 
         self.log_status(_("Rebooting to perform upgrade."),
                         REBOOT_REQUESTED_ID)
@@ -528,8 +528,8 @@ class SystemUpgradeCommand(dnf.cli.Command):
         # Delete symlink ASAP to avoid reboot loops
         dnf.yum.misc.unlink_f(MAGIC_SYMLINK)
         # change the upgrade status (so we can detect crashed upgrades later)
-        with self.state:
-            self.state.upgrade_status = 'incomplete'
+        with self.state as state:
+            state.upgrade_status = 'incomplete'
 
         self.log_status(_("Starting system upgrade. This will take a while."),
                         UPGRADE_STARTED_ID)
@@ -565,9 +565,9 @@ class SystemUpgradeCommand(dnf.cli.Command):
         if self.state.datadir:
             logger.info(_("Cleaning up downloaded data..."))
             shutil.rmtree(self.state.datadir, ignore_errors=True)
-        with self.state:
-            self.state.download_status = None
-            self.state.upgrade_status = None
+        with self.state as state:
+            state.download_status = None
+            state.upgrade_status = None
 
     def run_log(self, extcmds):
         assert extcmds[0] == 'log'
