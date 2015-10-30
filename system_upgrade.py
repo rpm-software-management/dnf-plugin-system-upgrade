@@ -560,13 +560,14 @@ class SystemUpgradeCommand(dnf.cli.Command):
         self.log_status(_("Starting system upgrade. This will take a while."),
                         UPGRADE_STARTED_ID)
 
-        # disable console blanking
-        maybe_disable_blanking()
-
         # reset the splash mode and let the user know we're running
         Plymouth.set_mode("updates")
         Plymouth.progress(0)
         Plymouth.message(_("Starting system upgrade. This will take a while."))
+
+        if not Plymouth.alive:
+            # disable console blanking
+            maybe_disable_blanking()
 
         # NOTE: We *assume* that depsolving here will yield the same
         # transaction as it did during the download, but we aren't doing
