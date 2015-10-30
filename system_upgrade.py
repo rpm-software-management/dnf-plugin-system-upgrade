@@ -23,6 +23,7 @@ from __future__ import unicode_literals
 
 import os
 import json
+import shutil
 
 import argparse
 from argparse import ArgumentParser
@@ -95,18 +96,6 @@ CANT_RESET_RELEASEVER = _(
 
 def reboot():
     check_call(["systemctl", "reboot"])
-
-# DNF-FIXME: dnf.util.clear_dir() doesn't delete regular files :/
-def clear_dir(path):
-    for entry in os.listdir(path):
-        fullpath = os.path.join(path, entry)
-        try:
-            if os.path.isdir(fullpath):
-                dnf.util.rm_rf(fullpath)
-            else:
-                os.unlink(fullpath)
-        except OSError:
-            pass
 
 def checkReleaseVer(conf, target=None):
     if dnf.rpm.detect_releasever(conf.installroot) == conf.releasever:
@@ -575,7 +564,7 @@ class SystemUpgradeCommand(dnf.cli.Command):
     def run_clean(self, extcmds):
         if self.state.datadir:
             logger.info(_("Cleaning up downloaded data..."))
-            clear_dir(self.state.datadir)
+            shutil.rmtree(self.state.datadir, ignore_errors=True)
         with self.state:
             self.state.download_status = None
             self.state.upgrade_status = None
