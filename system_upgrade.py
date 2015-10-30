@@ -23,6 +23,7 @@ from __future__ import unicode_literals
 
 import os
 import json
+import atexit
 
 import argparse
 from argparse import ArgumentParser
@@ -124,6 +125,20 @@ def checkDataDir(datadir):
 def checkDNFVer():
     if DNFVERSION < StrictVersion("1.1.0"):
         raise CliError(_("This plugin requires DNF 1.1.0 or later."))
+
+def enable_blanking(arg=10):
+    try:
+        tty = open('/dev/tty0', 'wb')
+    except Exception:
+        return
+    tty.write(b'\33[9;' + str(arg).encode('ascii') + b']')
+
+def maybe_disable_blanking():
+      term = os.getenv('TERM', '')
+      if not (term.startswith('linux') or term.startswith('con')):
+             return
+      atexit.register(enable_blanking)
+      enable_blanking(0)
 
 # --- State object - for tracking upgrade state between runs ------------------
 
@@ -544,6 +559,9 @@ class SystemUpgradeCommand(dnf.cli.Command):
 
         self.log_status(_("Starting system upgrade. This will take a while."),
                         UPGRADE_STARTED_ID)
+
+        # disable console blanking
+        maybe_disable_blanking()
 
         # reset the splash mode and let the user know we're running
         Plymouth.set_mode("updates")
