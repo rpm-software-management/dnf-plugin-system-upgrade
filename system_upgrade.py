@@ -175,6 +175,7 @@ class State(object):
     distro_sync = _prop("distro_sync")
     allow_erasing = _prop("allow_erasing")
     best = _prop("best")
+    exclude = _prop("exclude")
 
 # --- Plymouth output helpers -------------------------------------------------
 
@@ -462,6 +463,7 @@ class SystemUpgradeCommand(dnf.cli.Command):
         self.opts.distro_sync = self.state.distro_sync
         self.cli.demands.allow_erasing = self.state.allow_erasing
         self.base.conf.best = self.state.best
+        self.base.conf.exclude = self.state.exclude
         self.base.repos.all().pkgdir = self.opts.datadir
         # don't try to get new metadata, 'cuz we're offline
         self.cli.demands.cacheonly = True
@@ -534,6 +536,7 @@ class SystemUpgradeCommand(dnf.cli.Command):
             state.download_status = 'downloading'
             state.target_releasever = self.base.conf.releasever
             state.datadir = self.opts.datadir
+            state.exclude = self.base.conf.exclude
 
     def run_upgrade(self, extcmds):
         # Delete symlink ASAP to avoid reboot loops
