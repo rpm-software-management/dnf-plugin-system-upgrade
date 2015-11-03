@@ -9,9 +9,9 @@ Source0:    https://github.com/rpm-software-management/dnf-plugin-system-upgrade
 
 %if 0%{?fedora} >= 23
 # DNF in Fedora 23 uses Python 3 by default
-Requires: python3-%{name}
+Requires: python3-%{name} = %{version}-%{release}
 %else
-Requires: python2-%{name}
+Requires: python2-%{name} = %{version}-%{release}
 %endif
 
 Provides: dnf-command(system-upgrade)
