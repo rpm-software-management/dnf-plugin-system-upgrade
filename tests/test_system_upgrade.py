@@ -133,16 +133,17 @@ class PlymouthTransactionProgressTestCase(unittest.TestCase):
         ])
 
 import os, tempfile, shutil, gettext
-@unittest.skipUnless(os.path.exists("po/en_GB.mo"), "make po/en_GB.mo first")
+TESTLANG = "en_GB"
+TESTLANG_MO = "po/%s.mo" % TESTLANG
+@unittest.skipUnless(os.path.exists(TESTLANG_MO), "make %s first" % TESTLANG_MO)
 class I18NTestCaseBase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.localedir = tempfile.mkdtemp(prefix='i18ntest')
-        cls.msgdir = os.path.join(cls.localedir, "en_GB/LC_MESSAGES")
+        cls.msgdir = os.path.join(cls.localedir, TESTLANG+"/LC_MESSAGES")
         cls.msgfile = system_upgrade.TEXTDOMAIN + ".mo"
         os.makedirs(cls.msgdir)
-        shutil.copy2("po/en_GB.mo",
-                     os.path.join(cls.msgdir, cls.msgfile))
+        shutil.copy2(TESTLANG_MO, os.path.join(cls.msgdir, cls.msgfile))
 
     @classmethod
     def tearDownClass(cls):
@@ -150,18 +151,18 @@ class I18NTestCaseBase(unittest.TestCase):
 
     def setUp(self):
         self.t = gettext.translation(system_upgrade.TEXTDOMAIN, self.localedir,
-                                languages=["en_GB"], fallback=True)
+                                languages=[TESTLANG], fallback=True)
         self.gettext = self.t.gettext
 
 class I18NTestCase(I18NTestCaseBase):
     def test_selftest(self):
         self.assertIn(self.msgfile, os.listdir(self.msgdir))
-        self.assertIn("en_GB", os.listdir(self.localedir))
+        self.assertIn(TESTLANG, os.listdir(self.localedir))
         t = gettext.translation(system_upgrade.TEXTDOMAIN, self.localedir,
-                                languages=["en_GB"], fallback=False)
+                                languages=[TESTLANG], fallback=False)
         info = t.info()
         self.assertIn("language", info)
-        self.assertEqual(info["language"], "en-GB")
+        self.assertEqual(info["language"], TESTLANG.replace("_","-"))
 
     def test_fallback(self):
         msg = "THIS STRING DOES NOT EXIST"
