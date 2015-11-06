@@ -1,4 +1,5 @@
-%global dnf_version 1.1.4
+%global dnf_lowest_compatible 1.1.4
+%global dnf_not_compatible 2.0
 
 Name:       dnf-plugin-system-upgrade
 Version:    0.7.0
@@ -45,7 +46,8 @@ This package provides the systemd services required to make the upgrade work.
 %package -n python3-%{name}
 %{?python_provide:%python_provide python3-%{name}}
 Summary:    System Upgrade plugin for DNF
-Requires:   python3-dnf >= %{dnf_version}
+Requires:   python3-dnf >= %{dnf_lowest_compatible}
+Requires:   python3-dnf < %{dnf_not_compatible}
 Requires:   systemd-python3
 BuildRequires:  python3-devel python3-dnf systemd-python3
 %description -n python3-%{name}
@@ -56,7 +58,8 @@ This package provides the "system-upgrade" command.
 %{?python_provide:%python_provide python2-%{name}}
 Summary:    System Upgrade plugin for DNF
 # TODO: change to 'python2-dnf' once that exists
-Requires:   python-dnf >= %{dnf_version}
+Requires:   python-dnf >= %{dnf_lowest_compatible}
+Requires:   python-dnf < %{dnf_not_compatible}
 Requires:   systemd-python
 BuildRequires: python2-devel python-mock python-dnf systemd-python
 %description -n python2-%{name}
