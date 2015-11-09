@@ -367,7 +367,7 @@ class SystemUpgradeCommand(dnf.cli.Command):
     summary = _("Prepare system for upgrade to a new release")
     # NOTE: upgrade isn't meant to be invoked by users, so it's not in usage
     usage = "[%s] [download --releasever=%s|reboot|clean|log]" % (
-        _("OPTIONS"), _("VERSION"))
+        dnf.i18n.ucd(_("OPTIONS")), dnf.i18n.ucd(_("VERSION")))
 
     def __init__(self, cli):
         super(SystemUpgradeCommand, self).__init__(cli)
