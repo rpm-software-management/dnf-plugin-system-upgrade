@@ -475,7 +475,10 @@ class SystemUpgradeCommand(dnf.cli.Command):
 
     def check_reboot(self, basecmd, extargs):
         if not self.state.download_status == 'complete':
-            raise CliError(_("system is not ready for upgrade"))
+            raise CliError(_("system is not ready for upgrade. This can happen even after "
+                             "packages were downloaded when another dnf command installs or "
+                             "removes packages. "
+                             "Run '%s download --releasever=...' and try again."))
         if os.path.lexists(MAGIC_SYMLINK):
             raise CliError(_("upgrade is already scheduled"))
         # FUTURE: checkRPMDBStatus(self.state.download_transaction_id)
