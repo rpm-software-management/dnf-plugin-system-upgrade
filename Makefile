@@ -1,4 +1,5 @@
-VERSION = 0.7.0
+PACKAGE = dnf-plugin-system-upgrade
+VERSION = 0.7.1
 
 LN ?= ln
 INSTALL ?= install -p
@@ -72,7 +73,8 @@ clean:
 check: po/zh_CN.mo
 	$(PYTHON) -m unittest discover tests
 
-archive: version-check
+archive: $(PACKAGE)-$(VERSION).tar.gz
+$(PACKAGE)-$(VERSION).tar.gz: version-check
 	git archive --prefix=dnf-plugin-system-upgrade-$(VERSION)/ \
 		    --output=dnf-plugin-system-upgrade-$(VERSION).tar.gz \
 		    $(VERSION)

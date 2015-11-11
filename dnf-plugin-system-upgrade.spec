@@ -1,5 +1,5 @@
 Name:       dnf-plugin-system-upgrade
-Version:    0.7.0
+Version:    0.7.1
 Release:    1%{?dist}
 Summary:    System Upgrade plugin for DNF
 Group:      System Environment/Base
@@ -73,7 +73,7 @@ make install DESTDIR=$RPM_BUILD_ROOT PYTHON=%{__python2}
 make install-plugin DESTDIR=$RPM_BUILD_ROOT PYTHON=%{__python3}
 
 %check
-make check PYTHON=%{__python2}
+make check PYTHON=%{__python2} LANG=de_DE.UTF-8
 make check PYTHON=%{__python3}
 
 %pre
@@ -108,6 +108,10 @@ fi
 %{python_sitelib}/dnf-plugins/system_upgrade.py*
 
 %changelog
+* Wed Nov 11 2015 Will Woods <wwoods@redhat.com> 0.7.1-1
+- Fix crash at startup with zh_CN and other utf8 locales (#1278031, #1277895)
+- Fix upgrades using `-x` or `--exclude`
+
 * Tue Oct 27 2015 Will Woods <wwoods@redhat.com> 0.7.0-1
 - Add `log` subcommand (to show upgrade logs)
 - Fix upgrades on systems without `plymouth` installed
