@@ -348,7 +348,7 @@ def make_parser(prog):
     # options for the log verb
     g2 = p.add_argument_group(_("log options"))
     g2.add_argument('number', type=int, nargs='?',
-                    help='which logs to show (-1 is last, etc)')
+                    help=_('which logs to show (-1 is last, etc)'))
     return p
 
 # --- The actual Plugin and Command objects! ----------------------------------
