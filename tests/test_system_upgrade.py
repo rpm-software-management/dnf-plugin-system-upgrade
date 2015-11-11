@@ -133,7 +133,7 @@ class PlymouthTransactionProgressTestCase(unittest.TestCase):
         ])
 
 import os, tempfile, shutil, gettext
-TESTLANG = "en_GB"
+TESTLANG = "zh_CN"
 TESTLANG_MO = "po/%s.mo" % TESTLANG
 @unittest.skipUnless(os.path.exists(TESTLANG_MO), "make %s first" % TESTLANG_MO)
 class I18NTestCaseBase(unittest.TestCase):

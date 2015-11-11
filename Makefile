@@ -69,7 +69,7 @@ clean:
 	rm -rf *.py[co] __pycache__ tests/*.py[co] tests/__pycache__ \
 		dnf-plugin-system-upgrade-*.tar.gz po/*.mo
 
-check: po/en_GB.mo
+check: po/zh_CN.mo
 	$(PYTHON) -m unittest discover tests
 
 archive: version-check
