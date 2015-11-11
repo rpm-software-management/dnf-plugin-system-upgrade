@@ -125,6 +125,13 @@ def checkDNFVer():
     if DNFVERSION < StrictVersion("1.1.0"):
         raise CliError(_("This plugin requires DNF 1.1.0 or later."))
 
+def disable_blanking():
+    try:
+        tty = open('/dev/tty0', 'wb')
+        tty.write(b'\33[9;0]')
+    except Exception as e:
+        print("Screen blanking can't be disabled: %s" % e)
+
 # --- State object - for tracking upgrade state between runs ------------------
 
 # DNF-INTEGRATION-NOTE: basically the same thing as dnf.persistor.JSONDB
@@ -552,6 +559,9 @@ class SystemUpgradeCommand(dnf.cli.Command):
         Plymouth.set_mode("updates")
         Plymouth.progress(0)
         Plymouth.message(_("Starting system upgrade. This will take a while."))
+
+        # disable screen blanking
+        disable_blanking()
 
         # NOTE: We *assume* that depsolving here will yield the same
         # transaction as it did during the download, but we aren't doing
