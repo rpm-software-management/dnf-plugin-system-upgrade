@@ -188,7 +188,7 @@ class ArgparseTestCase(unittest.TestCase):
     def assert_warning(self, args):
         with mock.patch('system_upgrade.logger.warning') as warning:
             self.cmd.parse_args(args)
-            warning.assert_called_once()
+            self.assertTrue(warning.called)
 
     def assert_error(self, args, message):
         with self.assertRaises(CliError) as cm:
