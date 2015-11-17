@@ -8,6 +8,8 @@ Documentation=http://www.freedesktop.org/wiki/Software/systemd/SystemUpdates
 # change $releasever - see https://bugzilla.redhat.com/show_bug.cgi?id=1212341
 EnvironmentFile=/system-update/.dnf-system-upgrade
 ExecStart=/usr/bin/dnf --releasever=${RELEASEVER} system-upgrade upgrade
+
+ExecStopPost=/usr/bin/rm -fv /system-update
 FailureAction=reboot
 
 [Install]
