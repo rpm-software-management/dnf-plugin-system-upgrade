@@ -32,10 +32,19 @@ import dnf
 import dnf.cli
 from dnf.cli import CliError
 
-import gettext
+try:
+    from dnf.i18n import translation
+except ImportError:
+    # adapted from dnf-1.1.4's dnf.i18n.translation()
+    def translation(name):
+        def ucd_wrapper(fnc):
+            return lambda *w: dnf.i18n.ucd(fnc(*w))
+        t = dnf.pycomp.gettext.translation(name, fallback=True)
+        return (ucd_wrapper(f) for f in dnf.pycomp.gettext_setup(t))
+
 TEXTDOMAIN = 'dnf-plugin-system-upgrade' # NOTE: must match Makefile
-t = gettext.translation(TEXTDOMAIN, fallback=True)
-_ = t.gettext
+_, P_ = translation(TEXTDOMAIN)
+
 # Translators: This string is only used in unit tests.
 _("the color of the sky")
 

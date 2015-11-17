@@ -182,7 +182,7 @@ class ArgparseTestCase(unittest.TestCase):
         with mock.patch('system_upgrade.PluginArgumentParser.print_help') as ph:
             with self.assertRaises(CliError) as cm:
                 self.cmd.parse_args(args)
-            self.assertIn(message, str(cm.exception))
+            self.assertIn(message, cm.exception.__str__())
             ph.assert_called_once_with()
 
     def assert_warning(self, args):
@@ -193,7 +193,7 @@ class ArgparseTestCase(unittest.TestCase):
     def assert_error(self, args, message):
         with self.assertRaises(CliError) as cm:
             self.cmd.parse_args(args)
-        self.assertIn(message, str(cm.exception))
+        self.assertIn(message, cm.exception.__str__())
 
     def test_actions(self):
         for action in system_upgrade.ACTIONS:
