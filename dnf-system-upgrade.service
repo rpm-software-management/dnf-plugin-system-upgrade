@@ -2,6 +2,7 @@
 Description=System Upgrade
 ConditionPathExists=/system-update/.dnf-system-upgrade
 Documentation=http://www.freedesktop.org/wiki/Software/systemd/SystemUpdates
+OnFailure=reboot.target
 
 [Service]
 # We need the --releasever junk because there's no way for DNF plugins to
@@ -11,7 +12,6 @@ ExecStart=/usr/bin/dnf --releasever=${RELEASEVER} system-upgrade upgrade
 StandardOutput=journal+console
 
 ExecStopPost=/usr/bin/rm -fv /system-update
-FailureAction=reboot
 
 [Install]
 WantedBy=system-update.target
