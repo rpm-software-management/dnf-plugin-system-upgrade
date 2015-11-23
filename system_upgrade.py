@@ -358,6 +358,9 @@ def make_parser(prog):
     g2 = p.add_argument_group(_("log options"))
     g2.add_argument('number', type=int, nargs='?',
                     help=_('which logs to show (-1 is last, etc)'))
+    # hidden option for `reboot` testing
+    p.add_argument('--no-reboot', dest='reboot', default=True,
+                   action='store_false', help=argparse.SUPPRESS)
     return p
 
 # --- The actual Plugin and Command objects! ----------------------------------
@@ -517,7 +520,7 @@ class SystemUpgradeCommand(dnf.cli.Command):
     def run_help(self, extcmds):
         self.parser.print_help()
 
-    def run_reboot(self, extcmds):
+    def run_prepare(self, extcmds):
         # make the magic symlink
         os.symlink(self.state.datadir, MAGIC_SYMLINK)
         # write releasever into the flag file so it can be read by systemd
@@ -526,6 +529,12 @@ class SystemUpgradeCommand(dnf.cli.Command):
         # set upgrade_status so that the upgrade can run
         with self.state as state:
             state.upgrade_status = 'ready'
+
+    def run_reboot(self, extcmds):
+        self.run_prepare([])
+
+        if not self.opts.reboot:
+            return
 
         self.log_status(_("Rebooting to perform upgrade."),
                         REBOOT_REQUESTED_ID)
@@ -625,4 +634,5 @@ class SystemUpgradeCommand(dnf.cli.Command):
         self.log_status(_("Upgrade complete! Cleaning up and rebooting..."),
                         UPGRADE_FINISHED_ID)
         self.run_clean([])
-        reboot()
+        if self.opts.reboot:
+            reboot()

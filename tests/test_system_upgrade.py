@@ -400,6 +400,11 @@ class CheckDNFVerTestCase(unittest.TestCase):
             system_upgrade.checkDNFVer()
 
 class RebootCheckCommandTestCase(CommandTestCaseBase):
+    def setUp(self):
+        super(RebootCheckCommandTestCase, self).setUp()
+        self.MAGIC_SYMLINK = self.statedir + '/symlink'
+        self.SYSTEMD_FLAG_FILE = self.statedir + '/systemd.flag.file'
+
     def test_configure_reboot(self):
         self.cli.demands.root_user = None
         self.command.configure_reboot([])
@@ -430,6 +435,41 @@ class RebootCheckCommandTestCase(CommandTestCaseBase):
     def test_check_reboot_dnfver_bad(self):
         with self.assertRaises(CliError):
             self.check_reboot(status='complete', lexists=False, dnfverok=False)
+
+    def test_run_prepare(self):
+        self.command.state.datadir = '/lol/wut'
+        with patch('system_upgrade.SYSTEMD_FLAG_FILE', self.SYSTEMD_FLAG_FILE):
+            with patch('system_upgrade.MAGIC_SYMLINK', self.MAGIC_SYMLINK):
+                self.command.run_prepare([])
+        self.assertEqual(os.readlink(self.MAGIC_SYMLINK),
+                         self.command.state.datadir)
+        self.assertEqual(self.command.state.upgrade_status, 'ready')
+        releasever = self.command.state.target_releasever
+        with open(self.SYSTEMD_FLAG_FILE) as flag_file:
+            self.assertIn('RELEASEVER=%s\n' % releasever, flag_file.read())
+
+    @patch('system_upgrade.SystemUpgradeCommand.run_prepare')
+    @patch('system_upgrade.SystemUpgradeCommand.log_status')
+    @patch('system_upgrade.reboot')
+    def test_run_reboot(self, reboot, log_status, run_prepare):
+        self.command.opts = mock.MagicMock()
+        self.command.opts.reboot = True
+        self.command.run_reboot([])
+        run_prepare.assert_called_once_with([])
+        self.assertEqual(system_upgrade.REBOOT_REQUESTED_ID,
+                         log_status.call_args[0][1])
+        self.assertTrue(reboot.called)
+
+    @patch('system_upgrade.SystemUpgradeCommand.run_prepare')
+    @patch('system_upgrade.SystemUpgradeCommand.log_status')
+    @patch('system_upgrade.reboot')
+    def test_reboot_prepare_only(self, reboot, log_status, run_prepare):
+        self.command.opts = mock.MagicMock()
+        self.command.opts.reboot = False
+        self.command.run_reboot([])
+        run_prepare.assert_called_once_with([])
+        self.assertFalse(log_status.called)
+        self.assertFalse(reboot.called)
 
 class DownloadCommandTestCase(CommandTestCase):
     def test_configure_download(self):
