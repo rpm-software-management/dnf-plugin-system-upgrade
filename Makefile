@@ -1,5 +1,4 @@
-PACKAGE = dnf-plugin-system-upgrade
-VERSION = 0.7.1
+include const.mk
 
 LN ?= ln
 INSTALL ?= install -p
@@ -15,7 +14,7 @@ UNITDIR=$(shell pkg-config systemd --variable systemdsystemunitdir)
 TARGET_WANTSDIR=$(UNITDIR)/system-update.target.wants
 
 LOCALEDIR ?= /usr/share/locale
-TEXTDOMAIN = dnf-plugin-system-upgrade
+TEXTDOMAIN = $(PACKAGE)
 LANGUAGES = $(patsubst po/%.po,%,$(wildcard po/*.po))
 MSGFILES = $(patsubst %,po/%.mo,$(LANGUAGES))
 
@@ -68,20 +67,20 @@ install-man: $(MANPAGE)
 
 clean:
 	rm -rf *.py[co] __pycache__ tests/*.py[co] tests/__pycache__ \
-		dnf-plugin-system-upgrade-*.tar.gz po/*.mo
+		$(PACKAGE)-*.tar.gz po/*.mo
 
 check: po/zh_CN.mo
 	$(PYTHON) -m unittest discover tests
 
 archive: $(PACKAGE)-$(VERSION).tar.gz
 $(PACKAGE)-$(VERSION).tar.gz: version-check
-	git archive --prefix=dnf-plugin-system-upgrade-$(VERSION)/ \
-		    --output=dnf-plugin-system-upgrade-$(VERSION).tar.gz \
+	git archive --prefix=$(PACKAGE)-$(VERSION)/ \
+		    --output=$(PACKAGE)-$(VERSION).tar.gz \
 		    $(VERSION)
 
 version-check:
 	git describe --tags $(VERSION)
-	grep '^Version:\s*$(VERSION)' dnf-plugin-system-upgrade.spec
+	grep '^Version:\s*$(VERSION)' $(PACKAGE).spec
 	grep '^\.TH .* "$(VERSION)"' $(MANPAGE)
 
 .PHONY: build install clean check archive version-check
