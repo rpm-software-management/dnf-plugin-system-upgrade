@@ -67,21 +67,42 @@ install-man: $(MANPAGE)
 
 clean:
 	rm -rf *.py[co] __pycache__ tests/*.py[co] tests/__pycache__ \
-		$(PACKAGE)-*.tar.gz po/*.mo
+		$(PACKAGE)-*.tar.gz $(PACKAGE)-*.spec po/*.mo rpm/
 
 check: po/zh_CN.mo
 	$(PYTHON) -m unittest discover tests
 
 archive: $(PACKAGE)-$(VERSION).tar.gz
 $(PACKAGE)-$(VERSION).tar.gz: version-check
-	git archive --prefix=$(PACKAGE)-$(VERSION)/ \
-		    --output=$(PACKAGE)-$(VERSION).tar.gz \
-		    $(VERSION)
+	git archive --prefix=$(PACKAGE)-$(VERSION)/ --output=$@ $(VERSION)
 
 version-check:
 	git describe --tags $(VERSION)
 	grep '^Version:\s*$(VERSION)' $(PACKAGE).spec
 	grep '^\.TH .* "$(VERSION)"' $(MANPAGE)
 
+SNAPVER = $(shell git describe --long --tags --match="*.*.*" 2>/dev/null || \
+	          echo $(VERSION)-0-x0000000)
+SNAPREL = snap$(subst -,.,$(patsubst $(VERSION)-%,%,$(SNAPVER)))
+
+SNAPARCHIVE = $(PACKAGE)-$(SNAPVER).tar.gz
+SNAPSPEC = $(PACKAGE)-$(SNAPVER).spec
+
+$(SNAPARCHIVE):
+	git archive --prefix=$(PACKAGE)-$(VERSION)/ --output=$@ HEAD
+
+$(SNAPSPEC): $(PACKAGE).spec
+	sed -e 's/^Release:.*$$/Release: $(SNAPREL)%{?dist}/' \
+	    -e 's/^Source0:.*$$/Source0: $(SNAPARCHIVE)/' \
+	    $< > $@ || { rm -f $@; false; }
+
+snapshot-archive: $(SNAPARCHIVE)
+snapshot-spec: $(SNAPSPEC)
+snapshot-rpm: $(SNAPARCHIVE) $(SNAPSPEC)
+	rpmbuild -bb $(SNAPSPEC) \
+	         --define '_sourcedir $(CURDIR)' \
+	         --define '_rpmdir $(CURDIR)/rpm'
+
 .PHONY: build install clean check archive version-check
 .PHONY: install-plugin install-service install-bin install-lang install-man
+.PHONY: snapshot-archive snapshot-spec snapshot-rpm
