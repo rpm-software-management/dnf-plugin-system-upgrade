@@ -1,6 +1,9 @@
+%{!?dnf_lowest_compatible: %global dnf_lowest_compatible 1.1.2}
+%{!?dnf_not_compatible: %global dnf_not_compatible 2.0}
+
 Name:       dnf-plugin-system-upgrade
 Version:    0.7.1
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    System Upgrade plugin for DNF
 Group:      System Environment/Base
 License:    GPLv2+
@@ -43,9 +46,17 @@ This package provides the systemd services required to make the upgrade work.
 %package -n python3-%{name}
 %{?python_provide:%python_provide python3-%{name}}
 Summary:    System Upgrade plugin for DNF
-Requires:   python3-dnf >= 1.1.4
+# DNF is following Semantic Versioning, so this ensures we don't
+# get installed with a potentially incompatible version
+BuildRequires:  python3-dnf >= %{dnf_lowest_compatible}
+BuildRequires:  python3-dnf < %{dnf_not_compatible}
+BuildRequires:  python3-devel
+# TODO: change to 'python3-systemd' once that exists
+BuildRequires:  systemd-python3
+Requires:   python3-dnf >= %{dnf_lowest_compatible}
+Requires:   python3-dnf < %{dnf_not_compatible}
 Requires:   systemd-python3
-BuildRequires:  python3-devel python3-dnf systemd-python3
+
 %description -n python3-%{name}
 System Upgrade plugin for DNF (Python 3 version).
 This package provides the "system-upgrade" command.
@@ -53,10 +64,16 @@ This package provides the "system-upgrade" command.
 %package -n python2-%{name}
 %{?python_provide:%python_provide python2-%{name}}
 Summary:    System Upgrade plugin for DNF
-# TODO: change to 'python2-dnf' once that exists
-Requires:   python-dnf >= 1.1.4
+BuildRequires:  python2-devel
+BuildRequires:  python-mock
+BuildRequires:  python2-dnf >= %{dnf_lowest_compatible}
+BuildRequires:  python2-dnf < %{dnf_not_compatible}
+# TODO: change to 'python2-systemd' once that exists
+BuildRequires:  systemd-python
+Requires:   python2-dnf >= %{dnf_lowest_compatible}
+Requires:   python2-dnf < %{dnf_not_compatible}
 Requires:   systemd-python
-BuildRequires: python2-devel python-mock python-dnf systemd-python
+
 %description -n python2-%{name}
 System Upgrade plugin for DNF (Python 2 version).
 This package provides the "system-upgrade" command.
@@ -105,9 +122,13 @@ fi
 
 %files -n python2-%{name}
 %license LICENSE
-%{python_sitelib}/dnf-plugins/system_upgrade.py*
+%{python2_sitelib}/dnf-plugins/system_upgrade.py*
 
 %changelog
+* Sun Jan 24 2016 Neal Gompa <ngompa13@gmail.com> 0.7.2-2
+- Cleanup and update the spec
+- Add a stricter DNF version check (>= 1.1.4 && < 2.0.0)
+
 * Wed Nov 11 2015 Will Woods <wwoods@redhat.com> 0.7.1-1
 - Fix crash at startup with zh_CN and other utf8 locales (#1278031, #1277895)
 - Fix upgrades using `-x` or `--exclude`
