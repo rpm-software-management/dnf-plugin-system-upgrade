@@ -1,5 +1,5 @@
-%{!?dnf_lowest_compatible: %global dnf_lowest_compatible 1.1.2}
-%{!?dnf_not_compatible: %global dnf_not_compatible 2.0}
+%global dnf_lowest_compatible 1.1.2
+%global dnf_not_compatible 2.0
 
 Name:       dnf-plugin-system-upgrade
 Version:    0.7.1
@@ -8,7 +8,7 @@ Summary:    System Upgrade plugin for DNF
 Group:      System Environment/Base
 License:    GPLv2+
 URL:        https://github.com/rpm-software-management/dnf-plugin-system-upgrade
-Source0:    https://github.com/rpm-software-management/dnf-plugin-system-upgrade/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:    https://github.com/rpm-software-management/dnf-plugin-system-upgrade/archive/%{version}/%{name}-%{version}.tar.gz
 
 %if 0%{?fedora} >= 23
 # DNF in Fedora 23 uses Python 3 by default
@@ -51,7 +51,7 @@ Summary:    System Upgrade plugin for DNF
 BuildRequires:  python3-dnf >= %{dnf_lowest_compatible}
 BuildRequires:  python3-dnf < %{dnf_not_compatible}
 BuildRequires:  python3-devel
-# TODO: change to 'python3-systemd' once that exists
+# TODO: change to 'python3-systemd' once F22 is dropped
 BuildRequires:  systemd-python3
 Requires:   python3-dnf >= %{dnf_lowest_compatible}
 Requires:   python3-dnf < %{dnf_not_compatible}
@@ -68,7 +68,7 @@ BuildRequires:  python2-devel
 BuildRequires:  python-mock
 BuildRequires:  python2-dnf >= %{dnf_lowest_compatible}
 BuildRequires:  python2-dnf < %{dnf_not_compatible}
-# TODO: change to 'python2-systemd' once that exists
+# TODO: change to 'python2-systemd' once F22 is dropped
 BuildRequires:  systemd-python
 Requires:   python2-dnf >= %{dnf_lowest_compatible}
 Requires:   python2-dnf < %{dnf_not_compatible}
@@ -85,9 +85,9 @@ This package provides the "system-upgrade" command.
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=$RPM_BUILD_ROOT PYTHON=%{__python2}
+make install DESTDIR=%{buildroot} PYTHON=%{__python2}
 %find_lang %{name}
-make install-plugin DESTDIR=$RPM_BUILD_ROOT PYTHON=%{__python3}
+make install-plugin DESTDIR=%{buildroot} PYTHON=%{__python3}
 
 %check
 make check PYTHON=%{__python2} LANG=de_DE.UTF-8
@@ -127,7 +127,7 @@ fi
 %changelog
 * Sun Jan 24 2016 Neal Gompa <ngompa13@gmail.com> 0.7.2-2
 - Cleanup and update the spec
-- Add a stricter DNF version check (>= 1.1.4 && < 2.0.0)
+- Add a stricter DNF version check (>= 1.1.4 && < 2.0)
 
 * Wed Nov 11 2015 Will Woods <wwoods@redhat.com> 0.7.1-1
 - Fix crash at startup with zh_CN and other utf8 locales (#1278031, #1277895)
