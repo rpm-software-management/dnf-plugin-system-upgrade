@@ -1,10 +1,11 @@
 # Mario Blättermann <mario.blaettermann@gmail.com>, 2015. #zanata
+# Mario Blättermann <mario.blaettermann@gmail.com>, 2016. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-11 16:38-0500\n"
-"PO-Revision-Date: 2015-10-24 01:46-0400\n"
+"PO-Revision-Date: 2016-02-14 02:29-0500\n"
 "Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -12,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"X-Generator: Zanata 3.7.3\n"
+"X-Generator: Zanata 3.8.3\n"
 
 #: system_upgrade.py:69
 #, python-format
@@ -189,4 +190,4 @@ msgstr ""
 
 #: system_upgrade.py:351
 msgid "which logs to show (-1 is last, etc)"
-msgstr ""
+msgstr "Anzuzeigende Protokolle (-1 ist das letzte usw.)"

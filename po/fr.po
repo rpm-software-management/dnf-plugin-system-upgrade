@@ -1,18 +1,20 @@
 # Maxim Therrien <acerspyro@gmail.com>, 2015. #zanata
+# Charles-Antoine Couret <renault@fedoraproject.org>, 2016. #zanata
+# Jibec <jean-baptiste@holcroft.fr>, 2016. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-11 16:38-0500\n"
-"PO-Revision-Date: 2015-11-09 10:34-0500\n"
-"Last-Translator: Maxim Therrien <acerspyro@gmail.com>\n"
+"PO-Revision-Date: 2016-04-05 04:24-0400\n"
+"Last-Translator: Jibec <jean-baptiste@holcroft.fr>\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
-"X-Generator: Zanata 3.7.3\n"
+"X-Generator: Zanata 3.8.3\n"
 
 #: system_upgrade.py:69
 #, python-format
@@ -33,16 +35,16 @@ msgstr ""
 
 #: system_upgrade.py:265
 msgid "-- no logs were found --"
-msgstr "-- aucun journaux ont été trouvés --"
+msgstr "-- aucun journaux n'ont été trouvés --"
 
 #: system_upgrade.py:121
 msgid "--datadir: File exists"
-msgstr "--datadir: Le fichier existe"
+msgstr "--datadir : le fichier existe"
 
 #: system_upgrade.py:90
 #, python-format
 msgid "Can't do '%s' and '%s' at the same time."
-msgstr "Impossible de faire « %s » et « %s » en même temps."
+msgstr "Impossible de réaliser « %s » et « %s » en même temps."
 
 #: system_upgrade.py:82
 msgid ""
@@ -57,7 +59,7 @@ msgstr "Journaux introuvables avec cet index."
 
 #: system_upgrade.py:580
 msgid "Cleaning up downloaded data..."
-msgstr "Nettoyage des données téléchargées..."
+msgstr "Nettoyage des données téléchargées …"
 
 #. Translators: do not change "reboot" here
 #: system_upgrade.py:67
@@ -72,9 +74,8 @@ msgid "Download finished."
 msgstr "Téléchargement terminé."
 
 #: system_upgrade.py:65
-#, fuzzy
 msgid "Need a --releasever greater than the current system version."
-msgstr "--releasever doit être plus grand que la version du système courant."
+msgstr "--releasever doit être ultérieure à la version courante du système."
 
 #: system_upgrade.py:63
 msgid "No new kernel packages were found."
@@ -85,14 +86,12 @@ msgid "OPTIONS"
 msgstr "OPTIONS"
 
 #: system_upgrade.py:367
-#, fuzzy
 msgid "Prepare system for upgrade to a new release"
-msgstr "Préparez le système pour une mise à niveau vers une nouvelle release"
+msgstr "Préparez le système pour une mise à niveau vers une nouvelle version"
 
 #: system_upgrade.py:521
-#, fuzzy
 msgid "Rebooting to perform upgrade."
-msgstr "Redémarrage pour faire la mise en niveau."
+msgstr "Redémarrage pour réaliser la mise à niveau."
 
 #: system_upgrade.py:84
 #, python-format
@@ -117,69 +116,73 @@ msgstr ""
 
 #: system_upgrade.py:255
 msgid "The following boots appear to contain upgrade logs:"
-msgstr ""
+msgstr "Les démarrages suivants contiennent des journaux de mises à niveau :"
 
 #: system_upgrade.py:126
 msgid "This plugin requires DNF 1.1.0 or later."
-msgstr ""
+msgstr "Ce greffon requiert DNF 1.1.0 ou supérieur."
 
 #: system_upgrade.py:615 system_upgrade.py:616
 msgid "Upgrade complete! Cleaning up and rebooting..."
-msgstr ""
+msgstr "Mise à niveau effectuée ! Nettoyage et redémarrage en cours …"
 
 #: system_upgrade.py:319 system_upgrade.py:370
 msgid "VERSION"
-msgstr ""
+msgstr "VERSION"
 
 #: system_upgrade.py:347
 msgid "action to perform"
-msgstr ""
+msgstr "action à effectuer"
 
 #: system_upgrade.py:502
 msgid "another upgrade tool is running. exiting quietly."
 msgstr ""
+"un autre outil de mise à niveau est en fonctionnement. Fermeture "
+"silencieuse."
 
 #. basic download options
 #: system_upgrade.py:318
 msgid "download options"
-msgstr ""
+msgstr "options de téléchargement"
 
 #: system_upgrade.py:327
 msgid "keep installed packages if the new release's version is older"
 msgstr ""
+"garde les paquets installés si la version provenant du système à niveau est "
+"plus ancienne"
 
 #. options for the log verb
 #: system_upgrade.py:349
 msgid "log options"
-msgstr ""
+msgstr "options de suivi"
 
 #: system_upgrade.py:320
 msgid "release version (required)"
-msgstr ""
+msgstr "version (requis)"
 
 #: system_upgrade.py:322
 msgid "save downloaded data to this location"
-msgstr ""
+msgstr "sauvegarde des données téléchargées à cet emplacement"
 
 #: system_upgrade.py:491
 msgid "system is not ready for upgrade"
-msgstr ""
+msgstr "le système n'est pas prêt pour la mise à niveau"
 
 #. Translators: This string is only used in unit tests.
 #: system_upgrade.py:40
 msgid "the color of the sky"
-msgstr ""
+msgstr "la couleur du ciel"
 
 #: system_upgrade.py:493
 msgid "upgrade is already scheduled"
-msgstr ""
+msgstr "la mise à niveau est déjà programmée"
 
 #. Translators: do not change "reboot" here
 #: system_upgrade.py:500
 #, python-format
 msgid "use '%s reboot' to begin the upgrade"
-msgstr ""
+msgstr "utilisez « %s reboot » pour démarrer la mise à niveau"
 
 #: system_upgrade.py:351
 msgid "which logs to show (-1 is last, etc)"
-msgstr ""
+msgstr "indique quels journaux à afficher (-1 est le dernier, etc.)"

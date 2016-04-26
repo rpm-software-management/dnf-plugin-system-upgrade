@@ -1,10 +1,11 @@
 # Ooyama Yosiyuki <qqke6wd9k@apricot.ocn.ne.jp>, 2015. #zanata
+# Ooyama Yosiyuki <qqke6wd9k@apricot.ocn.ne.jp>, 2016. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-11 16:38-0500\n"
-"PO-Revision-Date: 2015-10-25 06:27-0400\n"
+"PO-Revision-Date: 2016-04-07 06:31-0400\n"
 "Last-Translator: Ooyama Yosiyuki <qqke6wd9k@apricot.ocn.ne.jp>\n"
 "Language-Team: Japanese\n"
 "MIME-Version: 1.0\n"
@@ -12,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: ja\n"
 "Plural-Forms: nplurals=1; plural=0\n"
-"X-Generator: Zanata 3.7.3\n"
+"X-Generator: Zanata 3.8.3\n"
 
 #: system_upgrade.py:69
 #, python-format
@@ -66,7 +67,7 @@ msgstr "ダウンロードが終了しました。"
 
 #: system_upgrade.py:65
 msgid "Need a --releasever greater than the current system version."
-msgstr ""
+msgstr "--releasever は、現在のシステムのバージョン番号よりも大きくなければなりません。"
 
 #: system_upgrade.py:63
 msgid "No new kernel packages were found."
@@ -108,7 +109,7 @@ msgstr ""
 
 #: system_upgrade.py:126
 msgid "This plugin requires DNF 1.1.0 or later."
-msgstr ""
+msgstr "このプラグインは DNF 1.1.0 以降を必要とします。"
 
 #: system_upgrade.py:615 system_upgrade.py:616
 msgid "Upgrade complete! Cleaning up and rebooting..."
