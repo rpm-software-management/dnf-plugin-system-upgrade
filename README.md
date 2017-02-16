@@ -1,4 +1,17 @@
-# dnf-plugin-system-upgrade
+# :warning: NOTE: this repo is obsolete :warning:
+
+The [`system-upgrade`] plugin has been moved into the [dnf-plugins-extras] repo.
+
+Please direct all patches, issues, etc. there instead.
+
+(The original README.md is preserved below because it has some useful tips.)
+
+[`system-upgrade`]: https://github.com/rpm-software-management/dnf-plugins-extras/blob/master/plugins/system_upgrade.py
+[dnf-plugins-extras]: https://github.com/rpm-software-management/dnf-plugins-extras
+
+-------
+
+## dnf-plugin-system-upgrade
 
 A plugin for [DNF] that does [fedup]-style upgrades using [systemd]'s [Offline
 Updates] facility.
