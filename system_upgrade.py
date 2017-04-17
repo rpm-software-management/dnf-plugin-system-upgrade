@@ -23,6 +23,7 @@ from __future__ import unicode_literals
 
 import os
 import json
+import atexit
 
 import argparse
 from argparse import ArgumentParser
@@ -133,6 +134,20 @@ def checkDataDir(datadir):
 def checkDNFVer():
     if DNFVERSION < StrictVersion("1.1.0"):
         raise CliError(_("This plugin requires DNF 1.1.0 or later."))
+
+def enable_blanking(arg=10):
+    try:
+        tty = open('/dev/tty0', 'wb')
+    except Exception:
+        return
+    tty.write(b'\33[9;' + str(arg).encode('ascii') + b']')
+
+def maybe_disable_blanking():
+      term = os.getenv('TERM', '')
+      if not (term.startswith('linux') or term.startswith('con')):
+             return
+      atexit.register(enable_blanking)
+      enable_blanking(0)
 
 # --- State object - for tracking upgrade state between runs ------------------
 
@@ -573,6 +588,10 @@ class SystemUpgradeCommand(dnf.cli.Command):
         Plymouth.set_mode("updates")
         Plymouth.progress(0)
         Plymouth.message(_("Starting system upgrade. This will take a while."))
+
+        if not Plymouth.alive:
+            # disable console blanking
+            maybe_disable_blanking()
 
         # NOTE: We *assume* that depsolving here will yield the same
         # transaction as it did during the download, but we aren't doing
