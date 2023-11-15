@@ -1,12 +1,13 @@
 # :warning: NOTE: this repo is obsolete :warning:
 
-The [`system-upgrade`] plugin has been moved into the [dnf-plugins-extras] repo.
+The [`system-upgrade`] plugin was moved to the [dnf-plugins-core] repo in 2022 (and before that was moved into the [dnf-plugins-extras] repo in 2017).
 
 Please direct all patches, issues, etc. there instead.
 
 (The original README.md is preserved below because it has some useful tips.)
 
 [`system-upgrade`]: https://github.com/rpm-software-management/dnf-plugins-extras/blob/master/plugins/system_upgrade.py
+[dnf-plugins-core]: https://github.com/rpm-software-management/dnf-plugins-core
 [dnf-plugins-extras]: https://github.com/rpm-software-management/dnf-plugins-extras
 
 -------
